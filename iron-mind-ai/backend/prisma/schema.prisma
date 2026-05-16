@@ -1,0 +1,254 @@
+// Prisma schema — AI Trainer
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum FitnessLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum FitnessGoalKey {
+  MASS
+  CUT
+  STRENGTH
+  ENDURANCE
+  ABS
+}
+
+enum WorkoutStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum MuscleGroup {
+  CHEST
+  BACK
+  SHOULDERS
+  BICEPS
+  TRICEPS
+  LEGS
+  CORE
+  GLUTES
+  CALVES
+  FOREARMS
+  FULL_BODY
+  OTHER
+}
+
+enum ExerciseCategory {
+  COMPOUND
+  ISOLATION
+  CARDIO
+  MOBILITY
+  OTHER
+}
+
+enum MealType {
+  BREAKFAST
+  LUNCH
+  DINNER
+  SNACK
+}
+
+enum ChatRole {
+  USER
+  ASSISTANT
+}
+
+enum UserRole {
+  USER
+  COACH
+  ADMIN
+}
+
+model User {
+  id                  String         @id @default(cuid())
+  email               String         @unique
+  passwordHash        String
+  role                UserRole       @default(USER)
+
+  // Profile
+  name                String
+  gender              Gender?
+  age                 Int?
+  heightCm            Int?
+  weightKg            Float?
+  level               FitnessLevel?
+
+  // Goal / program
+  goal                String?
+  goalKey             FitnessGoalKey?
+  currentProgramId    String?
+  programWeek         Int            @default(1)
+  onboardingCompleted Boolean        @default(false)
+
+  // Nutrition targets (kcal / macros per day)
+  dailyCaloriesGoal   Int?
+  dailyProteinGoal    Float?
+  dailyFatsGoal       Float?
+  dailyCarbsGoal      Float?
+
+  // Relations
+  workouts            Workout[]
+  measurements        Measurement[]
+  nutritionEntries    NutritionEntry[]
+  chatMessages        ChatMessage[]
+  coachAssignments    CoachAssignment[] @relation("CoachClients")
+  clientAssignment    CoachAssignment?  @relation("ClientCoach")
+
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+}
+
+model CoachAssignment {
+  id        String   @id @default(cuid())
+  coachId   String
+  clientId  String   @unique
+  notes     String?
+  coach     User     @relation("CoachClients", fields: [coachId], references: [id], onDelete: Cascade)
+  client    User     @relation("ClientCoach", fields: [clientId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([coachId])
+}
+
+model Program {
+  id            String       @id
+  title         String
+  subtitle      String
+  weeks         Int
+  level         FitnessLevel
+  goalKey       FitnessGoalKey
+  accent        String       @default("purple")
+  iconName      String       @default("barbell-outline")
+  description   String       @default("")
+
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model Exercise {
+  id          String           @id @default(cuid())
+  slug        String           @unique
+  name        String
+  primary     MuscleGroup
+  secondary   MuscleGroup[]
+  category    ExerciseCategory
+  difficulty  String           @default("Среднее")
+  steps       String[]         @default([])
+  tips        String[]         @default([])
+  videoUrl    String?
+
+  sets        ExerciseSet[]
+
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model Workout {
+  id              String        @id @default(cuid())
+  userId          String
+  date            DateTime      @default(now())
+  programId       String?
+  name            String?
+  durationSeconds Int?
+  calories        Int?
+  status          WorkoutStatus @default(ACTIVE)
+
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sets            ExerciseSet[]
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([userId, date])
+}
+
+model ExerciseSet {
+  id         String   @id @default(cuid())
+  workoutId  String
+  exerciseId String
+  setNumber  Int
+  weight     Float?
+  reps       Int?
+  rpeLevel   Int?
+  completed  Boolean  @default(false)
+
+  workout    Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([workoutId])
+  @@index([exerciseId])
+}
+
+model Measurement {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime @default(now())
+  weight    Float?
+  chest     Float?
+  waist     Float?
+  hips      Float?
+  biceps    Float?
+  thigh     Float?
+  calf      Float?
+  neck      Float?
+  shoulders Float?
+  forearm   Float?
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, date])
+}
+
+model NutritionEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime @default(now())
+  mealType  MealType
+  name      String
+  calories  Int
+  protein   Float?
+  fats      Float?
+  carbs     Float?
+  time      String?
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, date])
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  userId    String
+  role      ChatRole
+  content   String
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
