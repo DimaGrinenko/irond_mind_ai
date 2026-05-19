@@ -11,10 +11,20 @@ import { JwtStrategy } from './jwt.strategy';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        secret: config.get<string>('JWT_SECRET') ?? 'dev-secret-change-me',
-        signOptions: { expiresIn: '30d' },
-      }),
+      useFactory: (config: ConfigService) => {
+        const secret = config.get<string>('JWT_SECRET');
+        if (!secret || secret.length < 32) {
+          throw new Error(
+            'JWT_SECRET is required and must be at least 32 characters long. Set it in .env',
+          );
+        }
+        return {
+          secret,
+          signOptions: {
+            expiresIn: (config.get<string>('JWT_EXPIRES_IN') ?? '30d') as `${number}d`,
+          },
+        };
+      },
     }),
   ],
   controllers: [AuthController],

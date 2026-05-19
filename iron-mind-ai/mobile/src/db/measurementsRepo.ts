@@ -22,6 +22,10 @@ export async function listMeasurements(limit = 90) {
   );
 }
 
+export async function deleteMeasurement(id: number): Promise<void> {
+  await runAsync('DELETE FROM measurements WHERE id = ?', [id]);
+}
+
 export async function createMeasurement(row: Omit<MeasurementsRow, 'id'>) {
   const res = await runAsync(
     `INSERT INTO measurements (date, weight, chest, waist, hips, biceps, thigh, calf, neck, shoulders, forearm)

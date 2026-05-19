@@ -1,5 +1,10 @@
 import { create } from 'zustand';
-import { createMeasurement, listMeasurements, type MeasurementsRow } from '../db/measurementsRepo';
+import {
+  createMeasurement,
+  deleteMeasurement,
+  listMeasurements,
+  type MeasurementsRow,
+} from '../db/measurementsRepo';
 import { todayIsoDate } from '../utils/date';
 
 export type MeasurementInput = {
@@ -20,6 +25,7 @@ export type MeasurementsState = {
   loading: boolean;
   hydrate: () => Promise<void>;
   add: (input: MeasurementInput) => Promise<MeasurementsRow>;
+  remove: (id: number) => Promise<void>;
 };
 
 export const useMeasurementsStore = create<MeasurementsState>()((set, get) => ({
@@ -49,5 +55,9 @@ export const useMeasurementsStore = create<MeasurementsState>()((set, get) => ({
     });
     set({ rows: [saved, ...get().rows] });
     return saved;
+  },
+  remove: async (id) => {
+    await deleteMeasurement(id);
+    set({ rows: get().rows.filter((r) => r.id !== id) });
   },
 }));

@@ -1,0 +1,52 @@
+import { PrismaService } from '../prisma/prisma.service';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+export declare class UsersService {
+    private readonly prisma;
+    constructor(prisma: PrismaService);
+    findById(id: string): Promise<{
+        id: string;
+        level: import(".prisma/client").$Enums.FitnessLevel | null;
+        goalKey: import(".prisma/client").$Enums.FitnessGoalKey | null;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        email: string;
+        role: import(".prisma/client").$Enums.UserRole;
+        gender: import(".prisma/client").$Enums.Gender | null;
+        age: number | null;
+        heightCm: number | null;
+        weightKg: number | null;
+        activityLevel: import(".prisma/client").$Enums.ActivityLevel | null;
+        goal: string | null;
+        currentProgramId: string | null;
+        programWeek: number;
+        onboardingCompleted: boolean;
+        dailyCaloriesGoal: number | null;
+        dailyProteinGoal: number | null;
+        dailyFatsGoal: number | null;
+        dailyCarbsGoal: number | null;
+    } | null>;
+    updateProfile(userId: string, dto: UpdateProfileDto): Promise<{
+        id: string;
+        level: import(".prisma/client").$Enums.FitnessLevel | null;
+        goalKey: import(".prisma/client").$Enums.FitnessGoalKey | null;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        email: string;
+        role: import(".prisma/client").$Enums.UserRole;
+        gender: import(".prisma/client").$Enums.Gender | null;
+        age: number | null;
+        heightCm: number | null;
+        weightKg: number | null;
+        activityLevel: import(".prisma/client").$Enums.ActivityLevel | null;
+        goal: string | null;
+        currentProgramId: string | null;
+        programWeek: number;
+        onboardingCompleted: boolean;
+        dailyCaloriesGoal: number | null;
+        dailyProteinGoal: number | null;
+        dailyFatsGoal: number | null;
+        dailyCarbsGoal: number | null;
+    }>;
+}

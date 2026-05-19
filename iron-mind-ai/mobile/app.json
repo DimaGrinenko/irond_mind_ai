@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "Iron Mind AI",
+    "slug": "iron-mind-ai",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/app_icon.png",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#03040A",
     "newArchEnabled": true,
@@ -14,15 +14,27 @@
       "backgroundColor": "#03040A"
     },
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "ai.ironmind.app",
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Приложению нужна камера, чтобы снимать фото прогресса.",
+        "NSPhotoLibraryUsageDescription": "Приложению нужен доступ к фото, чтобы добавлять снимки прогресса.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
+      "package": "ai.ironmind.app",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/app_icon.png",
         "backgroundColor": "#03040A"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "CAMERA",
+        "READ_MEDIA_IMAGES",
+        "READ_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -36,6 +48,12 @@
         {
           "photosPermission": "Приложению нужен доступ к фото, чтобы добавлять снимки прогресса.",
           "cameraPermission": "Приложению нужна камера, чтобы снимать фото прогресса."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#7B3FE4"
         }
       ]
     ]

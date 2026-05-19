@@ -76,6 +76,14 @@ enum UserRole {
   ADMIN
 }
 
+enum ActivityLevel {
+  SEDENTARY
+  LIGHT
+  MODERATE
+  ACTIVE
+  VERY_ACTIVE
+}
+
 model User {
   id                  String         @id @default(cuid())
   email               String         @unique
@@ -89,6 +97,7 @@ model User {
   heightCm            Int?
   weightKg            Float?
   level               FitnessLevel?
+  activityLevel       ActivityLevel?
 
   // Goal / program
   goal                String?
@@ -110,9 +119,136 @@ model User {
   chatMessages        ChatMessage[]
   coachAssignments    CoachAssignment[] @relation("CoachClients")
   clientAssignment    CoachAssignment?  @relation("ClientCoach")
+  achievements        UserAchievement[]
+  progress            UserProgress?
+  activityEvents      ActivityEvent[]
+  scheduledWorkouts   ScheduledWorkout[]
 
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
+}
+
+enum ScheduledWorkoutStatus {
+  PLANNED
+  DONE
+  SKIPPED
+}
+
+model ScheduledWorkout {
+  id           String                 @id @default(cuid())
+  userId       String
+  date         DateTime               // дата (00:00 локального дня)
+  time         String?                // опционально "HH:mm"
+  title        String
+  programId    String?
+  /** Связь с конкретным днём программы (для группировки/прогресса) */
+  programDayId String?
+  notes        String?
+  status       ScheduledWorkoutStatus @default(PLANNED)
+  completedAt  DateTime?
+  workoutId    String?                // связь с фактической Workout если стартанули
+
+  user         User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+
+  @@index([userId, date])
+  @@index([userId, status])
+  @@index([userId, programId, status])
+}
+
+enum AchievementCategory {
+  STRENGTH
+  CARDIO
+  ENDURANCE
+  BODY
+  STREAK
+  MILESTONE
+}
+
+enum AchievementStatus {
+  LOCKED
+  IN_PROGRESS
+  UNLOCKED
+}
+
+enum ActivityEventKind {
+  WORKOUT_COMPLETED
+  REST_DAY
+  ACHIEVEMENT_UNLOCKED
+  PR_SET
+}
+
+model Achievement {
+  id            String                @id
+  title         String
+  description   String
+  category      AchievementCategory
+  iconName      String
+  positionX     Float                 @default(0)
+  positionY     Float                 @default(0)
+  xpReward      Int                   @default(10)
+  leavesReward  Int                   @default(5)
+  targetValue   Float?
+  targetUnit    String?
+  sortOrder     Int                   @default(0)
+
+  users         UserAchievement[]
+
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+}
+
+model UserAchievement {
+  id             String             @id @default(cuid())
+  userId         String
+  achievementId  String
+  status         AchievementStatus  @default(LOCKED)
+  progress       Float              @default(0)
+  currentValue   Float?
+  unlockedAt     DateTime?
+
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement    Achievement        @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  updatedAt      DateTime           @updatedAt
+
+  @@unique([userId, achievementId])
+  @@index([userId, status])
+}
+
+model UserProgress {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  treeLevel       Int      @default(1)
+  currentXp       Int      @default(0)
+  totalXp         Int      @default(0)
+  leaves          Int      @default(0)
+  streakDays      Int      @default(0)
+  longestStreak   Int      @default(0)
+  lastWorkoutAt   DateTime?
+  monthlyGoal     Int      @default(20)
+  monthlyDone     Int      @default(0)
+  monthAnchor     DateTime @default(now())
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  updatedAt       DateTime @updatedAt
+}
+
+model ActivityEvent {
+  id        String             @id @default(cuid())
+  userId    String
+  kind      ActivityEventKind
+  title     String
+  detail    String?
+  xp        Int                @default(0)
+  occurredAt DateTime          @default(now())
+
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, occurredAt])
 }
 
 model CoachAssignment {
@@ -127,19 +263,69 @@ model CoachAssignment {
   @@index([coachId])
 }
 
+enum ProgramKind {
+  FULL_BODY
+  UPPER_LOWER
+  PUSH_PULL_LEGS
+  SPLIT
+  CUSTOM
+}
+
 model Program {
-  id            String       @id
+  id            String         @id
   title         String
   subtitle      String
   weeks         Int
   level         FitnessLevel
   goalKey       FitnessGoalKey
-  accent        String       @default("purple")
-  iconName      String       @default("barbell-outline")
-  description   String       @default("")
+  kind          ProgramKind    @default(CUSTOM)
+  daysPerWeek   Int            @default(3)
+  accent        String         @default("purple")
+  iconName      String         @default("barbell-outline")
+  description   String         @default("")
 
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  /** Если null — это системный шаблон, доступный всем. Иначе — личная программа пользователя. */
+  ownerUserId   String?
+  /** Если клонирован из шаблона — id шаблона */
+  baseProgramId String?
+
+  days          ProgramDay[]
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([ownerUserId])
+}
+
+model ProgramDay {
+  id          String              @id @default(cuid())
+  programId   String
+  order       Int                 @default(0)
+  title       String              // например "Верх A", "Push", "День 1"
+  /** Опциональный день недели если программа привязана к расписанию недели (0=Пн ... 6=Вс) */
+  weekday     Int?
+
+  program     Program             @relation(fields: [programId], references: [id], onDelete: Cascade)
+  exercises   ProgramExercise[]
+
+  @@index([programId, order])
+}
+
+model ProgramExercise {
+  id          String      @id @default(cuid())
+  dayId       String
+  order       Int         @default(0)
+  exerciseId  String      // ссылка на slug в Exercise (string id)
+  exerciseName String     // денормализованное имя для оффлайн-чтения
+  sets        Int         @default(3)
+  repsMin     Int         @default(8)
+  repsMax     Int         @default(12)
+  restSeconds Int         @default(90)
+  notes       String?
+
+  day         ProgramDay  @relation(fields: [dayId], references: [id], onDelete: Cascade)
+
+  @@index([dayId, order])
 }
 
 model Exercise {

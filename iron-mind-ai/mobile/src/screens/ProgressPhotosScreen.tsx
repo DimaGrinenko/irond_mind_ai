@@ -11,6 +11,7 @@ import { fontFamilies } from '../theme/typography';
 import { useProgressPhotosStore } from '../store/progressPhotosStore';
 import { daysBetween } from '../utils/date';
 import type { ProgressPhotoRow } from '../db/progressPhotosRepo';
+import { t, useLang } from '../i18n';
 
 const RU_MONTHS = ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
 function prettyDate(iso: string) {
@@ -19,6 +20,7 @@ function prettyDate(iso: string) {
 }
 
 export function ProgressPhotosScreen({ navigation }: any) {
+  useLang();
   const photos = useProgressPhotosStore((s) => s.photos);
   const hydrate = useProgressPhotosStore((s) => s.hydrate);
   const add = useProgressPhotosStore((s) => s.add);
@@ -35,7 +37,7 @@ export function ProgressPhotosScreen({ navigation }: any) {
           ? await ImagePicker.requestCameraPermissionsAsync()
           : await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!perm.granted) {
-        Alert.alert('Нет доступа', 'Разреши доступ к камере/галерее в настройках, чтобы добавлять фото.');
+        Alert.alert(t('common.error'), t('notif.unsupported'));
         return;
       }
       const opts: ImagePicker.ImagePickerOptions = {
@@ -51,23 +53,23 @@ export function ProgressPhotosScreen({ navigation }: any) {
       if (res.canceled || !res.assets?.[0]) return;
       await add(res.assets[0].uri);
     } catch (e) {
-      console.error('Не удалось добавить фото:', e);
-      Alert.alert('Ошибка', 'Не удалось добавить фото. Попробуй ещё раз.');
+      console.error('photo add failed:', e);
+      Alert.alert(t('common.error'), (e as Error).message);
     }
   };
 
   const onAdd = () => {
-    Alert.alert('Добавить фото', 'Выбери источник', [
-      { text: 'Камера', onPress: () => pickFrom('camera') },
-      { text: 'Галерея', onPress: () => pickFrom('library') },
-      { text: 'Отмена', style: 'cancel' },
+    Alert.alert(t('photos.add'), '', [
+      { text: 'Camera', onPress: () => pickFrom('camera') },
+      { text: 'Library', onPress: () => pickFrom('library') },
+      { text: t('common.cancel'), style: 'cancel' },
     ]);
   };
 
   const onPhotoPress = (p: ProgressPhotoRow) => {
-    Alert.alert(prettyDate(p.date), 'Что сделать с фото?', [
-      { text: 'Удалить', style: 'destructive', onPress: () => remove(p.id) },
-      { text: 'Закрыть', style: 'cancel' },
+    Alert.alert(prettyDate(p.date), t('photos.confirmDelete'), [
+      { text: t('common.delete'), style: 'destructive', onPress: () => remove(p.id) },
+      { text: t('common.close'), style: 'cancel' },
     ]);
   };
 
@@ -78,7 +80,7 @@ export function ProgressPhotosScreen({ navigation }: any) {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
-      <ScreenHeader title="Фото прогресса" onBack={() => navigation.goBack()} />
+      <ScreenHeader title={t('photos.title')} onBack={() => navigation.goBack()} />
 
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }} showsVerticalScrollIndicator={false}>
         {/* ===== Сравнение до/после ===== */}
@@ -104,7 +106,7 @@ export function ProgressPhotosScreen({ navigation }: any) {
         {/* ===== Сетка фото ===== */}
         <View style={{ paddingHorizontal: 16, marginTop: 14 }}>
           <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body600, fontSize: 12 }}>
-            Все снимки ({photos.length})
+            {t('photos.title')} ({photos.length})
           </Text>
         </View>
 
@@ -112,10 +114,7 @@ export function ProgressPhotosScreen({ navigation }: any) {
           <View style={{ alignItems: 'center', paddingVertical: 48, gap: 12, paddingHorizontal: 32 }}>
             <Ionicons name="camera-outline" size={48} color={colors.textMuted} />
             <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body600, fontSize: 14, textAlign: 'center' }}>
-              Пока нет фото
-            </Text>
-            <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 12, textAlign: 'center' }}>
-              Делай снимок раз в неделю — и через месяц увидишь реальную разницу.
+              {t('photos.empty')}
             </Text>
           </View>
         ) : (
@@ -161,7 +160,7 @@ export function ProgressPhotosScreen({ navigation }: any) {
 
       <View style={{ position: 'absolute', left: 16, right: 16, bottom: 18 }}>
         <GradientButton
-          title="Добавить фото"
+          title={t('photos.add')}
           onPress={onAdd}
           rightIcon={<Ionicons name="camera" size={18} color={colors.text} />}
         />

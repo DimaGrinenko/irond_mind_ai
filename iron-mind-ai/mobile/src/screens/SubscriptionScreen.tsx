@@ -1,161 +1,322 @@
-import { LinearGradient } from 'expo-linear-gradient';
-import React, { useMemo, useState } from 'react';
+/**
+ * Premium pay-wall — UI без реальной интеграции (Stripe/RevenueCat будет позже).
+ */
+import React, { useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Card } from '../components/common/Card';
 import { GradientButton } from '../components/common/GradientButton';
 import { ScreenHeader } from '../components/layout/ScreenHeader';
-import { colors, glow, radii } from '../theme/tokens';
+import { colors, neonGlow, neonTextShadow, radii } from '../theme/tokens';
 import { fontFamilies } from '../theme/typography';
+import { t, useLang } from '../i18n';
 
-type Plan = { id: '1m' | '3m' | '12m'; label: string; price: number; oldPrice?: number; badge?: string };
+type Tier = 'free' | 'pro' | 'elite';
 
-const plans: Plan[] = [
-  { id: '1m', label: '1 месяц', price: 899 },
-  { id: '3m', label: '3 месяца', price: 2290, oldPrice: 2690, badge: '-15%' },
-  { id: '12m', label: '12 месяцев', price: 7990, oldPrice: 15980, badge: '-50%' },
+type TierDef = {
+  id: Tier;
+  name: string;
+  priceMonth: string;
+  priceYear: string;
+  tagline: string;
+  features: Array<{ text: string; included: boolean }>;
+  cta: string;
+  highlight?: boolean;
+};
+
+const TIERS: TierDef[] = [
+  {
+    id: 'free',
+    name: 'Free',
+    priceMonth: '0 ₽',
+    priceYear: '0 ₽',
+    tagline: 'Базовый функционал — навсегда',
+    features: [
+      { text: 'Все шаблоны программ', included: true },
+      { text: '1 личная программа', included: true },
+      { text: 'Аналитика — 7 дней', included: true },
+      { text: 'AI-тренер — 10 запросов в день', included: true },
+      { text: 'Замеры + питание', included: true },
+      { text: 'Все 67 упражнений с видео', included: true },
+      { text: 'Расширенная аналитика 30+ дней', included: false },
+      { text: 'AI без лимита', included: false },
+      { text: 'Кастомные темы', included: false },
+      { text: 'Экспорт данных', included: false },
+    ],
+    cta: 'Текущий план',
+  },
+  {
+    id: 'pro',
+    name: 'Pro',
+    priceMonth: '299 ₽',
+    priceYear: '1 990 ₽',
+    tagline: 'Для серьёзных тренировок',
+    highlight: true,
+    features: [
+      { text: 'Всё из Free', included: true },
+      { text: 'Неограниченные программы', included: true },
+      { text: 'Аналитика 30/90/365 дней', included: true },
+      { text: 'AI-тренер без лимита', included: true },
+      { text: 'Расширенный workout history', included: true },
+      { text: 'Журнал добавок', included: true },
+      { text: 'Сравнение «До/После» фото', included: true },
+      { text: 'Уведомления о тренировках', included: true },
+      { text: 'Эксклюзивные программы от тренеров', included: false },
+      { text: 'Видеоразбор техники по фото', included: false },
+    ],
+    cta: 'Получить Pro',
+  },
+  {
+    id: 'elite',
+    name: 'Elite',
+    priceMonth: '799 ₽',
+    priceYear: '5 990 ₽',
+    tagline: 'Полный арсенал атлета',
+    features: [
+      { text: 'Всё из Pro', included: true },
+      { text: 'Эксклюзивные программы тренеров', included: true },
+      { text: 'AI-видеоразбор техники по фото', included: true },
+      { text: 'Персональный план питания', included: true },
+      { text: 'Приоритет в обновлениях', included: true },
+      { text: 'Прямые консультации с тренером (1 раз/мес)', included: true },
+      { text: 'Эксклюзивный мерч и комьюнити', included: true },
+      { text: 'Все будущие фичи без доплат', included: true },
+    ],
+    cta: 'Стать Elite',
+  },
 ];
 
-export function SubscriptionScreen({ navigation }: any) {
-  const [selected, setSelected] = useState<Plan['id']>('12m');
-  const current = useMemo(() => plans.find((p) => p.id === selected) ?? plans[0], [selected]);
+export function SubscriptionScreen() {
+  useLang();
+  const nav = useNavigation<any>();
+  const [period, setPeriod] = useState<'month' | 'year'>('year');
+
+  const onSubscribe = (tier: Tier) => {
+    if (tier === 'free') return;
+    Alert.alert(
+      'Скоро',
+      'Подписки в разработке. Сейчас все Pro/Elite фичи доступны в beta-тесте бесплатно.',
+      [{ text: 'OK' }],
+    );
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
-      <ScreenHeader title="Подписка" onBack={() => navigation.goBack()} />
+      <ScreenHeader title="Iron Mind Premium" onBack={() => nav.goBack()} />
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 120 }} showsVerticalScrollIndicator={false}>
-        <View style={{ paddingHorizontal: 16, marginTop: 12 }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 40, paddingHorizontal: 16 }} showsVerticalScrollIndicator={false}>
+        <View style={{ marginTop: 12 }}>
           <Card style={{ padding: 0, overflow: 'hidden' }}>
-            <LinearGradient colors={['rgba(79,31,184,0.22)', 'rgba(0,0,0,0.95)']} style={{ padding: 16 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                <View
-                  style={{
-                    width: 34,
-                    height: 34,
-                    borderRadius: 12,
-                    backgroundColor: 'rgba(255,255,255,0.06)',
-                    borderWidth: 1,
-                    borderColor: 'rgba(255,255,255,0.12)',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Ionicons name="trophy" size={18} color="#F8D14A" />
-                </View>
-                <View>
-                  <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 16 }}>Премиум</Text>
-                  <Text style={{ marginTop: 2, color: colors.textSecondary, fontFamily: fontFamilies.body600, fontSize: 12 }}>
-                    Доступ ко всем функциям
-                  </Text>
-                </View>
-              </View>
-
-              <View style={{ marginTop: 14, gap: 10 }}>
-                {[
-                  'Все программы тренировок',
-                  'AI чат без ограничений',
-                  'Планы питания',
-                  'Аналитика прогресса',
-                  'Видео упражнений',
-                  'Индивидуальные рекомендации',
-                  'Приоритетная поддержка',
-                ].map((t) => (
-                  <View key={t} style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                    <Ionicons name="star" size={14} color="#F8D14A" />
-                    <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body600, fontSize: 12 }}>{t}</Text>
-                  </View>
-                ))}
-              </View>
-
-              <View style={{ marginTop: 16, flexDirection: 'row', gap: 12 }}>
-                <View style={{ flex: 1, gap: 10 }}>
-                  {plans.map((p) => {
-                    const active = p.id === selected;
-                    return (
-                      <Pressable
-                        key={p.id}
-                        onPress={() => setSelected(p.id)}
-                        style={{
-                          paddingVertical: 10,
-                          paddingHorizontal: 12,
-                          borderRadius: 14,
-                          borderWidth: 1,
-                          borderColor: active ? 'rgba(123,63,228,0.65)' : 'rgba(42,42,62,0.9)',
-                          backgroundColor: active ? 'rgba(123,63,228,0.14)' : 'rgba(15,15,26,0.55)',
-                        }}
-                      >
-                        <Text style={{ color: active ? colors.text : colors.textSecondary, fontFamily: fontFamilies.body700, fontSize: 12 }}>
-                          {p.label}
-                        </Text>
-                      </Pressable>
-                    );
-                  })}
-                </View>
-
-                <View
-                  style={{
-                    width: 150,
-                    borderRadius: 18,
-                    borderWidth: 1,
-                    borderColor: 'rgba(123,63,228,0.65)',
-                    backgroundColor: 'rgba(15,15,26,0.55)',
-                    padding: 12,
-                    ...glow,
-                  }}
-                >
-                  <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body600, fontSize: 12, textAlign: 'right' }}>
-                    {current.price} ₽
-                  </Text>
-                  {current.oldPrice ? (
-                    <Text style={{ marginTop: 6, color: 'rgba(255,255,255,0.35)', fontFamily: fontFamilies.body600, fontSize: 12, textAlign: 'right', textDecorationLine: 'line-through' }}>
-                      {current.oldPrice} ₽
-                    </Text>
-                  ) : null}
-
-                  <View style={{ flex: 1 }} />
-                  <Text style={{ marginTop: 28, color: colors.textMuted, fontFamily: fontFamilies.body600, fontSize: 11 }}>
-                    Лучший выбор
-                  </Text>
-
-                  {current.badge ? (
-                    <View
-                      style={{
-                        position: 'absolute',
-                        right: 10,
-                        bottom: 10,
-                        paddingHorizontal: 10,
-                        paddingVertical: 6,
-                        borderRadius: 999,
-                        backgroundColor: 'rgba(248,209,74,0.18)',
-                        borderWidth: 1,
-                        borderColor: 'rgba(248,209,74,0.45)',
-                      }}
-                    >
-                      <Text style={{ color: '#F8D14A', fontFamily: fontFamilies.body700, fontSize: 11 }}>{current.badge}</Text>
-                    </View>
-                  ) : null}
-                </View>
-              </View>
+            <LinearGradient
+              colors={['rgba(157,107,255,0.32)', 'rgba(0,229,255,0.18)', 'rgba(255,77,210,0.18)']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={{ padding: 20 }}
+            >
+              <Ionicons
+                name="diamond"
+                size={32}
+                color={colors.cyan}
+                style={[{ marginBottom: 8 }, neonTextShadow(colors.cyan, 16) as any]}
+              />
+              <Text
+                style={[
+                  { color: colors.text, fontFamily: fontFamilies.heading, fontSize: 24 },
+                  neonTextShadow(colors.purpleLight, 12),
+                ]}
+              >
+                Выжми максимум из тренировок
+              </Text>
+              <Text style={{ marginTop: 6, color: colors.textSecondary, fontFamily: fontFamilies.body, fontSize: 13 }}>
+                Подписка открывает AI без лимита, расширенную аналитику и эксклюзивные программы.
+              </Text>
             </LinearGradient>
           </Card>
         </View>
-      </ScrollView>
 
-      <View style={{ position: 'absolute', left: 16, right: 16, bottom: 18 }}>
-        <GradientButton
-          title="Оформить подписку"
-          onPress={() =>
-            Alert.alert(
-              'Подписка',
-              `Вы выбрали тариф "${current.label}" за ${current.price} ₽. Оплата будет доступна в релизной версии.`,
-              [{ text: 'Понятно' }],
-            )
-          }
-          rightIcon={<Ionicons name="arrow-forward" size={18} color={colors.text} />}
-        />
-      </View>
+        <View style={{ marginTop: 18, flexDirection: 'row', gap: 8 }}>
+          <Pressable onPress={() => setPeriod('month')} style={[periodBtnStyle, period === 'month' && periodBtnActive]}>
+            <Text style={{ color: period === 'month' ? colors.purpleLight : colors.textSecondary, fontFamily: fontFamilies.body700, fontSize: 13 }}>
+              Месяц
+            </Text>
+          </Pressable>
+          <Pressable onPress={() => setPeriod('year')} style={[periodBtnStyle, period === 'year' && periodBtnActive, { position: 'relative' }]}>
+            <Text style={{ color: period === 'year' ? colors.purpleLight : colors.textSecondary, fontFamily: fontFamilies.body700, fontSize: 13 }}>
+              Год
+            </Text>
+            <View
+              style={{
+                position: 'absolute',
+                top: -8,
+                right: -4,
+                paddingHorizontal: 6,
+                paddingVertical: 2,
+                borderRadius: 6,
+                backgroundColor: colors.green,
+              }}
+            >
+              <Text style={{ color: '#000', fontFamily: fontFamilies.body700, fontSize: 9 }}>−40%</Text>
+            </View>
+          </Pressable>
+        </View>
+
+        <View style={{ marginTop: 16, gap: 12 }}>
+          {TIERS.map((tier) => (
+            <TierCard key={tier.id} tier={tier} period={period} onPress={() => onSubscribe(tier.id)} />
+          ))}
+        </View>
+
+        <View style={{ marginTop: 18 }}>
+          <Card variant="secondary">
+            <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 12, lineHeight: 18 }}>
+              • Подписка возобновляется автоматически{'\n'}
+              • Можно отменить в любое время{'\n'}
+              • Pro и Elite дают 7-дневный free trial{'\n'}
+              • Доступ восстанавливается на всех устройствах с одним аккаунтом
+            </Text>
+          </Card>
+        </View>
+      </ScrollView>
     </View>
   );
 }
 
+function TierCard({ tier, period, onPress }: { tier: TierDef; period: 'month' | 'year'; onPress: () => void }) {
+  const price = period === 'month' ? tier.priceMonth : tier.priceYear;
+  const sub = period === 'month' ? '/мес' : '/год';
+  return (
+    <View
+      style={[
+        {
+          borderRadius: radii.xl,
+          overflow: 'hidden',
+          borderWidth: 1,
+          borderColor: tier.highlight ? colors.borderNeon : colors.border,
+        },
+        tier.highlight ? neonGlow(colors.purple, 0.35, 18, 6) : {},
+      ]}
+    >
+      <LinearGradient
+        colors={
+          tier.highlight
+            ? ['rgba(157,107,255,0.22)', 'rgba(0,229,255,0.10)']
+            : ['rgba(13,16,32,0.85)', 'rgba(8,11,22,0.95)']
+        }
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{ padding: 18 }}
+      >
+        {tier.highlight ? (
+          <View
+            style={{
+              alignSelf: 'flex-start',
+              paddingHorizontal: 10,
+              paddingVertical: 4,
+              borderRadius: 8,
+              backgroundColor: colors.purpleLight,
+              marginBottom: 10,
+            }}
+          >
+            <Text style={{ color: '#000', fontFamily: fontFamilies.body700, fontSize: 10, letterSpacing: 1 }}>
+              ПОПУЛЯРНЫЙ
+            </Text>
+          </View>
+        ) : null}
+
+        <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+          <View>
+            <Text
+              style={[
+                { color: colors.text, fontFamily: fontFamilies.heading, fontSize: 22 },
+                tier.highlight ? neonTextShadow(colors.purpleLight, 12) : null,
+              ]}
+            >
+              {tier.name}
+            </Text>
+            <Text style={{ marginTop: 4, color: colors.textSecondary, fontFamily: fontFamilies.body, fontSize: 12 }}>
+              {tier.tagline}
+            </Text>
+          </View>
+          <View style={{ alignItems: 'flex-end' }}>
+            <Text
+              style={[
+                { color: colors.text, fontFamily: fontFamilies.body700, fontSize: 20 },
+                tier.highlight ? neonTextShadow(colors.purpleLight, 10) : null,
+              ]}
+            >
+              {price}
+            </Text>
+            <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11 }}>{sub}</Text>
+          </View>
+        </View>
+
+        <View style={{ marginTop: 14, gap: 6 }}>
+          {tier.features.map((f, i) => (
+            <View key={`${tier.id}-${i}`} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
+              <Ionicons
+                name={f.included ? 'checkmark-circle' : 'close-circle-outline'}
+                size={16}
+                color={f.included ? colors.green : colors.textMuted}
+                style={{ marginTop: 1 }}
+              />
+              <Text
+                style={{
+                  flex: 1,
+                  color: f.included ? colors.text : colors.textMuted,
+                  fontFamily: fontFamilies.body,
+                  fontSize: 12,
+                  textDecorationLine: f.included ? 'none' : 'line-through',
+                }}
+              >
+                {f.text}
+              </Text>
+            </View>
+          ))}
+        </View>
+
+        <View style={{ marginTop: 16 }}>
+          {tier.id === 'free' ? (
+            <View
+              style={{
+                paddingVertical: 12,
+                alignItems: 'center',
+                borderRadius: radii.md,
+                borderWidth: 1,
+                borderColor: colors.border,
+                backgroundColor: colors.bgSecondary,
+              }}
+            >
+              <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body700, fontSize: 13 }}>
+                {tier.cta}
+              </Text>
+            </View>
+          ) : (
+            <GradientButton
+              title={tier.cta}
+              onPress={onPress}
+              variant={tier.id === 'elite' ? 'aurora' : 'primary'}
+              rightIcon={<Ionicons name="arrow-forward" size={18} color="#fff" />}
+            />
+          )}
+        </View>
+      </LinearGradient>
+    </View>
+  );
+}
+
+const periodBtnStyle = {
+  flex: 1,
+  paddingVertical: 12,
+  alignItems: 'center' as const,
+  borderRadius: 14,
+  borderWidth: 1,
+  borderColor: colors.border,
+  backgroundColor: colors.bgSecondary,
+} as const;
+
+const periodBtnActive = {
+  borderColor: colors.borderNeon,
+  backgroundColor: 'rgba(157,107,255,0.18)',
+} as const;

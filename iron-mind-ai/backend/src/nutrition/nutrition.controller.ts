@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/jwt.guard';
 import { CurrentUser, CurrentUserPayload } from '../auth/current-user.decorator';
 import { NutritionService } from './nutrition.service';
@@ -17,5 +17,12 @@ export class NutritionController {
   @Post()
   create(@CurrentUser() user: CurrentUserPayload, @Body() dto: CreateNutritionEntryDto) {
     return this.nutrition.create(user.id, dto);
+  }
+
+  /** Импорт рецепта по URL — парсит ингредиенты и считает БЖУ. */
+  @Post('recipe-import')
+  recipeImport(@Body() body: { url?: string }) {
+    if (!body?.url) throw new BadRequestException('url required');
+    return this.nutrition.recipeImport(body.url);
   }
 }

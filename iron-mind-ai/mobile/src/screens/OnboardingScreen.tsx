@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
+  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -20,48 +21,79 @@ import { GradientButton } from '../components/common/GradientButton';
 import { CyberAthlete } from '../components/anatomy/CyberAthlete';
 import { Particles } from '../components/anim/Particles';
 import {
+  type ActivityLevel,
   type FitnessGoalKey,
   type FitnessLevel,
   type Gender,
   useUserStore,
 } from '../store/userStore';
 import { useAuthStore } from '../store/authStore';
-import { ApiError, api } from '../api/client';
+import { ApiError, api, type OnboardingPlan, type OnboardingPayload } from '../api/client';
+import { t, useLang } from '../i18n';
+
+function goals() {
+  return [
+    { key: 'mass' as const, title: t('goal.mass'), subtitle: t('goal.mass.sub'), icon: 'barbell' as const },
+    { key: 'cut' as const, title: t('goal.cut'), subtitle: t('goal.cut.sub'), icon: 'flame' as const },
+    { key: 'strength' as const, title: t('goal.strength'), subtitle: t('goal.strength.sub'), icon: 'flash' as const },
+    { key: 'endurance' as const, title: t('goal.endurance'), subtitle: t('goal.endurance.sub'), icon: 'pulse' as const },
+    { key: 'abs' as const, title: t('goal.abs'), subtitle: t('goal.abs.sub'), icon: 'fitness' as const },
+  ];
+}
+function levels() {
+  return [
+    { key: 'beginner' as const, title: t('level.beginner'), subtitle: t('level.beginner.sub') },
+    { key: 'intermediate' as const, title: t('level.intermediate'), subtitle: t('level.intermediate.sub') },
+    { key: 'advanced' as const, title: t('level.advanced'), subtitle: t('level.advanced.sub') },
+  ];
+}
+function activities() {
+  return [
+    { key: 'sedentary' as const, title: t('activity.sedentary'), subtitle: t('activity.sedentary.sub'), icon: 'cafe' as const },
+    { key: 'light' as const, title: t('activity.light'), subtitle: t('activity.light.sub'), icon: 'walk' as const },
+    { key: 'moderate' as const, title: t('activity.moderate'), subtitle: t('activity.moderate.sub'), icon: 'bicycle' as const },
+    { key: 'active' as const, title: t('activity.active'), subtitle: t('activity.active.sub'), icon: 'flame' as const },
+    { key: 'very_active' as const, title: t('activity.very_active'), subtitle: t('activity.very_active.sub'), icon: 'flash' as const },
+  ];
+}
+function genders() {
+  return [
+    { key: 'male' as const, title: t('gender.male'), icon: 'male' as const },
+    { key: 'female' as const, title: t('gender.female'), icon: 'female' as const },
+    { key: 'other' as const, title: t('gender.other'), icon: 'person' as const },
+  ];
+}
 
 type Step =
   | 'welcome'
   | 'name'
   | 'gender'
   | 'metrics'
+  | 'activity'
   | 'goal'
   | 'level'
+  | 'summary'
   | 'account'
   | 'finish';
 
-const GOALS: Array<{ key: FitnessGoalKey; title: string; subtitle: string; icon: keyof typeof Ionicons.glyphMap }> = [
-  { key: 'mass', title: 'Набор массы', subtitle: 'Растим объём и силу', icon: 'barbell' },
-  { key: 'cut', title: 'Рельеф', subtitle: 'Сжигаем жир, проявляем мышцы', icon: 'flame' },
-  { key: 'strength', title: 'Сила', subtitle: 'Тяжёлые базовые движения', icon: 'flash' },
-  { key: 'endurance', title: 'Выносливость', subtitle: 'Кардио и работа на объём', icon: 'pulse' },
-  { key: 'abs', title: 'Пресс', subtitle: 'Кубики и крепкий кор', icon: 'fitness' },
-];
+// GOALS/LEVELS/ACTIVITIES/GENDERS теперь живут в функциях goals()/levels()/activities()/genders() выше
 
-const LEVELS: Array<{ key: FitnessLevel; title: string; subtitle: string }> = [
-  { key: 'beginner', title: 'Новичок', subtitle: 'Опыт меньше 6 месяцев' },
-  { key: 'intermediate', title: 'Средний', subtitle: 'Тренируюсь 1–2 года' },
-  { key: 'advanced', title: 'Продвинутый', subtitle: 'Опыт более 2 лет' },
+const ORDER: Step[] = [
+  'welcome',
+  'name',
+  'gender',
+  'metrics',
+  'activity',
+  'goal',
+  'level',
+  'summary',
+  'account',
+  'finish',
 ];
-
-const GENDERS: Array<{ key: Gender; title: string; icon: keyof typeof Ionicons.glyphMap }> = [
-  { key: 'male', title: 'Мужской', icon: 'male' },
-  { key: 'female', title: 'Женский', icon: 'female' },
-  { key: 'other', title: 'Другое', icon: 'person' },
-];
-
-const ORDER: Step[] = ['welcome', 'name', 'gender', 'metrics', 'goal', 'level', 'account', 'finish'];
 
 export function OnboardingScreen() {
   const [step, setStep] = useState<Step>('welcome');
+  const [loginVisible, setLoginVisible] = useState(false);
   const insets = useSafeAreaInsets();
   const u = useUserStore();
 
@@ -113,7 +145,9 @@ export function OnboardingScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {step === 'welcome' && <WelcomeStep onNext={() => goNext('name')} />}
+          {step === 'welcome' && (
+            <WelcomeStep onNext={() => goNext('name')} onLogin={() => setLoginVisible(true)} />
+          )}
 
           {step === 'name' && (
             <NameStep
@@ -142,6 +176,15 @@ export function OnboardingScreen() {
               setHeight={u.setHeight}
               setWeight={u.setWeight}
               onBack={() => goNext('gender')}
+              onNext={() => goNext('activity')}
+            />
+          )}
+
+          {step === 'activity' && (
+            <ActivityStep
+              value={u.activityLevel}
+              onChange={u.setActivityLevel}
+              onBack={() => goNext('metrics')}
               onNext={() => goNext('goal')}
             />
           )}
@@ -150,7 +193,7 @@ export function OnboardingScreen() {
             <GoalStep
               value={u.goalKey}
               onChange={(g) => u.setGoal(g.title, g.key)}
-              onBack={() => goNext('metrics')}
+              onBack={() => goNext('activity')}
               onNext={() => goNext('level')}
             />
           )}
@@ -160,13 +203,20 @@ export function OnboardingScreen() {
               value={u.level}
               onChange={u.setLevel}
               onBack={() => goNext('goal')}
+              onNext={() => goNext('summary')}
+            />
+          )}
+
+          {step === 'summary' && (
+            <SummaryStep
+              onBack={() => goNext('level')}
               onNext={() => goNext('account')}
             />
           )}
 
           {step === 'account' && (
             <AccountStep
-              onBack={() => goNext('level')}
+              onBack={() => goNext('summary')}
               onNext={() => goNext('finish')}
             />
           )}
@@ -180,7 +230,166 @@ export function OnboardingScreen() {
           )}
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <LoginModal
+        visible={loginVisible}
+        onClose={() => setLoginVisible(false)}
+        onSuccess={() => setLoginVisible(false)}
+      />
     </View>
+  );
+}
+
+function LoginModal({
+  visible,
+  onClose,
+  onSuccess,
+}: {
+  visible: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
+}) {
+  const auth = useAuthStore();
+  const u = useUserStore();
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [submitting, setSubmitting] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (visible) {
+      setEmail('');
+      setPassword('');
+      setError(null);
+    }
+  }, [visible]);
+
+  const onSubmit = async () => {
+    if (!/\S+@\S+\.\S+/.test(email) || password.length < 6) {
+      setError('Введи корректный email и пароль');
+      return;
+    }
+    setSubmitting(true);
+    setError(null);
+    try {
+      const user = await auth.login(email.trim(), password);
+      // Подтягиваем профиль в userStore
+      u.setId(user.id);
+      if (user.name) u.setName(user.name);
+      if (user.gender) u.setGender(user.gender.toLowerCase() as Gender);
+      if (user.age) u.setAge(user.age);
+      if (user.heightCm) u.setHeight(user.heightCm);
+      if (user.weightKg) u.setWeight(user.weightKg);
+      if (user.level) u.setLevel(user.level.toLowerCase() as FitnessLevel);
+      if (user.activityLevel) u.setActivityLevel(user.activityLevel.toLowerCase() as ActivityLevel);
+      if (user.goal) u.setGoal(user.goal, user.goalKey ? (user.goalKey.toLowerCase() as FitnessGoalKey) : null);
+      u.setProgram(user.currentProgramId ?? null, user.programWeek ?? 1);
+      if (user.dailyCaloriesGoal) {
+        u.setNutritionGoals({
+          dailyCaloriesGoal: user.dailyCaloriesGoal,
+          dailyProteinGoal: user.dailyProteinGoal,
+          dailyFatsGoal: user.dailyFatsGoal,
+          dailyCarbsGoal: user.dailyCarbsGoal,
+        });
+      }
+      // Если у юзера уже завершён онбординг — пропускаем сразу в RootTabs
+      if (user.onboardingCompleted) {
+        u.completeOnboarding();
+      }
+      onSuccess();
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : 'Не удалось войти. Проверь сеть и попробуй снова.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.78)', justifyContent: 'flex-end' }}>
+        <View
+          style={{
+            backgroundColor: colors.bg,
+            borderTopLeftRadius: radii.xl,
+            borderTopRightRadius: radii.xl,
+            borderWidth: 1,
+            borderColor: colors.border,
+            padding: 20,
+            paddingBottom: 32,
+            gap: 14,
+          }}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={{ flex: 1, color: colors.text, fontFamily: fontFamilies.heading, fontSize: 22 }}>
+              {t('onboarding.login')}
+            </Text>
+            <Pressable onPress={onClose} hitSlop={12}>
+              <Ionicons name="close" size={22} color={colors.textSecondary} />
+            </Pressable>
+          </View>
+          <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 12 }}>
+            {t('onboarding.loginHint')}
+          </Text>
+
+          <View
+            style={{
+              borderRadius: radii.md,
+              borderWidth: 1,
+              borderColor: colors.border,
+              backgroundColor: colors.bgSecondary,
+              paddingHorizontal: 14,
+            }}
+          >
+            <TextInput
+              value={email}
+              onChangeText={setEmail}
+              placeholder={t('onboarding.loginEmail')}
+              placeholderTextColor={colors.textMuted}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              style={{ color: colors.text, fontFamily: fontFamilies.body600, fontSize: 15, height: 50 }}
+            />
+          </View>
+          <View
+            style={{
+              borderRadius: radii.md,
+              borderWidth: 1,
+              borderColor: colors.border,
+              backgroundColor: colors.bgSecondary,
+              paddingHorizontal: 14,
+            }}
+          >
+            <TextInput
+              value={password}
+              onChangeText={setPassword}
+              placeholder={t('onboarding.loginPassword')}
+              placeholderTextColor={colors.textMuted}
+              secureTextEntry
+              style={{ color: colors.text, fontFamily: fontFamilies.body600, fontSize: 15, height: 50 }}
+            />
+          </View>
+
+          {error ? (
+            <Text style={{ color: colors.red, fontFamily: fontFamilies.body600, fontSize: 12 }}>
+              {error}
+            </Text>
+          ) : null}
+
+          <GradientButton
+            title={submitting ? t('onboarding.loginSubmitting') : t('onboarding.loginSubmit')}
+            disabled={submitting}
+            onPress={onSubmit}
+            rightIcon={
+              submitting ? (
+                <ActivityIndicator color={colors.text} />
+              ) : (
+                <Ionicons name="log-in" size={18} color={colors.text} />
+              )
+            }
+          />
+        </View>
+      </View>
+    </Modal>
   );
 }
 
@@ -282,7 +491,8 @@ function NavRow({ onBack, onNext, nextLabel = 'Дальше', disabled }: {
   );
 }
 
-function WelcomeStep({ onNext }: { onNext: () => void }) {
+function WelcomeStep({ onNext, onLogin }: { onNext: () => void; onLogin: () => void }) {
+  useLang(); // re-render on lang change
   return (
     <StepShell>
       <View style={{ alignItems: 'center', marginTop: 24 }}>
@@ -301,7 +511,7 @@ function WelcomeStep({ onNext }: { onNext: () => void }) {
           marginTop: 10,
         }}
       >
-        ТВОЙ ПУТЬ.{'\n'}ТВОИ ПРАВИЛА.
+        {t('onboarding.welcomeTitle')}
       </Animated.Text>
       <Animated.Text
         entering={FadeInUp.delay(220).duration(420)}
@@ -314,26 +524,25 @@ function WelcomeStep({ onNext }: { onNext: () => void }) {
           paddingHorizontal: 16,
         }}
       >
-        Искусственный интеллект.{'\n'}Максимальный результат.
+        {t('onboarding.welcomeSub')}
       </Animated.Text>
       <View style={{ marginTop: 36 }}>
         <GradientButton
-          title="Начать"
+          title={t('onboarding.welcomeStart')}
           onPress={onNext}
           rightIcon={<Ionicons name="arrow-forward" size={18} color={colors.text} />}
         />
       </View>
-      <Text
-        style={{
-          textAlign: 'center',
-          marginTop: 14,
-          color: colors.textMuted,
-          fontFamily: fontFamilies.body,
-          fontSize: 12,
-        }}
-      >
-        Займёт меньше минуты
-      </Text>
+      <View style={{ marginTop: 14, alignItems: 'center', gap: 6 }}>
+        <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 12 }}>
+          {t('onboarding.welcomeTime')}
+        </Text>
+        <Pressable onPress={onLogin} hitSlop={10} style={{ marginTop: 8 }}>
+          <Text style={{ color: colors.purpleLight, fontFamily: fontFamilies.body700, fontSize: 13 }}>
+            {t('onboarding.haveAccount')}
+          </Text>
+        </Pressable>
+      </View>
     </StepShell>
   );
 }
@@ -347,8 +556,8 @@ function NameStep({ value, onChange, onBack, onNext }: {
   const ok = value.trim().length >= 2;
   return (
     <StepShell>
-      <HeadingSmall>ШАГ 1 ИЗ 6</HeadingSmall>
-      <HeadingBig>Как тебя зовут?</HeadingBig>
+      <HeadingSmall>{t('onb.step1of7')}</HeadingSmall>
+      <HeadingBig>{t('onb.nameQ')}</HeadingBig>
       <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, marginTop: 8 }}>
         Будем обращаться по имени.
       </Text>
@@ -392,14 +601,14 @@ function GenderStep({ value, onChange, onBack, onNext }: {
 }) {
   return (
     <StepShell>
-      <HeadingSmall>ШАГ 2 ИЗ 6</HeadingSmall>
-      <HeadingBig>Твой пол</HeadingBig>
+      <HeadingSmall>{t('onb.step2of7')}</HeadingSmall>
+      <HeadingBig>{t('onb.genderQ')}</HeadingBig>
       <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, marginTop: 8 }}>
         Подберём программы и нормы под тебя.
       </Text>
 
       <View style={{ marginTop: 24, gap: 12 }}>
-        {GENDERS.map((g) => {
+        {genders().map((g) => {
           const active = value === g.key;
           return (
             <Pressable key={g.key} onPress={() => onChange(g.key)}>
@@ -475,8 +684,8 @@ function MetricsStep({
   const ok = age && age > 0 && heightCm && heightCm > 0 && weightKg && weightKg > 0;
   return (
     <StepShell>
-      <HeadingSmall>ШАГ 3 ИЗ 6</HeadingSmall>
-      <HeadingBig>Параметры тела</HeadingBig>
+      <HeadingSmall>{t('onb.step3of7')}</HeadingSmall>
+      <HeadingBig>{t('onb.metricsQ')}</HeadingBig>
       <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, marginTop: 8 }}>
         Используем только локально, нужны для расчётов.
       </Text>
@@ -573,14 +782,14 @@ function GoalStep({ value, onChange, onBack, onNext }: {
 }) {
   return (
     <StepShell>
-      <HeadingSmall>ШАГ 4 ИЗ 6</HeadingSmall>
-      <HeadingBig>Какая твоя цель?</HeadingBig>
+      <HeadingSmall>{t('onb.step5of7')}</HeadingSmall>
+      <HeadingBig>{t('onb.goalQ')}</HeadingBig>
       <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, marginTop: 8 }}>
         Под цель подберём программу и питание.
       </Text>
 
       <View style={{ marginTop: 24, gap: 10 }}>
-        {GOALS.map((g) => {
+        {goals().map((g) => {
           const active = value === g.key;
           return (
             <Pressable key={g.key} onPress={() => onChange({ key: g.key, title: g.title })}>
@@ -653,14 +862,14 @@ function LevelStep({ value, onChange, onBack, onNext }: {
 }) {
   return (
     <StepShell>
-      <HeadingSmall>ШАГ 5 ИЗ 6</HeadingSmall>
-      <HeadingBig>Твой уровень</HeadingBig>
+      <HeadingSmall>{t('onb.step6of7')}</HeadingSmall>
+      <HeadingBig>{t('onb.levelQ')}</HeadingBig>
       <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, marginTop: 8 }}>
         Подберём интенсивность.
       </Text>
 
       <View style={{ marginTop: 24, gap: 12 }}>
-        {LEVELS.map((l) => {
+        {levels().map((l) => {
           const active = value === l.key;
           return (
             <Pressable key={l.key} onPress={() => onChange(l.key)}>
@@ -710,6 +919,20 @@ function LevelStep({ value, onChange, onBack, onNext }: {
   );
 }
 
+function buildOnboardingPayload(u: ReturnType<typeof useUserStore.getState>): OnboardingPayload | null {
+  if (!u.gender || !u.age || !u.heightCm || !u.weightKg || !u.activityLevel || !u.goalKey) return null;
+  return {
+    gender: u.gender.toUpperCase() as OnboardingPayload['gender'],
+    age: u.age,
+    heightCm: u.heightCm,
+    weightKg: u.weightKg,
+    activityLevel: u.activityLevel.toUpperCase() as OnboardingPayload['activityLevel'],
+    goalKey: u.goalKey.toUpperCase() as OnboardingPayload['goalKey'],
+    level: u.level ? (u.level.toUpperCase() as OnboardingPayload['level']) : undefined,
+    name: u.name || undefined,
+  };
+}
+
 function AccountStep({ onBack, onNext }: { onBack: () => void; onNext: () => void }) {
   const u = useUserStore();
   const auth = useAuthStore();
@@ -723,19 +946,22 @@ function AccountStep({ onBack, onNext }: { onBack: () => void; onNext: () => voi
     setSubmitting(true);
     try {
       await auth.register(email.trim(), password, u.name || 'User', u.goal);
-      try {
-        await api.users.update({
-          gender: u.gender ? u.gender.toUpperCase() : undefined,
-          age: u.age ?? undefined,
-          heightCm: u.heightCm ?? undefined,
-          weightKg: u.weightKg ?? undefined,
-          level: u.level ? u.level.toUpperCase() : undefined,
-          goalKey: u.goalKey ? u.goalKey.toUpperCase() : undefined,
-          goal: u.goal,
-          onboardingCompleted: true,
-        });
-      } catch {
-        // best-effort: профиль локально уже сохранён
+      const payload = buildOnboardingPayload(u);
+      if (payload) {
+        try {
+          const { user, plan } = await api.onboarding.complete(payload);
+          u.setId(user.id);
+          // Программу НЕ назначаем — пользователь выберет сам после онбординга
+          u.setProgram(null, 1);
+          u.setNutritionGoals({
+            dailyCaloriesGoal: plan.dailyCalories,
+            dailyProteinGoal: plan.proteinG,
+            dailyFatsGoal: plan.fatsG,
+            dailyCarbsGoal: plan.carbsG,
+          });
+        } catch {
+          // best-effort: профиль локально уже сохранён
+        }
       }
       onNext();
     } catch (e) {
@@ -743,10 +969,10 @@ function AccountStep({ onBack, onNext }: { onBack: () => void; onNext: () => voi
       const msg =
         e instanceof ApiError
           ? e.message
-          : 'Сервер недоступен. Можно продолжить локально.';
-      Alert.alert('Ошибка', msg, [
-        { text: 'Повторить', style: 'cancel' },
-        { text: 'Продолжить локально', onPress: onNext },
+          : t('onb.errServerDown');
+      Alert.alert(t('onb.errTitle'), msg, [
+        { text: t('onb.retry'), style: 'cancel' },
+        { text: t('onb.continueLocally'), onPress: onNext },
       ]);
     } finally {
       setSubmitting(false);
@@ -755,10 +981,10 @@ function AccountStep({ onBack, onNext }: { onBack: () => void; onNext: () => voi
 
   return (
     <StepShell>
-      <HeadingSmall>ПОСЛЕДНИЙ ШАГ</HeadingSmall>
-      <HeadingBig>Создай аккаунт</HeadingBig>
+      <HeadingSmall>{t('onb.step7of7')}</HeadingSmall>
+      <HeadingBig>{t('onb.accountQ')}</HeadingBig>
       <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, marginTop: 8 }}>
-        Чтобы синхронизировать прогресс между устройствами. Не обязательно — можно продолжить без аккаунта.
+        {t('onb.accountHint')}
       </Text>
 
       <View
@@ -774,7 +1000,7 @@ function AccountStep({ onBack, onNext }: { onBack: () => void; onNext: () => voi
         <TextInput
           value={email}
           onChangeText={setEmail}
-          placeholder="Email"
+          placeholder={t('onb.email')}
           placeholderTextColor={colors.textMuted}
           autoCapitalize="none"
           autoCorrect={false}
@@ -801,7 +1027,7 @@ function AccountStep({ onBack, onNext }: { onBack: () => void; onNext: () => voi
         <TextInput
           value={password}
           onChangeText={setPassword}
-          placeholder="Пароль (мин. 8 символов)"
+          placeholder={t('onb.password')}
           placeholderTextColor={colors.textMuted}
           autoCapitalize="none"
           autoCorrect={false}
@@ -818,7 +1044,7 @@ function AccountStep({ onBack, onNext }: { onBack: () => void; onNext: () => voi
       <View style={{ marginTop: 28, gap: 10 }}>
         <View style={{ opacity: !valid || submitting ? 0.5 : 1 }} pointerEvents={!valid || submitting ? 'none' : 'auto'}>
           <GradientButton
-            title={submitting ? 'Создаём…' : 'Создать аккаунт'}
+            title={submitting ? t('onb.creating') : t('onb.createAccount')}
             onPress={submit}
             rightIcon={
               submitting ? (
@@ -843,16 +1069,271 @@ function AccountStep({ onBack, onNext }: { onBack: () => void; onNext: () => voi
           }}
         >
           <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body600 }}>
-            Продолжить без аккаунта
+            {t('onb.continueNoAcc')}
           </Text>
         </Pressable>
 
         <Pressable onPress={onBack} style={{ alignItems: 'center', paddingVertical: 8 }}>
-          <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body }}>Назад</Text>
+          <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body }}>{t('onb.back')}</Text>
         </Pressable>
       </View>
     </StepShell>
   );
+}
+
+function ActivityStep({ value, onChange, onBack, onNext }: {
+  value: ActivityLevel | null;
+  onChange: (v: ActivityLevel) => void;
+  onBack: () => void;
+  onNext: () => void;
+}) {
+  return (
+    <StepShell>
+      <HeadingSmall>{t('onb.step4of7')}</HeadingSmall>
+      <HeadingBig>{t('onb.activityQ')}</HeadingBig>
+      <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, marginTop: 8 }}>
+        {t('onb.activityHint')}
+      </Text>
+
+      <View style={{ marginTop: 24, gap: 10 }}>
+        {activities().map((a) => {
+          const active = value === a.key;
+          return (
+            <Pressable key={a.key} onPress={() => onChange(a.key)}>
+              <LinearGradient
+                colors={
+                  active
+                    ? (['rgba(123,63,228,0.35)', 'rgba(255,63,203,0.18)'] as any)
+                    : (['rgba(255,255,255,0.02)', 'rgba(255,255,255,0.02)'] as any)
+                }
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={{
+                  borderRadius: radii.lg,
+                  borderWidth: 1,
+                  borderColor: active ? colors.purpleLight : colors.border,
+                  padding: 14,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 14,
+                }}
+              >
+                <View
+                  style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: radii.md,
+                    backgroundColor: 'rgba(21,21,31,0.85)',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderWidth: 1,
+                    borderColor: active ? colors.purpleLight : colors.border,
+                  }}
+                >
+                  <Ionicons name={a.icon} size={20} color={active ? colors.purpleLight : colors.text} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 15 }}>
+                    {a.title}
+                  </Text>
+                  <Text
+                    style={{
+                      color: colors.textSecondary,
+                      fontFamily: fontFamilies.body,
+                      fontSize: 12,
+                      marginTop: 2,
+                    }}
+                  >
+                    {a.subtitle}
+                  </Text>
+                </View>
+                {active ? (
+                  <Ionicons name="checkmark-circle" size={22} color={colors.purpleLight} />
+                ) : null}
+              </LinearGradient>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      <NavRow onBack={onBack} onNext={onNext} disabled={!value} />
+    </StepShell>
+  );
+}
+
+function SummaryStep({ onBack, onNext }: { onBack: () => void; onNext: () => void }) {
+  const u = useUserStore();
+  const [plan, setPlan] = useState<OnboardingPlan | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    const payload = buildOnboardingPayload(u);
+    if (!payload) {
+      setError('Не хватает данных для расчёта');
+      setLoading(false);
+      return;
+    }
+    // Локальный расчёт чтобы экран работал и без сети.
+    const local = calculatePlanLocally(payload);
+    setPlan(local);
+    setLoading(false);
+
+    // Параллельно пробуем точный расчёт с бэкенда.
+    api.onboarding
+      .preview(payload)
+      .then((p) => setPlan(p))
+      .catch(() => {
+        // оставляем локальный расчёт
+      });
+  }, []);
+
+  return (
+    <StepShell>
+      <HeadingSmall>{t('onb.summaryQ').toUpperCase()}</HeadingSmall>
+      <HeadingBig>{t('onb.summaryHint')}</HeadingBig>
+      <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, marginTop: 8 }}>
+        Подобрали калории, макросы и программу под твою цель.
+      </Text>
+
+      {loading ? (
+        <View style={{ marginTop: 40, alignItems: 'center' }}>
+          <ActivityIndicator color={colors.purpleLight} />
+        </View>
+      ) : error ? (
+        <View style={{ marginTop: 40 }}>
+          <Text style={{ color: colors.textSecondary }}>{error}</Text>
+        </View>
+      ) : plan ? (
+        <View style={{ marginTop: 24, gap: 12 }}>
+          <SummaryCard
+            title="Дневные калории"
+            value={`${plan.dailyCalories} ккал`}
+            subtitle={`BMR ${plan.bmr} → TDEE ${plan.tdee}${
+              plan.surplusOrDeficit !== 0
+                ? ` ${plan.surplusOrDeficit > 0 ? '+' : ''}${plan.surplusOrDeficit}`
+                : ''
+            }`}
+            icon="flame"
+          />
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            <SummaryCard small title="Белки" value={`${plan.proteinG} г`} icon="barbell" />
+            <SummaryCard small title="Жиры" value={`${plan.fatsG} г`} icon="water" />
+            <SummaryCard small title="Углеводы" value={`${plan.carbsG} г`} icon="leaf" />
+          </View>
+          <SummaryCard
+            title="Программа"
+            value={plan.goalLabel}
+            subtitle={`ID: ${plan.programId}`}
+            icon="fitness"
+          />
+        </View>
+      ) : null}
+
+      <NavRow onBack={onBack} onNext={onNext} nextLabel="Продолжить" />
+    </StepShell>
+  );
+}
+
+function SummaryCard({
+  title,
+  value,
+  subtitle,
+  icon,
+  small,
+}: {
+  title: string;
+  value: string;
+  subtitle?: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  small?: boolean;
+}) {
+  return (
+    <LinearGradient
+      colors={['rgba(123,63,228,0.18)', 'rgba(255,63,203,0.08)']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={{
+        flex: small ? 1 : undefined,
+        borderRadius: radii.lg,
+        borderWidth: 1,
+        borderColor: colors.border,
+        padding: small ? 12 : 16,
+      }}
+    >
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+        <Ionicons name={icon} size={small ? 16 : 20} color={colors.purpleLight} />
+        <Text
+          style={{
+            color: colors.textSecondary,
+            fontFamily: fontFamilies.body500,
+            fontSize: small ? 11 : 12,
+            letterSpacing: 0.8,
+            textTransform: 'uppercase',
+          }}
+        >
+          {title}
+        </Text>
+      </View>
+      <Text
+        style={{
+          marginTop: small ? 6 : 8,
+          color: colors.text,
+          fontFamily: fontFamilies.heading,
+          fontSize: small ? 18 : 26,
+        }}
+      >
+        {value}
+      </Text>
+      {subtitle ? (
+        <Text
+          style={{
+            marginTop: 4,
+            color: colors.textMuted,
+            fontFamily: fontFamilies.body,
+            fontSize: 11,
+          }}
+        >
+          {subtitle}
+        </Text>
+      ) : null}
+    </LinearGradient>
+  );
+}
+
+function calculatePlanLocally(p: OnboardingPayload): OnboardingPlan {
+  const base = 10 * p.weightKg + 6.25 * p.heightCm - 5 * p.age;
+  const bmr = Math.round(p.gender === 'MALE' ? base + 5 : p.gender === 'FEMALE' ? base - 161 : base - 78);
+  const mult: Record<OnboardingPayload['activityLevel'], number> = {
+    SEDENTARY: 1.2, LIGHT: 1.375, MODERATE: 1.55, ACTIVE: 1.725, VERY_ACTIVE: 1.9,
+  };
+  const tdee = Math.round(bmr * mult[p.activityLevel]);
+  const goalAdj: Record<OnboardingPayload['goalKey'], number> = {
+    MASS: 0.1, CUT: -0.2, STRENGTH: 0.05, ENDURANCE: 0, ABS: -0.1,
+  };
+  const surplusOrDeficit = Math.round(tdee * goalAdj[p.goalKey]);
+  const dailyCalories = tdee + surplusOrDeficit;
+  const proteinPerKg = p.goalKey === 'CUT' || p.goalKey === 'ABS' ? 2.2 : 1.8;
+  const proteinG = Math.round(p.weightKg * proteinPerKg);
+  const fatsG = Math.round(p.weightKg * 0.9);
+  const carbsG = Math.max(0, Math.round((dailyCalories - proteinG * 4 - fatsG * 9) / 4));
+  const programMap: Record<OnboardingPayload['goalKey'], string> = {
+    MASS: 'mass', CUT: 'relief', STRENGTH: 'strength', ENDURANCE: 'endurance', ABS: 'abs',
+  };
+  const labelMap: Record<OnboardingPayload['goalKey'], string> = {
+    MASS: 'Набор массы', CUT: 'Сушка', STRENGTH: 'Сила', ENDURANCE: 'Выносливость', ABS: 'Пресс',
+  };
+  return {
+    bmr,
+    tdee,
+    dailyCalories,
+    proteinG,
+    fatsG,
+    carbsG,
+    surplusOrDeficit,
+    programId: programMap[p.goalKey],
+    goalLabel: labelMap[p.goalKey],
+  };
 }
 
 function FinishStep({ onStart }: { onStart: () => void }) {
@@ -870,13 +1351,13 @@ function FinishStep({ onStart }: { onStart: () => void }) {
           </LinearGradient>
         </Animated.View>
       </View>
-      <HeadingBig>Профиль готов!</HeadingBig>
+      <HeadingBig>{t('onb.finishQ')}</HeadingBig>
       <Text style={{ marginTop: 8, color: colors.textSecondary, fontFamily: fontFamilies.body }}>
-        Подобрали программу и план питания под твою цель и уровень.
+        {t('onb.finishHint')}
       </Text>
       <View style={{ marginTop: 28 }}>
         <GradientButton
-          title="К приложению"
+          title={t('onb.toApp')}
           onPress={onStart}
           rightIcon={<Ionicons name="arrow-forward" size={18} color={colors.text} />}
         />

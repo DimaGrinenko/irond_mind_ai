@@ -20,6 +20,24 @@ export class WorkoutsController {
     return this.workouts.create(user.id, dto);
   }
 
+  /** Историю по упражнению (по slug) — последний и максимальный сеты. */
+  @Get('exercise-history/:slug')
+  exerciseHistory(
+    @CurrentUser() user: CurrentUserPayload,
+    @Param('slug') slug: string,
+  ) {
+    return this.workouts.exerciseHistory(user.id, slug);
+  }
+
+  /** Серия 1RM (Brzycki) по упражнению по датам. */
+  @Get('exercise-1rm-series/:slug')
+  exercise1rmSeries(
+    @CurrentUser() user: CurrentUserPayload,
+    @Param('slug') slug: string,
+  ) {
+    return this.workouts.exercise1rmSeries(user.id, slug);
+  }
+
   @Get(':id')
   one(@CurrentUser() user: CurrentUserPayload, @Param('id') id: string) {
     return this.workouts.byId(user.id, id);

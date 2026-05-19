@@ -14,7 +14,7 @@ export type AuthState = {
 
   hydrate: () => Promise<void>;
   register: (email: string, password: string, name: string, goal?: string) => Promise<void>;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<any>;
   logout: () => Promise<void>;
   isAdmin: () => boolean;
   isCoach: () => boolean;
@@ -85,6 +85,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       role: mapRole(r.user.role),
       serverUserId: r.user.id,
     });
+    return r.user;
   },
 
   logout: async () => {

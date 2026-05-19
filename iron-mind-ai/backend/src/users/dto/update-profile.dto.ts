@@ -8,6 +8,7 @@ export class UpdateProfileDto {
   @IsOptional() @Type(() => Number) @IsInt() @Min(80) @Max(260) heightCm?: number;
   @IsOptional() @Type(() => Number) @IsNumber() @Min(20) @Max(400) weightKg?: number;
   @IsOptional() @IsEnum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED']) level?: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+  @IsOptional() @IsEnum(['SEDENTARY', 'LIGHT', 'MODERATE', 'ACTIVE', 'VERY_ACTIVE']) activityLevel?: 'SEDENTARY' | 'LIGHT' | 'MODERATE' | 'ACTIVE' | 'VERY_ACTIVE';
   @IsOptional() @IsString() goal?: string;
   @IsOptional() @IsEnum(['MASS', 'CUT', 'STRENGTH', 'ENDURANCE', 'ABS']) goalKey?: 'MASS' | 'CUT' | 'STRENGTH' | 'ENDURANCE' | 'ABS';
   @IsOptional() @IsString() currentProgramId?: string;

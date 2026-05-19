@@ -21,6 +21,10 @@ export async function listNutritionEntries(date: string) {
   );
 }
 
+export async function deleteNutritionEntry(id: number): Promise<void> {
+  await runAsync('DELETE FROM nutrition_entries WHERE id = ?', [id]);
+}
+
 export async function createNutritionEntry(row: Omit<NutritionEntryRow, 'id'>) {
   const res = await runAsync(
     `INSERT INTO nutrition_entries (date, meal_type, name, calories, protein, fats, carbs, time)

@@ -12,6 +12,8 @@ const PRESETS = [60, 90, 120] as const;
 type Props = {
   /** Меняется при отметке подхода — запускает таймер с текущим пресетом. */
   triggerKey: number;
+  /** Сколько секунд отдыхать (из ProgramExercise.restSeconds). Если не задано — пресет. */
+  seconds?: number;
 };
 
 function fmt(s: number) {
@@ -24,12 +26,20 @@ function fmt(s: number) {
  * Таймер отдыха между подходами. Авто-стартует при изменении triggerKey,
  * по окончании вибрирует. Пресеты 60/90/120 секунд.
  */
-export function RestTimer({ triggerKey }: Props) {
-  const [preset, setPreset] = React.useState<number>(90);
+export function RestTimer({ triggerKey, seconds }: Props) {
+  const [preset, setPreset] = React.useState<number>(seconds ?? 90);
   const [remaining, setRemaining] = React.useState(0);
   const [running, setRunning] = React.useState(false);
   const presetRef = React.useRef(preset);
   presetRef.current = preset;
+
+  // Если пришёл seconds из программы — синхронизируем пресет
+  React.useEffect(() => {
+    if (seconds && seconds > 0) {
+      setPreset(seconds);
+      presetRef.current = seconds;
+    }
+  }, [seconds]);
 
   // авто-старт при отметке подхода
   React.useEffect(() => {

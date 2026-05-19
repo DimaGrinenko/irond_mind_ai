@@ -6,6 +6,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, glowStrong, gradients, neonGlow, neonTextShadow } from '../../theme/tokens';
 import { fontFamilies } from '../../theme/typography';
+import { t, useLang } from '../../i18n';
+
+const TAB_LABELS: Record<string, string> = {
+  Home: 'tabs.home',
+  Programs: 'tabs.programs',
+  AiTrainer: 'tabs.ai',
+  Analytics: 'tabs.analytics',
+  Profile: 'tabs.profile',
+};
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 
 const active = colors.purpleLight;
@@ -46,6 +55,7 @@ function TabIcon({ routeName, focused }: { routeName: string; focused: boolean }
 }
 
 export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+  useLang(); // re-render on lang change
   const insets = useSafeAreaInsets();
   const animate = Platform.OS !== 'web';
   const pulse = useSharedValue(0);
@@ -97,7 +107,10 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
         {state.routes.map((route, index) => {
           const isFocused = state.index === index;
           const { options } = descriptors[route.key];
-          const label = (options.tabBarLabel ?? options.title ?? route.name) as string;
+          const labelKey = TAB_LABELS[route.name];
+          const label = labelKey
+            ? t(labelKey)
+            : ((options.tabBarLabel ?? options.title ?? route.name) as string);
 
           const onPress = () => {
             const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
@@ -165,7 +178,7 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
                     isFocused ? neonTextShadow(colors.purple, 10) : null,
                   ]}
                 >
-                  AI
+                  {t('tabs.ai')}
                 </Text>
               </View>
             );

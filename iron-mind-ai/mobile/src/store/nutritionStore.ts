@@ -1,5 +1,11 @@
 import { create } from 'zustand';
-import { createNutritionEntry, listNutritionEntries, type MealType, type NutritionEntryRow } from '../db/nutritionRepo';
+import {
+  createNutritionEntry,
+  deleteNutritionEntry,
+  listNutritionEntries,
+  type MealType,
+  type NutritionEntryRow,
+} from '../db/nutritionRepo';
 import { todayIsoDate } from '../utils/date';
 
 export type NutritionState = {
@@ -8,7 +14,8 @@ export type NutritionState = {
   loading: boolean;
   setDate: (date: string) => void;
   hydrate: () => Promise<void>;
-  addQuickSnack: () => Promise<NutritionEntryRow>;
+  addEntry: (e: Omit<NutritionEntryRow, 'id' | 'date'> & { date?: string }) => Promise<NutritionEntryRow>;
+  remove: (id: number) => Promise<void>;
 };
 
 export const useNutritionStore = create<NutritionState>()((set, get) => ({
@@ -24,20 +31,24 @@ export const useNutritionStore = create<NutritionState>()((set, get) => ({
       set({ loading: false });
     }
   },
-  addQuickSnack: async () => {
-    const date = get().date;
+  addEntry: async (e) => {
+    const date = e.date ?? get().date;
     const row = await createNutritionEntry({
       date,
-      meal_type: 'snack' as MealType,
-      name: 'Протеиновый батончик',
-      calories: 210,
-      protein: 20,
-      fats: 7,
-      carbs: 18,
-      time: '16:30',
+      meal_type: e.meal_type as MealType,
+      name: e.name,
+      calories: e.calories,
+      protein: e.protein,
+      fats: e.fats,
+      carbs: e.carbs,
+      time: e.time,
     });
     set({ entries: [...get().entries, row] });
     return row;
+  },
+  remove: async (id) => {
+    await deleteNutritionEntry(id);
+    set({ entries: get().entries.filter((r) => r.id !== id) });
   },
 }));
 

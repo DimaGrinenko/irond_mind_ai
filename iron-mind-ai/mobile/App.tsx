@@ -11,6 +11,8 @@ import { useFonts as useManrope, Manrope_400Regular, Manrope_500Medium, Manrope_
 import { useFonts as useUnbounded, Unbounded_700Bold } from '@expo-google-fonts/unbounded';
 import { initDb } from './src/db/init';
 import { useAuthStore } from './src/store/authStore';
+import { useAppStreakStore } from './src/store/appStreakStore';
+import { useUserStore } from './src/store/userStore';
 
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error: unknown }> {
   state = { error: null as unknown };
@@ -58,10 +60,18 @@ export default function App() {
   const [dbReady, setDbReady] = React.useState(false);
   const [dbError, setDbError] = React.useState<unknown>(null);
   const hydrateAuth = useAuthStore((s) => s.hydrate);
+  const registerOpen = useAppStreakStore((s) => s.registerOpen);
 
   React.useEffect(() => {
     hydrateAuth().catch(() => null);
-  }, [hydrateAuth]);
+    // Регистрируем заход — серия дней захода в приложение
+    registerOpen();
+    // Авто-старт Pro-trial при первом запуске прошедшего онбординг юзера
+    const userState = useUserStore.getState();
+    if (userState.onboardingCompleted && !userState.proTrialEndsAt && userState.subscriptionTier === 'free') {
+      userState.startProTrial(7);
+    }
+  }, [hydrateAuth, registerOpen]);
 
   React.useEffect(() => {
     let alive = true;
