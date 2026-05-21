@@ -2,6 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg';
 import { colors } from '../../theme/tokens';
+import { useTheme } from '../../theme/useTheme';
 
 type Props = {
   width?: number;
@@ -26,17 +27,18 @@ function toPath(points: number[], w: number, h: number, pad = 10) {
 }
 
 export function LineChart({ width = 320, height = 140, series }: Props) {
+  const theme = useTheme();
   return (
     <View style={{ width, height }}>
       <Svg width={width} height={height}>
         <Defs>
           <LinearGradient id="gradPurple" x1="0" y1="0" x2="1" y2="0">
-            <Stop offset="0" stopColor={colors.purpleLight} stopOpacity="0.9" />
-            <Stop offset="1" stopColor={colors.purple} stopOpacity="0.9" />
+            <Stop offset="0" stopColor={theme.accentLight} stopOpacity="0.9" />
+            <Stop offset="1" stopColor={theme.accent} stopOpacity="0.9" />
           </LinearGradient>
           <LinearGradient id="gradBlue" x1="0" y1="0" x2="1" y2="0">
             <Stop offset="0" stopColor={colors.blue} stopOpacity="0.9" />
-            <Stop offset="1" stopColor={colors.purpleLight} stopOpacity="0.65" />
+            <Stop offset="1" stopColor={theme.accentLight} stopOpacity="0.65" />
           </LinearGradient>
         </Defs>
 
@@ -55,4 +57,3 @@ export function LineChart({ width = 320, height = 140, series }: Props) {
     </View>
   );
 }
-

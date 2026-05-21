@@ -2,6 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { colors } from '../../theme/tokens';
+import { useTheme } from '../../theme/useTheme';
 
 type Props = {
   size?: number;
@@ -10,6 +11,7 @@ type Props = {
 };
 
 export function RingChart({ size = 56, strokeWidth = 6, progress }: Props) {
+  const theme = useTheme();
   const r = (size - strokeWidth) / 2;
   const c = 2 * Math.PI * r;
   const clamped = Math.max(0, Math.min(1, progress));
@@ -21,8 +23,8 @@ export function RingChart({ size = 56, strokeWidth = 6, progress }: Props) {
       <Svg width={size} height={size}>
         <Defs>
           <LinearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
-            <Stop offset="0" stopColor={colors.purple} />
-            <Stop offset="1" stopColor={colors.purpleLight} />
+            <Stop offset="0" stopColor={theme.accent} />
+            <Stop offset="1" stopColor={theme.accentLight} />
           </LinearGradient>
         </Defs>
         <Circle
@@ -50,4 +52,3 @@ export function RingChart({ size = 56, strokeWidth = 6, progress }: Props) {
     </View>
   );
 }
-

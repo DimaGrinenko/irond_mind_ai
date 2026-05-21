@@ -18,6 +18,7 @@ import {
   neonGlow,
   neonTextShadow,
 } from '../../theme/tokens';
+import { useTheme } from '../../theme/useTheme';
 import { fontFamilies } from '../../theme/typography';
 import { t, useLang } from '../../i18n';
 import type { AwardResult } from '../../store/progressStore';
@@ -63,6 +64,7 @@ export function LevelUpOverlay({ result }: Props) {
 }
 
 function Badge({ result }: { result: AwardResult }) {
+  const theme = useTheme();
   const scale = useSharedValue(0.6);
   const spin = useSharedValue(0);
 
@@ -124,7 +126,7 @@ function Badge({ result }: { result: AwardResult }) {
             justifyContent: 'center',
             borderWidth: 1,
             borderColor: 'rgba(157,107,255,0.4)',
-            ...neonGlow(colors.purple, 0.7, 30, 16),
+            ...neonGlow(theme.accent, 0.7, 30, 16),
           }}
         >
           <Ionicons

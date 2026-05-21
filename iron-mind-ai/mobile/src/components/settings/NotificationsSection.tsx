@@ -10,6 +10,7 @@ import {
   setPrefs,
 } from '../../services/notifications';
 import { colors } from '../../theme/tokens';
+import { useTheme } from '../../theme/useTheme';
 import { fontFamilies } from '../../theme/typography';
 import { t, useLang } from '../../i18n';
 
@@ -17,6 +18,7 @@ const HOUR_OPTIONS = [6, 7, 8, 18, 19, 20, 21];
 
 export function NotificationsSection() {
   useLang();
+  const theme = useTheme();
   const [prefs, setLocal] = useState<NotificationPrefs | null>(null);
 
   useEffect(() => {
@@ -46,7 +48,13 @@ export function NotificationsSection() {
 
   return (
     <View style={{ paddingHorizontal: 16, marginTop: 14, gap: 12 }}>
-      <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body600, fontSize: 12 }}>
+      <Text
+        style={{
+          color: colors.textSecondary,
+          fontFamily: fontFamilies.body600,
+          fontSize: 12,
+        }}
+      >
         {t('notif.title')}
       </Text>
 
@@ -54,15 +62,26 @@ export function NotificationsSection() {
         <Ionicons
           name="notifications"
           size={20}
-          color={prefs.enabled ? colors.purpleLight : colors.textMuted}
+          color={prefs.enabled ? theme.accentLight : colors.textMuted}
           style={{ marginRight: 12 }}
         />
         <View style={{ flex: 1 }}>
-          <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 13 }}>
+          <Text
+            style={{
+              color: colors.text,
+              fontFamily: fontFamilies.body700,
+              fontSize: 13,
+            }}
+          >
             {t('notif.enable')}
           </Text>
           <Text
-            style={{ marginTop: 3, color: colors.textSecondary, fontFamily: fontFamilies.body, fontSize: 12 }}
+            style={{
+              marginTop: 3,
+              color: colors.textSecondary,
+              fontFamily: fontFamilies.body,
+              fontSize: 12,
+            }}
           >
             {prefs.enabled ? t('notif.enabled') : t('notif.disabled')}
           </Text>
@@ -73,9 +92,20 @@ export function NotificationsSection() {
       {prefs.enabled ? (
         <>
           <View style={rowStyle}>
-            <Ionicons name="sunny" size={20} color={colors.amber} style={{ marginRight: 12 }} />
+            <Ionicons
+              name="sunny"
+              size={20}
+              color={colors.amber}
+              style={{ marginRight: 12 }}
+            />
             <View style={{ flex: 1 }}>
-              <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 13 }}>
+              <Text
+                style={{
+                  color: colors.text,
+                  fontFamily: fontFamilies.body700,
+                  fontSize: 13,
+                }}
+              >
                 {t('notif.morningPing')}
               </Text>
             </View>
@@ -86,9 +116,20 @@ export function NotificationsSection() {
           </View>
 
           <View style={rowStyle}>
-            <Ionicons name="alarm" size={20} color={colors.purpleLight} style={{ marginRight: 12 }} />
+            <Ionicons
+              name="alarm"
+              size={20}
+              color={theme.accentLight}
+              style={{ marginRight: 12 }}
+            />
             <View style={{ flex: 1 }}>
-              <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 13 }}>
+              <Text
+                style={{
+                  color: colors.text,
+                  fontFamily: fontFamilies.body700,
+                  fontSize: 13,
+                }}
+              >
                 {t('notif.dailyReminder')}
               </Text>
               <Text
@@ -128,8 +169,12 @@ export function NotificationsSection() {
                       paddingVertical: 8,
                       borderRadius: 14,
                       borderWidth: 1,
-                      borderColor: active ? 'rgba(123,63,228,0.55)' : colors.border,
-                      backgroundColor: active ? 'rgba(123,63,228,0.18)' : colors.bgSecondary,
+                      borderColor: active
+                        ? 'rgba(123,63,228,0.55)'
+                        : colors.border,
+                      backgroundColor: active
+                        ? 'rgba(123,63,228,0.18)'
+                        : colors.bgSecondary,
                     }}
                   >
                     <Text
@@ -148,9 +193,20 @@ export function NotificationsSection() {
           ) : null}
 
           <View style={rowStyle}>
-            <Ionicons name="flame" size={20} color={colors.amber} style={{ marginRight: 12 }} />
+            <Ionicons
+              name="flame"
+              size={20}
+              color={colors.amber}
+              style={{ marginRight: 12 }}
+            />
             <View style={{ flex: 1 }}>
-              <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 13 }}>
+              <Text
+                style={{
+                  color: colors.text,
+                  fontFamily: fontFamilies.body700,
+                  fontSize: 13,
+                }}
+              >
                 {t('notif.streakAlert')}
               </Text>
             </View>

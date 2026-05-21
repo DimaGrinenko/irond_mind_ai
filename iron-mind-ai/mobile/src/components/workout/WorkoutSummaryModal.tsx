@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { GradientButton } from '../common/GradientButton';
 import { colors, neonGlow, neonTextShadow, radii } from '../../theme/tokens';
+import { useTheme } from '../../theme/useTheme';
 import { fontFamilies } from '../../theme/typography';
 import type { WorkoutSummary } from '../../store/activeWorkoutStore';
 import { exercises } from '../../data/exercises';
@@ -31,6 +32,7 @@ export function WorkoutSummaryModal({
   onClose: () => void;
 }) {
   useLang();
+  const theme = useTheme();
   if (!summary) return null;
   const completionPct =
     summary.totalSets > 0
@@ -59,7 +61,7 @@ export function WorkoutSummaryModal({
             maxHeight: '88%',
             borderRadius: radii.xl,
             overflow: 'hidden',
-            ...neonGlow(colors.purple, 0.45, 40, 14),
+            ...neonGlow(theme.accent, 0.45, 40, 14),
           }}
         >
           <LinearGradient
@@ -100,7 +102,7 @@ export function WorkoutSummaryModal({
                         fontFamily: fontFamilies.heading,
                         fontSize: 22,
                       },
-                      neonTextShadow(colors.purpleLight, 12),
+                      neonTextShadow(theme.accentLight, 12),
                     ]}
                   >
                     {t('ws.title')}
@@ -308,6 +310,7 @@ function StatCell({
   icon: keyof typeof Ionicons.glyphMap;
   sub?: string;
 }) {
+  const theme = useTheme();
   return (
     <View
       style={{
@@ -320,7 +323,7 @@ function StatCell({
       }}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-        <Ionicons name={icon} size={14} color={colors.purpleLight} />
+        <Ionicons name={icon} size={14} color={theme.accentLight} />
         <Text
           style={{
             color: colors.textMuted,
@@ -340,7 +343,7 @@ function StatCell({
             fontFamily: fontFamilies.body700,
             fontSize: 18,
           },
-          neonTextShadow(colors.purpleLight, 8),
+          neonTextShadow(theme.accentLight, 8),
         ]}
       >
         {value}

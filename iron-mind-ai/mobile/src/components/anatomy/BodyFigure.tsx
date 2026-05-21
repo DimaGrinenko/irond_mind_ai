@@ -9,6 +9,7 @@ import Svg, {
   G,
 } from 'react-native-svg';
 import { colors, glow } from '../../theme/tokens';
+import { useTheme } from '../../theme/useTheme';
 import { useUserStore } from '../../store/userStore';
 
 export type MuscleKey =
@@ -66,6 +67,7 @@ export function BodyFigure({
   gender,
 }: Props) {
   const storeGender = useUserStore((s) => s.gender);
+  const theme = useTheme();
   const variant = (gender ?? storeGender) === 'female' ? 'female' : 'male';
   const baseFill = 'url(#bodyGrad)';
 
@@ -87,24 +89,16 @@ export function BodyFigure({
       <Svg width={width} height={height} viewBox="0 0 200 320">
         <Defs>
           <LinearGradient id="bodyGrad" x1="0" y1="0" x2="1" y2="1">
-            <Stop offset="0" stopColor={colors.purpleDeep} stopOpacity="0.65" />
-            <Stop offset="0.55" stopColor={colors.purple} stopOpacity="0.45" />
+            <Stop offset="0" stopColor={theme.accentDeep} stopOpacity="0.65" />
+            <Stop offset="0.55" stopColor={theme.accent} stopOpacity="0.45" />
             <Stop offset="1" stopColor={colors.pink} stopOpacity="0.20" />
           </LinearGradient>
           <RadialGradient id="ambient" cx="50%" cy="50%" r="60%">
-            <Stop
-              offset="0"
-              stopColor={colors.purpleLight}
-              stopOpacity="0.35"
-            />
-            <Stop offset="1" stopColor={colors.purpleLight} stopOpacity="0" />
+            <Stop offset="0" stopColor={theme.accentLight} stopOpacity="0.35" />
+            <Stop offset="1" stopColor={theme.accentLight} stopOpacity="0" />
           </RadialGradient>
           <LinearGradient id="muscleGrad" x1="0" y1="0" x2="0" y2="1">
-            <Stop
-              offset="0"
-              stopColor={colors.purpleLight}
-              stopOpacity="0.95"
-            />
+            <Stop offset="0" stopColor={theme.accentLight} stopOpacity="0.95" />
             <Stop offset="1" stopColor={colors.pink} stopOpacity="0.6" />
           </LinearGradient>
         </Defs>

@@ -16,6 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../common/Card';
 import { GradientButton } from '../common/GradientButton';
 import { colors, radii } from '../../theme/tokens';
+import { useTheme } from '../../theme/useTheme';
 import { fontFamilies } from '../../theme/typography';
 import { lookupOFF, type OFFProduct } from '../../utils/openFoodFacts';
 import { t, useLang } from '../../i18n';
@@ -28,6 +29,7 @@ type Props = {
 
 export function BarcodeScannerModal({ visible, onClose, onProduct }: Props) {
   useLang();
+  const theme = useTheme();
   const [manualCode, setManualCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -229,17 +231,17 @@ export function BarcodeScannerModal({ visible, onClose, onProduct }: Props) {
                 paddingHorizontal: 16,
                 borderRadius: radii.md,
                 borderWidth: 1,
-                borderColor: colors.borderNeon,
+                borderColor: theme.borderNeon,
                 backgroundColor: 'rgba(157,107,255,0.16)',
                 justifyContent: 'center',
               }}
             >
               {loading ? (
-                <ActivityIndicator color={colors.purpleLight} size="small" />
+                <ActivityIndicator color={theme.accentLight} size="small" />
               ) : (
                 <Text
                   style={{
-                    color: colors.purpleLight,
+                    color: theme.accentLight,
                     fontFamily: fontFamilies.body700,
                     fontSize: 12,
                   }}

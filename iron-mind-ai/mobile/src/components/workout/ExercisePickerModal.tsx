@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radii } from '../../theme/tokens';
+import { useTheme } from '../../theme/useTheme';
 import { fontFamilies } from '../../theme/typography';
 import {
   exercises as catalog,
@@ -49,6 +50,7 @@ export function ExercisePickerModal({
   onPick,
 }: Props) {
   const lang = useLang();
+  const theme = useTheme();
   const [q, setQ] = useState('');
   const [group, setGroup] = useState<MuscleGroup | 'all'>(preferGroup ?? 'all');
 
@@ -158,7 +160,7 @@ export function ExercisePickerModal({
                     paddingVertical: 8,
                     borderRadius: 12,
                     borderWidth: 1,
-                    borderColor: active ? colors.borderNeon : colors.border,
+                    borderColor: active ? theme.borderNeon : colors.border,
                     backgroundColor: active
                       ? 'rgba(157,107,255,0.18)'
                       : colors.bgSecondary,
@@ -166,7 +168,7 @@ export function ExercisePickerModal({
                 >
                   <Text
                     style={{
-                      color: active ? colors.purpleLight : colors.textSecondary,
+                      color: active ? theme.accentLight : colors.textSecondary,
                       fontFamily: fontFamilies.body700,
                       fontSize: 11,
                     }}
@@ -208,13 +210,13 @@ export function ExercisePickerModal({
                     justifyContent: 'center',
                     backgroundColor: 'rgba(157,107,255,0.18)',
                     borderWidth: 1,
-                    borderColor: colors.borderNeon,
+                    borderColor: theme.borderNeon,
                   }}
                 >
                   <Ionicons
                     name="barbell"
                     size={16}
-                    color={colors.purpleLight}
+                    color={theme.accentLight}
                   />
                 </View>
                 <View style={{ flex: 1 }}>
