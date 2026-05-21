@@ -8,11 +8,13 @@ import { Particles } from '../components/anim/Particles';
 import { TapScale } from '../components/anim/TapScale';
 import { motivationQuotes } from '../data/motivation';
 import { colors, glow, radii, spacing } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import { t, useLang } from '../i18n';
 
 export function MotivationScreen({ navigation }: any) {
   const lang = useLang();
+  const theme = useTheme();
   const [seed, setSeed] = useState(() => Math.floor(Date.now() / 1000));
   const quote = useMemo(() => {
     const quotes = motivationQuotes(lang);
@@ -73,11 +75,7 @@ export function MotivationScreen({ navigation }: any) {
                   justifyContent: 'center',
                 }}
               >
-                <Ionicons
-                  name="sparkles"
-                  size={22}
-                  color={colors.purpleLight}
-                />
+                <Ionicons name="sparkles" size={22} color={theme.accentLight} />
               </View>
             </View>
 
@@ -127,7 +125,7 @@ export function MotivationScreen({ navigation }: any) {
             ...glow,
           }}
         >
-          <Ionicons name="refresh" size={20} color={colors.purpleLight} />
+          <Ionicons name="refresh" size={20} color={theme.accentLight} />
           <Text
             style={{
               color: colors.text,

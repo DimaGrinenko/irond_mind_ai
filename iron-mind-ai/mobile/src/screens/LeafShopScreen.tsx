@@ -34,11 +34,13 @@ import {
   type Currency,
 } from '../store/currencyStore';
 import { colors, radii } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import { t, useLang } from '../i18n';
 
 export function LeafShopScreen() {
   useLang();
+  const theme = useTheme();
   const nav = useNavigation<any>();
   const leaves = useLeafEconomyStore((s) => s.leaves);
   const owned = useLeafEconomyStore((s) => s.owned);
@@ -259,7 +261,7 @@ export function LeafShopScreen() {
                       borderColor: isEquipped
                         ? colors.green
                         : isOwned
-                          ? colors.borderNeon
+                          ? theme.borderNeon
                           : colors.border,
                       backgroundColor: colors.bgSecondary,
                       flexDirection: 'row',
@@ -330,7 +332,7 @@ export function LeafShopScreen() {
                     ) : (
                       <Text
                         style={{
-                          color: colors.purpleLight,
+                          color: theme.accentLight,
                           fontFamily: fontFamilies.body700,
                           fontSize: 11,
                         }}
@@ -427,6 +429,7 @@ function ItemPreviewModal({
   onEquip: () => void;
   onUnequip: () => void;
 }) {
+  const theme = useTheme();
   if (!item) return null;
   const canAfford = leaves >= item.price;
   return (
@@ -482,7 +485,7 @@ function ItemPreviewModal({
               minHeight: 220,
               borderRadius: radii.lg,
               borderWidth: 1,
-              borderColor: colors.borderNeon,
+              borderColor: theme.borderNeon,
               backgroundColor: 'rgba(13,16,32,0.65)',
               alignItems: 'center',
               justifyContent: 'center',
@@ -643,6 +646,7 @@ function PacksModal({
   onClose: () => void;
   onBuy: (packId: string) => void;
 }) {
+  const theme = useTheme();
   return (
     <Modal
       visible={visible}
@@ -723,7 +727,7 @@ function PacksModal({
                 pack.badge === 'best_value'
                   ? colors.green
                   : pack.badge === 'popular'
-                    ? colors.purpleLight
+                    ? theme.accentLight
                     : pack.badge === 'limited'
                       ? colors.pink
                       : null;
@@ -903,6 +907,7 @@ function CurrencyModal({
   onClose: () => void;
   onPick: (c: Currency) => void;
 }) {
+  const theme = useTheme();
   const currencies: Currency[] = ['USD', 'EUR', 'RUB', 'BYN'];
   return (
     <Modal
@@ -965,7 +970,7 @@ function CurrencyModal({
                   padding: 12,
                   borderRadius: 12,
                   borderWidth: 1,
-                  borderColor: active ? colors.borderNeon : colors.border,
+                  borderColor: active ? theme.borderNeon : colors.border,
                   backgroundColor: active
                     ? 'rgba(157,107,255,0.14)'
                     : 'transparent',
@@ -1019,6 +1024,7 @@ function AurasGalleryModal({
   streakDays: number;
   onClose: () => void;
 }) {
+  const theme = useTheme();
   return (
     <Modal
       visible={visible}
@@ -1039,7 +1045,7 @@ function AurasGalleryModal({
             borderTopLeftRadius: radii.xl,
             borderTopRightRadius: radii.xl,
             borderWidth: 1,
-            borderColor: colors.borderNeon,
+            borderColor: theme.borderNeon,
             padding: 20,
             paddingBottom: 28,
             maxHeight: '92%',

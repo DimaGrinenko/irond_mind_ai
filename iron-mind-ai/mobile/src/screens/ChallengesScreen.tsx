@@ -13,6 +13,7 @@ import {
 import { useChallengesStore } from '../store/challengesStore';
 import { useLeafEconomyStore } from '../store/leafEconomyStore';
 import { colors } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import { t, useLang } from '../i18n';
 
@@ -117,6 +118,7 @@ function ChallengeCard({
   onLeave: () => void;
   onClaim: () => void;
 }) {
+  const theme = useTheme();
   const ratio = Math.min(1, current / c.target);
   return (
     <Card
@@ -126,7 +128,7 @@ function ChallengeCard({
         borderColor: completed
           ? colors.amber
           : joined
-            ? colors.borderNeon
+            ? theme.borderNeon
             : colors.border,
         borderWidth: 1,
       }}
@@ -164,13 +166,13 @@ function ChallengeCard({
               paddingVertical: 8,
               borderRadius: 12,
               borderWidth: 1,
-              borderColor: colors.borderNeon,
+              borderColor: theme.borderNeon,
               backgroundColor: 'rgba(157,107,255,0.18)',
             }}
           >
             <Text
               style={{
-                color: colors.purpleLight,
+                color: theme.accentLight,
                 fontFamily: fontFamilies.body700,
                 fontSize: 11,
               }}
@@ -250,7 +252,7 @@ function ChallengeCard({
             </Text>
             <Text
               style={{
-                color: colors.purpleLight,
+                color: theme.accentLight,
                 fontFamily: fontFamilies.body700,
                 fontSize: 10,
               }}
@@ -260,7 +262,7 @@ function ChallengeCard({
           </View>
           <ProgressBar
             value={ratio}
-            color={completed ? colors.amber : colors.purpleLight}
+            color={completed ? colors.amber : theme.accentLight}
           />
         </>
       ) : null}

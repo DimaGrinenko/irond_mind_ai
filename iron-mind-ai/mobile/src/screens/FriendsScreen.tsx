@@ -20,11 +20,13 @@ import { useUserStore } from '../store/userStore';
 import { useReferralStore } from '../store/referralStore';
 import { useLeafEconomyStore } from '../store/leafEconomyStore';
 import { colors, radii } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import { t, useLang } from '../i18n';
 
 export function FriendsScreen() {
   useLang();
+  const theme = useTheme();
   const nav = useNavigation<any>();
   const friends = useFriendsStore((s) => s.friends);
   const invite = useFriendsStore((s) => s.invite);
@@ -68,14 +70,14 @@ export function FriendsScreen() {
                   borderRadius: 22,
                   backgroundColor: 'rgba(157,107,255,0.22)',
                   borderWidth: 1,
-                  borderColor: colors.borderNeon,
+                  borderColor: theme.borderNeon,
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
               >
                 <Text
                   style={{
-                    color: colors.purpleLight,
+                    color: theme.accentLight,
                     fontFamily: fontFamilies.body700,
                     fontSize: 16,
                   }}
@@ -95,7 +97,7 @@ export function FriendsScreen() {
                 </Text>
                 <Text
                   style={{
-                    color: colors.purpleLight,
+                    color: theme.accentLight,
                     fontFamily: fontFamilies.body600,
                     fontSize: 12,
                     marginTop: 2,
@@ -127,14 +129,14 @@ export function FriendsScreen() {
                   paddingVertical: 8,
                   borderRadius: 12,
                   borderWidth: 1,
-                  borderColor: colors.borderNeon,
+                  borderColor: theme.borderNeon,
                   backgroundColor: 'rgba(157,107,255,0.18)',
                 }}
               >
                 <Ionicons
                   name="share-social"
                   size={16}
-                  color={colors.purpleLight}
+                  color={theme.accentLight}
                 />
               </Pressable>
             </View>
@@ -320,14 +322,14 @@ export function FriendsScreen() {
                   paddingHorizontal: 14,
                   borderRadius: radii.md,
                   borderWidth: 1,
-                  borderColor: colors.borderNeon,
+                  borderColor: theme.borderNeon,
                   backgroundColor: 'rgba(157,107,255,0.18)',
                   justifyContent: 'center',
                 }}
               >
                 <Text
                   style={{
-                    color: colors.purpleLight,
+                    color: theme.accentLight,
                     fontFamily: fontFamilies.body700,
                     fontSize: 12,
                   }}
@@ -426,14 +428,14 @@ export function FriendsScreen() {
                       borderRadius: 18,
                       backgroundColor: 'rgba(157,107,255,0.22)',
                       borderWidth: 1,
-                      borderColor: colors.borderNeon,
+                      borderColor: theme.borderNeon,
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
                   >
                     <Text
                       style={{
-                        color: colors.purpleLight,
+                        color: theme.accentLight,
                         fontFamily: fontFamilies.body700,
                         fontSize: 14,
                       }}
@@ -453,7 +455,7 @@ export function FriendsScreen() {
                     </Text>
                     <Text
                       style={{
-                        color: colors.purpleLight,
+                        color: theme.accentLight,
                         fontFamily: fontFamilies.body,
                         fontSize: 11,
                         marginTop: 2,
@@ -540,6 +542,7 @@ export function FriendsScreen() {
 }
 
 function ReferralCard() {
+  const theme = useTheme();
   const myCode = useReferralStore((s) => s.myCode);
   const applied = useReferralStore((s) => s.appliedCode);
   const applyCode = useReferralStore((s) => s.applyCode);
@@ -637,15 +640,11 @@ function ReferralCard() {
               paddingVertical: 10,
               borderRadius: 12,
               borderWidth: 1,
-              borderColor: colors.borderNeon,
+              borderColor: theme.borderNeon,
               backgroundColor: 'rgba(157,107,255,0.18)',
             }}
           >
-            <Ionicons
-              name="share-social"
-              size={16}
-              color={colors.purpleLight}
-            />
+            <Ionicons name="share-social" size={16} color={theme.accentLight} />
           </Pressable>
         </View>
 
