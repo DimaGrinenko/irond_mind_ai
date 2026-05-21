@@ -17,6 +17,7 @@ import { RingChart } from '../components/charts/RingChart';
 import { GradientButton } from '../components/common/GradientButton';
 import { CyclePhaseBanner } from '../components/common/CyclePhaseBanner';
 import { colors, radii } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import { useNutritionStore } from '../store/nutritionStore';
 import { useUserStore } from '../store/userStore';
@@ -42,6 +43,7 @@ function mealTitle(t_: typeof t, m: string) {
 
 export function NutritionScreen({ navigation }: any) {
   const lang = useLang();
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const date = useNutritionStore((s) => s.date);
   const entries = useNutritionStore((s) => s.entries);
@@ -216,7 +218,7 @@ export function NutritionScreen({ navigation }: any) {
                       label: t('nutrition.carbs'),
                       v: totals.carbs,
                       target: goalCarbs,
-                      c: colors.purpleLight,
+                      c: theme.accentLight,
                     },
                   ].map((x) => (
                     <View key={x.label} style={{ gap: 6 }}>
@@ -288,7 +290,7 @@ export function NutritionScreen({ navigation }: any) {
                       borderRadius: 12,
                       backgroundColor: 'rgba(123,63,228,0.18)',
                       borderWidth: 1,
-                      borderColor: colors.borderNeon,
+                      borderColor: theme.borderNeon,
                       alignItems: 'center',
                       justifyContent: 'center',
                       marginRight: 10,
@@ -297,7 +299,7 @@ export function NutritionScreen({ navigation }: any) {
                     <Ionicons
                       name="restaurant"
                       size={16}
-                      color={colors.purpleLight}
+                      color={theme.accentLight}
                     />
                   </View>
                   <View style={{ flex: 1 }}>
@@ -333,12 +335,12 @@ export function NutritionScreen({ navigation }: any) {
                       borderRadius: 10,
                       backgroundColor: 'rgba(157,107,255,0.18)',
                       borderWidth: 1,
-                      borderColor: colors.borderNeon,
+                      borderColor: theme.borderNeon,
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
                   >
-                    <Ionicons name="add" size={18} color={colors.purpleLight} />
+                    <Ionicons name="add" size={18} color={theme.accentLight} />
                   </Pressable>
                 </View>
                 {g.items.length === 0 ? null : (
@@ -450,6 +452,7 @@ export function NutritionScreen({ navigation }: any) {
 }
 
 function SaveAsTemplatePrompt({ entries }: { entries: any[] }) {
+  const theme = useTheme();
   const add = useMealTemplatesStore((s) => s.add);
   const [visible, setVisible] = React.useState(false);
   const [title, setTitle] = React.useState('');
@@ -557,7 +560,7 @@ function SaveAsTemplatePrompt({ entries }: { entries: any[] }) {
                         paddingVertical: 8,
                         borderRadius: 10,
                         borderWidth: 1,
-                        borderColor: active ? colors.borderNeon : colors.border,
+                        borderColor: active ? theme.borderNeon : colors.border,
                         backgroundColor: active
                           ? 'rgba(157,107,255,0.18)'
                           : colors.bgSecondary,
@@ -567,7 +570,7 @@ function SaveAsTemplatePrompt({ entries }: { entries: any[] }) {
                       <Text
                         style={{
                           color: active
-                            ? colors.purpleLight
+                            ? theme.accentLight
                             : colors.textSecondary,
                           fontFamily: fontFamilies.body700,
                           fontSize: 11,
@@ -819,6 +822,7 @@ function FoodPickerModal({
   onAdd: (food: Food, grams: number, meal: MealType) => void;
 }) {
   const lang = useLang();
+  const theme = useTheme();
   const [q, setQ] = useState('');
   const [selected, setSelected] = useState<Food | null>(null);
   const [grams, setGrams] = useState('100');
@@ -943,7 +947,7 @@ function FoodPickerModal({
                     paddingVertical: 8,
                     borderRadius: 12,
                     borderWidth: 1,
-                    borderColor: active ? colors.borderNeon : colors.border,
+                    borderColor: active ? theme.borderNeon : colors.border,
                     backgroundColor: active
                       ? 'rgba(157,107,255,0.18)'
                       : colors.bgSecondary,
@@ -951,7 +955,7 @@ function FoodPickerModal({
                 >
                   <Text
                     style={{
-                      color: active ? colors.purpleLight : colors.textSecondary,
+                      color: active ? theme.accentLight : colors.textSecondary,
                       fontFamily: fontFamilies.body700,
                       fontSize: 12,
                     }}
@@ -979,7 +983,7 @@ function FoodPickerModal({
                     paddingVertical: 8,
                     borderRadius: 10,
                     borderWidth: 1,
-                    borderColor: active ? colors.borderNeon : colors.border,
+                    borderColor: active ? theme.borderNeon : colors.border,
                     backgroundColor: active
                       ? 'rgba(157,107,255,0.18)'
                       : colors.bgSecondary,
@@ -988,7 +992,7 @@ function FoodPickerModal({
                 >
                   <Text
                     style={{
-                      color: active ? colors.purpleLight : colors.textSecondary,
+                      color: active ? theme.accentLight : colors.textSecondary,
                       fontFamily: fontFamilies.body700,
                       fontSize: 10,
                     }}
@@ -1063,7 +1067,7 @@ function FoodPickerModal({
                 paddingHorizontal: 12,
                 borderRadius: radii.md,
                 borderWidth: 1,
-                borderColor: showCustomForm ? '#FFB547' : colors.borderNeon,
+                borderColor: showCustomForm ? '#FFB547' : theme.borderNeon,
                 backgroundColor: showCustomForm
                   ? 'rgba(255,181,71,0.16)'
                   : 'rgba(157,107,255,0.16)',
@@ -1072,7 +1076,7 @@ function FoodPickerModal({
             >
               <Text
                 style={{
-                  color: showCustomForm ? '#FFB547' : colors.purpleLight,
+                  color: showCustomForm ? '#FFB547' : theme.accentLight,
                   fontFamily: fontFamilies.body700,
                   fontSize: 11,
                 }}
@@ -1223,7 +1227,7 @@ function FoodPickerModal({
                 padding: 14,
                 borderRadius: radii.md,
                 borderWidth: 1,
-                borderColor: colors.borderNeon,
+                borderColor: theme.borderNeon,
                 backgroundColor: 'rgba(157,107,255,0.12)',
                 marginBottom: 12,
               }}
@@ -1299,7 +1303,7 @@ function FoodPickerModal({
                   <MacroPill
                     label={t('nut.cShort')}
                     value={macros.carbs}
-                    tint={colors.purpleLight}
+                    tint={theme.accentLight}
                   />
                 </View>
               ) : null}
@@ -1449,6 +1453,7 @@ function CustomFoodForm({
   onSave: (food: Omit<Food, 'id'>, grams: number) => void;
   onCancel: () => void;
 }) {
+  const theme = useTheme();
   const [name, setName] = useState('');
   const [kcal, setKcal] = useState('');
   const [protein, setProtein] = useState('');

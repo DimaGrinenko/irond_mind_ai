@@ -7,6 +7,7 @@ import { Card } from '../components/common/Card';
 import { GradientButton } from '../components/common/GradientButton';
 import { ScreenHeader } from '../components/layout/ScreenHeader';
 import { colors, neonGlow, neonTextShadow } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import { useProgressPhotosStore } from '../store/progressPhotosStore';
 import { daysBetween } from '../utils/date';
@@ -20,6 +21,7 @@ function prettyDate(iso: string) {
 
 export function ProgressPhotosScreen({ navigation }: any) {
   useLang();
+  const theme = useTheme();
   const photos = useProgressPhotosStore((s) => s.photos);
   const hydrate = useProgressPhotosStore((s) => s.hydrate);
   const add = useProgressPhotosStore((s) => s.add);
@@ -107,7 +109,7 @@ export function ProgressPhotosScreen({ navigation }: any) {
                       fontFamily: fontFamilies.body700,
                       fontSize: 14,
                     },
-                    neonTextShadow(colors.purple, 8),
+                    neonTextShadow(theme.accent, 8),
                   ]}
                 >
                   {t('pp.transform')}
@@ -204,7 +206,7 @@ export function ProgressPhotosScreen({ navigation }: any) {
                   overflow: 'hidden',
                   borderWidth: 1,
                   borderColor: 'rgba(157,107,255,0.4)',
-                  ...neonGlow(colors.purple, 0.3, 14, 5),
+                  ...neonGlow(theme.accent, 0.3, 14, 5),
                 }}
               >
                 <Image

@@ -8,6 +8,7 @@ import { Card } from '../components/common/Card';
 import { FieldRow } from '../components/common/FieldRow';
 import { GradientButton } from '../components/common/GradientButton';
 import { colors } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import { useMeasurementsStore } from '../store/measurementsStore';
 import { useUserStore } from '../store/userStore';
@@ -452,6 +453,7 @@ function HistoryItem({
   row: MeasurementsRow;
   onDelete: () => void;
 }) {
+  const theme = useTheme();
   const fields: Array<{
     label: string;
     v: number | null | undefined;
@@ -477,7 +479,7 @@ function HistoryItem({
         <Ionicons
           name="calendar-outline"
           size={14}
-          color={colors.purpleLight}
+          color={theme.accentLight}
           style={{ marginRight: 6 }}
         />
         <Text

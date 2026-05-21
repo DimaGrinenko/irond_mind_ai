@@ -18,6 +18,7 @@ import { Card } from '../components/common/Card';
 import { GradientButton } from '../components/common/GradientButton';
 import { ScreenHeader } from '../components/layout/ScreenHeader';
 import { colors, radii } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import {
   CATEGORIES,
@@ -37,7 +38,8 @@ type Tab = 'my' | 'catalog' | 'top' | 'chem';
 
 function evidenceLabel(ev: 'high' | 'medium' | 'low') {
   if (ev === 'high') return { label: t('supp.evidenceHigh'), color: '#3FFF96' };
-  if (ev === 'medium') return { label: t('supp.evidenceMedium'), color: '#FFB547' };
+  if (ev === 'medium')
+    return { label: t('supp.evidenceMedium'), color: '#FFB547' };
   return { label: t('supp.evidenceLow'), color: '#FF4DD2' };
 }
 
@@ -47,6 +49,7 @@ function categoryLabel(c: SupplementCategory) {
 
 export function SupplementsScreen() {
   const lang = useLang();
+  const theme = useTheme();
   const nav = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const items = useSupplementsStore((s) => s.items);
@@ -69,7 +72,10 @@ export function SupplementsScreen() {
     // Каталог — без химии. Химия в отдельной вкладке.
     const nonChem = supplements.filter((s) => s.category !== 'chemistry');
     const term = q.trim().toLowerCase();
-    const byCat = category === 'all' ? nonChem : nonChem.filter((s) => s.category === category);
+    const byCat =
+      category === 'all'
+        ? nonChem
+        : nonChem.filter((s) => s.category === category);
     if (!term) return byCat;
     return byCat.filter(
       (s) =>
@@ -83,7 +89,9 @@ export function SupplementsScreen() {
     const term = q.trim().toLowerCase();
     if (!term) return chemistry;
     return chemistry.filter(
-      (s) => s.name.toLowerCase().includes(term) || s.whatIs.toLowerCase().includes(term),
+      (s) =>
+        s.name.toLowerCase().includes(term) ||
+        s.whatIs.toLowerCase().includes(term),
     );
   }, [q]);
 
@@ -93,7 +101,14 @@ export function SupplementsScreen() {
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
       <ScreenHeader title={t('supp.title')} onBack={() => nav.goBack()} />
 
-      <View style={{ paddingHorizontal: 16, marginTop: 8, flexDirection: 'row', gap: 6 }}>
+      <View
+        style={{
+          paddingHorizontal: 16,
+          marginTop: 8,
+          flexDirection: 'row',
+          gap: 6,
+        }}
+      >
         {(['my', 'top', 'catalog', 'chem'] as Tab[]).map((tk) => {
           const active = tk === tab;
           const label =
@@ -114,15 +129,25 @@ export function SupplementsScreen() {
                 alignItems: 'center',
                 borderRadius: 12,
                 borderWidth: 1,
-                borderColor: active ? (tk === 'chem' ? '#FF4D6D' : colors.borderNeon) : colors.border,
+                borderColor: active
+                  ? tk === 'chem'
+                    ? '#FF4D6D'
+                    : theme.borderNeon
+                  : colors.border,
                 backgroundColor: active
-                  ? tk === 'chem' ? 'rgba(255,77,109,0.18)' : 'rgba(157,107,255,0.18)'
+                  ? tk === 'chem'
+                    ? 'rgba(255,77,109,0.18)'
+                    : 'rgba(157,107,255,0.18)'
                   : colors.bgSecondary,
               }}
             >
               <Text
                 style={{
-                  color: active ? (tk === 'chem' ? '#FF4D6D' : colors.purpleLight) : colors.textSecondary,
+                  color: active
+                    ? tk === 'chem'
+                      ? '#FF4D6D'
+                      : theme.accentLight
+                    : colors.textSecondary,
                   fontFamily: fontFamilies.body700,
                   fontSize: 11,
                 }}
@@ -134,26 +159,60 @@ export function SupplementsScreen() {
         })}
       </View>
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 120 }} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 120 }}
+        showsVerticalScrollIndicator={false}
+      >
         {tab === 'my' && (
           <View style={{ paddingHorizontal: 16, marginTop: 12, gap: 12 }}>
             {items.length === 0 ? (
               <Card variant="secondary">
-                <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, textAlign: 'center' }}>
+                <Text
+                  style={{
+                    color: colors.textSecondary,
+                    fontFamily: fontFamilies.body,
+                    textAlign: 'center',
+                  }}
+                >
                   {t('supp.myEmpty')}
                 </Text>
               </Card>
             ) : (
               items.map((item) => {
-                const todayTake = takesToday.find((tk) => tk.userSupplementId === item.id);
+                const todayTake = takesToday.find(
+                  (tk) => tk.userSupplementId === item.id,
+                );
                 return (
-                  <Card key={item.id} variant="secondary" style={{ padding: 14 }}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
+                  <Card
+                    key={item.id}
+                    variant="secondary"
+                    style={{ padding: 14 }}
+                  >
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        marginBottom: 6,
+                      }}
+                    >
                       <View style={{ flex: 1 }}>
-                        <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 14 }}>
+                        <Text
+                          style={{
+                            color: colors.text,
+                            fontFamily: fontFamilies.body700,
+                            fontSize: 14,
+                          }}
+                        >
                           {item.name}
                         </Text>
-                        <Text style={{ marginTop: 2, color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11 }}>
+                        <Text
+                          style={{
+                            marginTop: 2,
+                            color: colors.textMuted,
+                            fontFamily: fontFamilies.body,
+                            fontSize: 11,
+                          }}
+                        >
                           {item.dose} · {item.timing}
                         </Text>
                       </View>
@@ -165,24 +224,41 @@ export function SupplementsScreen() {
                         <Ionicons
                           name={item.active ? 'eye' : 'eye-off'}
                           size={18}
-                          color={item.active ? colors.purpleLight : colors.textMuted}
+                          color={
+                            item.active ? theme.accentLight : colors.textMuted
+                          }
                         />
                       </Pressable>
                       <Pressable
                         onPress={() =>
                           Alert.alert(item.name, t('supp.removeQ'), [
                             { text: t('common.cancel'), style: 'cancel' },
-                            { text: t('common.delete'), style: 'destructive', onPress: () => remove(item.id) },
+                            {
+                              text: t('common.delete'),
+                              style: 'destructive',
+                              onPress: () => remove(item.id),
+                            },
                           ])
                         }
                         hitSlop={10}
                         style={{ paddingHorizontal: 6 }}
                       >
-                        <Ionicons name="trash-outline" size={16} color={colors.pink} />
+                        <Ionicons
+                          name="trash-outline"
+                          size={16}
+                          color={colors.pink}
+                        />
                       </Pressable>
                     </View>
                     {item.notes ? (
-                      <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, fontSize: 12, marginBottom: 8 }}>
+                      <Text
+                        style={{
+                          color: colors.textSecondary,
+                          fontFamily: fontFamilies.body,
+                          fontSize: 12,
+                          marginBottom: 8,
+                        }}
+                      >
                         {item.notes}
                       </Text>
                     ) : null}
@@ -194,20 +270,34 @@ export function SupplementsScreen() {
                         alignItems: 'center',
                         borderRadius: 12,
                         borderWidth: 1,
-                        borderColor: todayTake ? colors.green : colors.borderNeon,
-                        backgroundColor: todayTake ? 'rgba(63,255,150,0.14)' : 'rgba(157,107,255,0.12)',
+                        borderColor: todayTake
+                          ? colors.green
+                          : theme.borderNeon,
+                        backgroundColor: todayTake
+                          ? 'rgba(63,255,150,0.14)'
+                          : 'rgba(157,107,255,0.12)',
                         flexDirection: 'row',
                         justifyContent: 'center',
                         gap: 6,
                       }}
                     >
                       <Ionicons
-                        name={todayTake ? 'checkmark-circle' : 'add-circle-outline'}
+                        name={
+                          todayTake ? 'checkmark-circle' : 'add-circle-outline'
+                        }
                         size={16}
-                        color={todayTake ? colors.green : colors.purpleLight}
+                        color={todayTake ? colors.green : theme.accentLight}
                       />
-                      <Text style={{ color: todayTake ? colors.green : colors.purpleLight, fontFamily: fontFamilies.body700, fontSize: 12 }}>
-                        {todayTake ? t('supp.tookAt', { time: todayTake.time }) : t('supp.markTake')}
+                      <Text
+                        style={{
+                          color: todayTake ? colors.green : theme.accentLight,
+                          fontFamily: fontFamilies.body700,
+                          fontSize: 12,
+                        }}
+                      >
+                        {todayTake
+                          ? t('supp.tookAt', { time: todayTake.time })
+                          : t('supp.markTake')}
                       </Text>
                     </Pressable>
                   </Card>
@@ -220,17 +310,35 @@ export function SupplementsScreen() {
         {tab === 'top' && (
           <View style={{ paddingHorizontal: 16, marginTop: 12, gap: 8 }}>
             <Card variant="secondary">
-              <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 14 }}>
+              <Text
+                style={{
+                  color: colors.text,
+                  fontFamily: fontFamilies.body700,
+                  fontSize: 14,
+                }}
+              >
                 {t('supp.top10Title')}
               </Text>
-              <Text style={{ marginTop: 6, color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 12 }}>
+              <Text
+                style={{
+                  marginTop: 6,
+                  color: colors.textMuted,
+                  fontFamily: fontFamilies.body,
+                  fontSize: 12,
+                }}
+              >
                 {t('supp.top10Sub')}
               </Text>
             </Card>
             {top.map((s) => {
               const loc = localizedSupplement(s, lang);
               return (
-                <SupplementRow key={s.id} supplement={loc} rank={s.topRank} onTap={() => setSelected(s)} />
+                <SupplementRow
+                  key={s.id}
+                  supplement={loc}
+                  rank={s.topRank}
+                  onTap={() => setSelected(s)}
+                />
               );
             })}
           </View>
@@ -252,15 +360,33 @@ export function SupplementsScreen() {
                 onChangeText={setQ}
                 placeholder={t('supp.search')}
                 placeholderTextColor={colors.textMuted}
-                style={{ color: colors.text, fontFamily: fontFamilies.body600, fontSize: 15, height: 46 }}
+                style={{
+                  color: colors.text,
+                  fontFamily: fontFamilies.body600,
+                  fontSize: 15,
+                  height: 46,
+                }}
               />
             </View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: 6 }}
+            >
               <Pressable
                 onPress={() => setCategory('all')}
-                style={[chipStyle, category === 'all' && chipActive]}
+                style={[chipStyle, category === 'all' && chipActive(theme)]}
               >
-                <Text style={{ color: category === 'all' ? colors.purpleLight : colors.textSecondary, fontFamily: fontFamilies.body700, fontSize: 11 }}>
+                <Text
+                  style={{
+                    color:
+                      category === 'all'
+                        ? theme.accentLight
+                        : colors.textSecondary,
+                    fontFamily: fontFamilies.body700,
+                    fontSize: 11,
+                  }}
+                >
                   {t('supp.catAll')}
                 </Text>
               </Pressable>
@@ -268,19 +394,40 @@ export function SupplementsScreen() {
                 <Pressable
                   key={c.key}
                   onPress={() => setCategory(c.key)}
-                  style={[chipStyle, category === c.key && chipActive]}
+                  style={[chipStyle, category === c.key && chipActive(theme)]}
                 >
-                  <Text style={{ color: category === c.key ? colors.purpleLight : colors.textSecondary, fontFamily: fontFamilies.body700, fontSize: 11 }}>
+                  <Text
+                    style={{
+                      color:
+                        category === c.key
+                          ? theme.accentLight
+                          : colors.textSecondary,
+                      fontFamily: fontFamilies.body700,
+                      fontSize: 11,
+                    }}
+                  >
                     {c.emoji} {categoryLabel(c.key)}
                   </Text>
                 </Pressable>
               ))}
             </ScrollView>
             {filteredCatalog.map((s) => (
-              <SupplementRow key={s.id} supplement={localizedSupplement(s, lang)} onTap={() => setSelected(s)} />
+              <SupplementRow
+                key={s.id}
+                supplement={localizedSupplement(s, lang)}
+                onTap={() => setSelected(s)}
+              />
             ))}
             {filteredCatalog.length === 0 ? (
-              <Text style={{ color: colors.textMuted, textAlign: 'center', paddingVertical: 24 }}>—</Text>
+              <Text
+                style={{
+                  color: colors.textMuted,
+                  textAlign: 'center',
+                  paddingVertical: 24,
+                }}
+              >
+                —
+              </Text>
             ) : null}
           </View>
         )}
@@ -296,7 +443,13 @@ export function SupplementsScreen() {
                 backgroundColor: 'rgba(255,77,109,0.10)',
               }}
             >
-              <Text style={{ color: '#FF4D6D', fontFamily: fontFamilies.body700, fontSize: 13 }}>
+              <Text
+                style={{
+                  color: '#FF4D6D',
+                  fontFamily: fontFamilies.body700,
+                  fontSize: 13,
+                }}
+              >
                 {t('supp.chemDisclaimerTitle')}
               </Text>
               <Text
@@ -326,25 +479,46 @@ export function SupplementsScreen() {
                 onChangeText={setQ}
                 placeholder={t('supp.search')}
                 placeholderTextColor={colors.textMuted}
-                style={{ color: colors.text, fontFamily: fontFamilies.body600, fontSize: 15, height: 46 }}
+                style={{
+                  color: colors.text,
+                  fontFamily: fontFamilies.body600,
+                  fontSize: 15,
+                  height: 46,
+                }}
               />
             </View>
 
             {filteredChem.map((s) => (
-              <SupplementRow key={s.id} supplement={localizedSupplement(s, lang)} onTap={() => setSelected(s)} chem />
+              <SupplementRow
+                key={s.id}
+                supplement={localizedSupplement(s, lang)}
+                onTap={() => setSelected(s)}
+                chem
+              />
             ))}
           </View>
         )}
       </ScrollView>
 
-      <SupplementModal supplement={selected ? localizedSupplement(selected, lang) : null} onClose={() => setSelected(null)} />
+      <SupplementModal
+        supplement={selected ? localizedSupplement(selected, lang) : null}
+        onClose={() => setSelected(null)}
+      />
     </View>
   );
 }
 
 function SupplementRow({
-  supplement, rank, onTap, chem,
-}: { supplement: Supplement; rank?: number; onTap: () => void; chem?: boolean }) {
+  supplement,
+  rank,
+  onTap,
+  chem,
+}: {
+  supplement: Supplement;
+  rank?: number;
+  onTap: () => void;
+  chem?: boolean;
+}) {
   const ev = evidenceLabel(supplement.evidence);
   const accent = chem ? '#FF4D6D' : colors.border;
   return (
@@ -374,17 +548,36 @@ function SupplementRow({
             justifyContent: 'center',
           }}
         >
-          <Text style={{ color: colors.amber, fontFamily: fontFamilies.body700, fontSize: 12 }}>{rank}</Text>
+          <Text
+            style={{
+              color: colors.amber,
+              fontFamily: fontFamilies.body700,
+              fontSize: 12,
+            }}
+          >
+            {rank}
+          </Text>
         </View>
       ) : (
         <Text style={{ fontSize: 22 }}>{supplement.emoji}</Text>
       )}
       <View style={{ flex: 1 }}>
-        <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 13 }}>
+        <Text
+          style={{
+            color: colors.text,
+            fontFamily: fontFamilies.body700,
+            fontSize: 13,
+          }}
+        >
           {supplement.name}
         </Text>
         <Text
-          style={{ marginTop: 2, color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11 }}
+          style={{
+            marginTop: 2,
+            color: colors.textMuted,
+            fontFamily: fontFamilies.body,
+            fontSize: 11,
+          }}
           numberOfLines={2}
         >
           {supplement.whatIs}
@@ -400,14 +593,29 @@ function SupplementRow({
           backgroundColor: ev.color + '22',
         }}
       >
-        <Text style={{ color: ev.color, fontFamily: fontFamilies.body700, fontSize: 9 }}>{ev.label}</Text>
+        <Text
+          style={{
+            color: ev.color,
+            fontFamily: fontFamilies.body700,
+            fontSize: 9,
+          }}
+        >
+          {ev.label}
+        </Text>
       </View>
       <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
     </Pressable>
   );
 }
 
-function SupplementModal({ supplement, onClose }: { supplement: Supplement | null; onClose: () => void }) {
+function SupplementModal({
+  supplement,
+  onClose,
+}: {
+  supplement: Supplement | null;
+  onClose: () => void;
+}) {
+  const theme = useTheme();
   const add = useSupplementsStore((s) => s.add);
   const items = useSupplementsStore((s) => s.items);
   const [dose, setDose] = useState('');
@@ -428,8 +636,19 @@ function SupplementModal({ supplement, onClose }: { supplement: Supplement | nul
   const isChem = supplement.category === 'chemistry';
 
   return (
-    <Modal visible={!!supplement} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.85)', justifyContent: 'flex-end' }}>
+    <Modal
+      visible={!!supplement}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+    >
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: 'rgba(0,0,0,0.85)',
+          justifyContent: 'flex-end',
+        }}
+      >
         <View
           style={{
             backgroundColor: colors.bg,
@@ -442,13 +661,34 @@ function SupplementModal({ supplement, onClose }: { supplement: Supplement | nul
             maxHeight: '92%',
           }}
         >
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-            <Text style={{ fontSize: 28, marginRight: 10 }}>{supplement.emoji}</Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginBottom: 8,
+            }}
+          >
+            <Text style={{ fontSize: 28, marginRight: 10 }}>
+              {supplement.emoji}
+            </Text>
             <View style={{ flex: 1 }}>
-              <Text style={{ color: colors.text, fontFamily: fontFamilies.heading, fontSize: 20 }}>
+              <Text
+                style={{
+                  color: colors.text,
+                  fontFamily: fontFamilies.heading,
+                  fontSize: 20,
+                }}
+              >
                 {supplement.name}
               </Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 6,
+                  marginTop: 4,
+                }}
+              >
                 <View
                   style={{
                     paddingHorizontal: 8,
@@ -459,10 +699,24 @@ function SupplementModal({ supplement, onClose }: { supplement: Supplement | nul
                     backgroundColor: ev.color + '22',
                   }}
                 >
-                  <Text style={{ color: ev.color, fontFamily: fontFamilies.body700, fontSize: 9 }}>{ev.label}</Text>
+                  <Text
+                    style={{
+                      color: ev.color,
+                      fontFamily: fontFamilies.body700,
+                      fontSize: 9,
+                    }}
+                  >
+                    {ev.label}
+                  </Text>
                 </View>
                 {supplement.topRank > 0 ? (
-                  <Text style={{ color: colors.amber, fontFamily: fontFamilies.body700, fontSize: 10 }}>
+                  <Text
+                    style={{
+                      color: colors.amber,
+                      fontFamily: fontFamilies.body700,
+                      fontSize: 10,
+                    }}
+                  >
                     {t('supp.rank', { n: supplement.topRank })}
                   </Text>
                 ) : null}
@@ -473,7 +727,10 @@ function SupplementModal({ supplement, onClose }: { supplement: Supplement | nul
             </Pressable>
           </View>
 
-          <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 480 }}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={{ maxHeight: 480 }}
+          >
             <Section title={t('supp.sectionWhatIs')}>
               <Text style={txtBody}>{supplement.whatIs}</Text>
             </Section>
@@ -484,7 +741,9 @@ function SupplementModal({ supplement, onClose }: { supplement: Supplement | nul
               <Text style={txtBody}>{supplement.dosage}</Text>
             </Section>
             <Section title={t('supp.sectionTiming')}>
-              <Text style={txtBody}>{supplement.timing.map(timingLabel).join(' · ')}</Text>
+              <Text style={txtBody}>
+                {supplement.timing.map(timingLabel).join(' · ')}
+              </Text>
             </Section>
             <Section title={t('supp.sectionCycle')}>
               <Text style={txtBody}>{supplement.cycle}</Text>
@@ -499,11 +758,17 @@ function SupplementModal({ supplement, onClose }: { supplement: Supplement | nul
                       paddingVertical: 6,
                       borderRadius: 10,
                       borderWidth: 1,
-                      borderColor: colors.borderNeon,
+                      borderColor: theme.borderNeon,
                       backgroundColor: 'rgba(157,107,255,0.12)',
                     }}
                   >
-                    <Text style={{ color: colors.purpleLight, fontFamily: fontFamilies.body600, fontSize: 11 }}>
+                    <Text
+                      style={{
+                        color: theme.accentLight,
+                        fontFamily: fontFamilies.body600,
+                        fontSize: 11,
+                      }}
+                    >
                       {g}
                     </Text>
                   </View>
@@ -511,14 +776,18 @@ function SupplementModal({ supplement, onClose }: { supplement: Supplement | nul
               </View>
             </Section>
             <Section title={t('supp.sectionCautions')}>
-              <Text style={[txtBody, { color: colors.amber }]}>{supplement.cautions}</Text>
+              <Text style={[txtBody, { color: colors.amber }]}>
+                {supplement.cautions}
+              </Text>
             </Section>
 
             {isChem ? (
               <>
                 {supplement.sideEffects ? (
                   <Section title={t('supp.sectionSideEffects')}>
-                    <Text style={[txtBody, { color: '#FF4D6D' }]}>{supplement.sideEffects}</Text>
+                    <Text style={[txtBody, { color: '#FF4D6D' }]}>
+                      {supplement.sideEffects}
+                    </Text>
                   </Section>
                 ) : null}
                 {supplement.legality ? (
@@ -541,8 +810,21 @@ function SupplementModal({ supplement, onClose }: { supplement: Supplement | nul
 
             {!alreadyAdded && !isChem ? (
               <>
-                <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 14 }} />
-                <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 14, marginBottom: 10 }}>
+                <View
+                  style={{
+                    height: 1,
+                    backgroundColor: colors.border,
+                    marginVertical: 14,
+                  }}
+                />
+                <Text
+                  style={{
+                    color: colors.text,
+                    fontFamily: fontFamilies.body700,
+                    fontSize: 14,
+                    marginBottom: 10,
+                  }}
+                >
                   {t('supp.addToStack')}
                 </Text>
                 <Field label={t('supp.fieldDose')}>
@@ -565,7 +847,10 @@ function SupplementModal({ supplement, onClose }: { supplement: Supplement | nul
                   <TextInput
                     value={notes}
                     onChangeText={setNotes}
-                    style={[inputStyle, { height: 64, paddingTop: 12, textAlignVertical: 'top' }]}
+                    style={[
+                      inputStyle,
+                      { height: 64, paddingTop: 12, textAlignVertical: 'top' },
+                    ]}
                     multiline
                     maxLength={200}
                     placeholderTextColor={colors.textMuted}
@@ -574,7 +859,14 @@ function SupplementModal({ supplement, onClose }: { supplement: Supplement | nul
               </>
             ) : alreadyAdded ? (
               <View style={{ paddingVertical: 14 }}>
-                <Text style={{ color: colors.green, fontFamily: fontFamilies.body700, fontSize: 13, textAlign: 'center' }}>
+                <Text
+                  style={{
+                    color: colors.green,
+                    fontFamily: fontFamilies.body700,
+                    fontSize: 13,
+                    textAlign: 'center',
+                  }}
+                >
                   {t('supp.alreadyInStack')}
                 </Text>
               </View>
@@ -603,7 +895,13 @@ function SupplementModal({ supplement, onClose }: { supplement: Supplement | nul
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <View style={{ marginBottom: 14 }}>
       <Text
@@ -621,7 +919,13 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     </View>
   );
 }
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <View style={{ marginBottom: 10 }}>
       <Text
@@ -672,7 +976,7 @@ const chipStyle = {
   backgroundColor: colors.bgSecondary,
 } as const;
 
-const chipActive = {
-  borderColor: colors.borderNeon,
-  backgroundColor: 'rgba(157,107,255,0.18)',
-} as const;
+const chipActive = (theme: { borderNeon: string; accentSoft: string }) => ({
+  borderColor: theme.borderNeon,
+  backgroundColor: theme.accentSoft,
+});

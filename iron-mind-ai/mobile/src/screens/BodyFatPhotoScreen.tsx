@@ -10,6 +10,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Card } from '../components/common/Card';
 import { ScreenHeader } from '../components/layout/ScreenHeader';
 import { colors, radii } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import { t, useLang } from '../i18n';
 
@@ -40,18 +41,47 @@ export function BodyFatPhotoScreen() {
       <ScrollView contentContainerStyle={{ paddingBottom: 60 }}>
         <View style={{ paddingHorizontal: 16, marginTop: 10 }}>
           <Card variant="secondary">
-            <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 14 }}>
+            <Text
+              style={{
+                color: colors.text,
+                fontFamily: fontFamilies.body700,
+                fontSize: 14,
+              }}
+            >
               {t('bodyFat.uploadTwo')}
             </Text>
-            <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11, marginTop: 4, lineHeight: 16 }}>
+            <Text
+              style={{
+                color: colors.textMuted,
+                fontFamily: fontFamilies.body,
+                fontSize: 11,
+                marginTop: 4,
+                lineHeight: 16,
+              }}
+            >
               {t('bodyFat.hint')}
             </Text>
           </Card>
         </View>
 
-        <View style={{ paddingHorizontal: 16, marginTop: 14, flexDirection: 'row', gap: 10 }}>
-          <PhotoSlot label={t('bodyFat.front')} uri={frontUri} onPress={() => pick('front')} />
-          <PhotoSlot label={t('bodyFat.side')} uri={sideUri} onPress={() => pick('side')} />
+        <View
+          style={{
+            paddingHorizontal: 16,
+            marginTop: 14,
+            flexDirection: 'row',
+            gap: 10,
+          }}
+        >
+          <PhotoSlot
+            label={t('bodyFat.front')}
+            uri={frontUri}
+            onPress={() => pick('front')}
+          />
+          <PhotoSlot
+            label={t('bodyFat.side')}
+            uri={sideUri}
+            onPress={() => pick('side')}
+          />
         </View>
 
         <View style={{ paddingHorizontal: 16, marginTop: 14 }}>
@@ -65,12 +95,21 @@ export function BodyFatPhotoScreen() {
               borderRadius: 14,
               borderWidth: 1,
               borderColor: frontUri && sideUri ? colors.cyan : colors.border,
-              backgroundColor: frontUri && sideUri ? 'rgba(0,229,255,0.16)' : colors.bgSecondary,
+              backgroundColor:
+                frontUri && sideUri
+                  ? 'rgba(0,229,255,0.16)'
+                  : colors.bgSecondary,
               alignItems: 'center',
               opacity: frontUri && sideUri ? 1 : 0.5,
             }}
           >
-            <Text style={{ color: frontUri && sideUri ? colors.cyan : colors.textMuted, fontFamily: fontFamilies.body700, fontSize: 13 }}>
+            <Text
+              style={{
+                color: frontUri && sideUri ? colors.cyan : colors.textMuted,
+                fontFamily: fontFamilies.body700,
+                fontSize: 13,
+              }}
+            >
               {t('bodyFat.evaluate')}
             </Text>
           </Pressable>
@@ -80,7 +119,16 @@ export function BodyFatPhotoScreen() {
   );
 }
 
-function PhotoSlot({ label, uri, onPress }: { label: string; uri: string | null; onPress: () => void }) {
+function PhotoSlot({
+  label,
+  uri,
+  onPress,
+}: {
+  label: string;
+  uri: string | null;
+  onPress: () => void;
+}) {
+  const theme = useTheme();
   return (
     <Pressable
       onPress={onPress}
@@ -89,7 +137,7 @@ function PhotoSlot({ label, uri, onPress }: { label: string; uri: string | null;
         aspectRatio: 0.7,
         borderRadius: radii.lg,
         borderWidth: 1,
-        borderColor: uri ? colors.borderNeon : colors.border,
+        borderColor: uri ? theme.borderNeon : colors.border,
         backgroundColor: uri ? 'transparent' : colors.bgSecondary,
         overflow: 'hidden',
         alignItems: 'center',
@@ -97,11 +145,22 @@ function PhotoSlot({ label, uri, onPress }: { label: string; uri: string | null;
       }}
     >
       {uri ? (
-        <Image source={{ uri }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+        <Image
+          source={{ uri }}
+          style={{ width: '100%', height: '100%' }}
+          resizeMode="cover"
+        />
       ) : (
         <>
           <Ionicons name="camera-outline" size={28} color={colors.textMuted} />
-          <Text style={{ marginTop: 6, color: colors.textMuted, fontFamily: fontFamilies.body700, fontSize: 11 }}>
+          <Text
+            style={{
+              marginTop: 6,
+              color: colors.textMuted,
+              fontFamily: fontFamilies.body700,
+              fontSize: 11,
+            }}
+          >
             {label}
           </Text>
         </>
