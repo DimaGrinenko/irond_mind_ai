@@ -16,6 +16,7 @@ import { ScreenHeader } from '../components/layout/ScreenHeader';
 import { api } from '../api/client';
 import { useAuthStore } from '../store/authStore';
 import { colors } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import { t, useLang } from '../i18n';
 
@@ -29,6 +30,7 @@ type Client = {
 
 export function CoachPanelScreen({ navigation }: any) {
   useLang();
+  const theme = useTheme();
   const online = useAuthStore((s) => s.online);
   const [loading, setLoading] = useState(true);
   const [clients, setClients] = useState<Client[]>([]);
@@ -126,7 +128,7 @@ export function CoachPanelScreen({ navigation }: any) {
                   {c.assignmentNotes ? (
                     <Text
                       style={{
-                        color: colors.purpleLight,
+                        color: theme.accentLight,
                         fontSize: 11,
                         marginTop: 4,
                       }}

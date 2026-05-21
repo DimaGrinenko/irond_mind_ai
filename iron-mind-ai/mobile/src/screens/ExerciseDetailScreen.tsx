@@ -18,6 +18,7 @@ import { Card } from '../components/common/Card';
 import { GradientButton } from '../components/common/GradientButton';
 import { ScreenHeader } from '../components/layout/ScreenHeader';
 import { colors, radii } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import { exercises } from '../data/exercises';
 import { localizedExercise } from '../data/exercises_en';
@@ -37,6 +38,7 @@ function youtubeId(url: string): string | null {
 
 export function ExerciseDetailScreen() {
   const lang = useLang();
+  const theme = useTheme();
   const route = useRoute<R>();
   const navigation = useNavigation<any>();
   const ex = useMemo(
@@ -83,7 +85,7 @@ export function ExerciseDetailScreen() {
               <Ionicons
                 name="open-outline"
                 size={14}
-                color={colors.purpleLight}
+                color={theme.accentLight}
               />
             </Pressable>
           ) : null
@@ -217,7 +219,7 @@ export function ExerciseDetailScreen() {
                           : 'rgba(255,255,255,0.04)',
                       shoulders:
                         ex.primary === 'Плечи'
-                          ? colors.purpleLight
+                          ? theme.accentLight
                           : 'rgba(255,255,255,0.04)',
                       arms:
                         ex.primary === 'Бицепс' || ex.primary === 'Трицепс'
@@ -309,7 +311,7 @@ export function ExerciseDetailScreen() {
                       height: 24,
                       borderRadius: 12,
                       borderWidth: 1,
-                      borderColor: colors.borderNeon,
+                      borderColor: theme.borderNeon,
                       backgroundColor: 'rgba(123,63,228,0.15)',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -317,7 +319,7 @@ export function ExerciseDetailScreen() {
                   >
                     <Text
                       style={{
-                        color: colors.purpleLight,
+                        color: theme.accentLight,
                         fontFamily: fontFamilies.body700,
                         fontSize: 11,
                       }}

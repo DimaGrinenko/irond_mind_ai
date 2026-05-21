@@ -18,6 +18,7 @@ import { Card } from '../components/common/Card';
 import { GradientButton } from '../components/common/GradientButton';
 import { ScreenHeader } from '../components/layout/ScreenHeader';
 import { colors } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import { api } from '../api/client';
 import { t, useLang } from '../i18n';
@@ -74,6 +75,7 @@ async function downloadCsv(filename: string, csv: string) {
 
 export function DataExportScreen() {
   useLang();
+  const theme = useTheme();
   const nav = useNavigation<any>();
   const [busy, setBusy] = useState<string | null>(null);
 
@@ -175,7 +177,7 @@ export function DataExportScreen() {
             label={t('dataExport.workouts')}
             sub={t('dataExport.workoutsSub')}
             icon="barbell-outline"
-            tint={colors.purpleLight}
+            tint={theme.accentLight}
             onPress={exportWorkouts}
             busy={busy === 'workouts'}
           />

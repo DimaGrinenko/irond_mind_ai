@@ -10,6 +10,7 @@ import { Card } from '../components/common/Card';
 import { GradientButton } from '../components/common/GradientButton';
 import { ScreenHeader } from '../components/layout/ScreenHeader';
 import { colors, neonGlow, neonTextShadow, radii } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import { t, useLang } from '../i18n';
 
@@ -92,6 +93,7 @@ function tiers(): TierDef[] {
 
 export function SubscriptionScreen() {
   useLang();
+  const theme = useTheme();
   const nav = useNavigation<any>();
   const [period, setPeriod] = useState<'month' | 'year'>('year');
 
@@ -138,7 +140,7 @@ export function SubscriptionScreen() {
                     fontFamily: fontFamilies.heading,
                     fontSize: 24,
                   },
-                  neonTextShadow(colors.purpleLight, 12),
+                  neonTextShadow(theme.accentLight, 12),
                 ]}
               >
                 {t('sub.heroTitle')}
@@ -160,14 +162,15 @@ export function SubscriptionScreen() {
         <View style={{ marginTop: 18, flexDirection: 'row', gap: 8 }}>
           <Pressable
             onPress={() => setPeriod('month')}
-            style={[periodBtnStyle, period === 'month' && periodBtnActive]}
+            style={[
+              periodBtnStyle,
+              period === 'month' && periodBtnActive(theme),
+            ]}
           >
             <Text
               style={{
                 color:
-                  period === 'month'
-                    ? colors.purpleLight
-                    : colors.textSecondary,
+                  period === 'month' ? theme.accentLight : colors.textSecondary,
                 fontFamily: fontFamilies.body700,
                 fontSize: 13,
               }}
@@ -179,14 +182,14 @@ export function SubscriptionScreen() {
             onPress={() => setPeriod('year')}
             style={[
               periodBtnStyle,
-              period === 'year' && periodBtnActive,
+              period === 'year' && periodBtnActive(theme),
               { position: 'relative' },
             ]}
           >
             <Text
               style={{
                 color:
-                  period === 'year' ? colors.purpleLight : colors.textSecondary,
+                  period === 'year' ? theme.accentLight : colors.textSecondary,
                 fontFamily: fontFamilies.body700,
                 fontSize: 13,
               }}
@@ -259,6 +262,7 @@ function TierCard({
   period: 'month' | 'year';
   onPress: () => void;
 }) {
+  const theme = useTheme();
   const price = period === 'month' ? tier.priceMonth : tier.priceYear;
   const sub = period === 'month' ? t('sub.perMonth') : t('sub.perYear');
   return (
@@ -268,9 +272,9 @@ function TierCard({
           borderRadius: radii.xl,
           overflow: 'hidden',
           borderWidth: 1,
-          borderColor: tier.highlight ? colors.borderNeon : colors.border,
+          borderColor: tier.highlight ? theme.borderNeon : colors.border,
         },
-        tier.highlight ? neonGlow(colors.purple, 0.35, 18, 6) : {},
+        tier.highlight ? neonGlow(theme.accent, 0.35, 18, 6) : {},
       ]}
     >
       <LinearGradient
@@ -290,7 +294,7 @@ function TierCard({
               paddingHorizontal: 10,
               paddingVertical: 4,
               borderRadius: 8,
-              backgroundColor: colors.purpleLight,
+              backgroundColor: theme.accentLight,
               marginBottom: 10,
             }}
           >
@@ -322,7 +326,7 @@ function TierCard({
                   fontFamily: fontFamilies.heading,
                   fontSize: 22,
                 },
-                tier.highlight ? neonTextShadow(colors.purpleLight, 12) : null,
+                tier.highlight ? neonTextShadow(theme.accentLight, 12) : null,
               ]}
             >
               {tier.name}
@@ -346,7 +350,7 @@ function TierCard({
                   fontFamily: fontFamilies.body700,
                   fontSize: 20,
                 },
-                tier.highlight ? neonTextShadow(colors.purpleLight, 10) : null,
+                tier.highlight ? neonTextShadow(theme.accentLight, 10) : null,
               ]}
             >
               {price}
@@ -438,7 +442,10 @@ const periodBtnStyle = {
   backgroundColor: colors.bgSecondary,
 } as const;
 
-const periodBtnActive = {
-  borderColor: colors.borderNeon,
-  backgroundColor: 'rgba(157,107,255,0.18)',
-} as const;
+const periodBtnActive = (theme: {
+  borderNeon: string;
+  accentSoft: string;
+}) => ({
+  borderColor: theme.borderNeon,
+  backgroundColor: theme.accentSoft,
+});

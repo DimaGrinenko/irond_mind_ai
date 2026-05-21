@@ -16,6 +16,7 @@ import { ScreenHeader } from '../components/layout/ScreenHeader';
 import { api } from '../api/client';
 import { useAuthStore } from '../store/authStore';
 import { colors, neonTextShadow } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import { t, useLang } from '../i18n';
 
@@ -29,6 +30,7 @@ type AdminUser = {
 
 export function AdminPanelScreen({ navigation }: any) {
   useLang();
+  const theme = useTheme();
   const online = useAuthStore((s) => s.online);
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -94,7 +96,7 @@ export function AdminPanelScreen({ navigation }: any) {
         )}
         {loading && online ? (
           <ActivityIndicator
-            color={colors.purpleLight}
+            color={theme.accentLight}
             style={{ marginTop: 24 }}
           />
         ) : null}
@@ -168,7 +170,7 @@ export function AdminPanelScreen({ navigation }: any) {
               style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}
             >
               <LinearGradient
-                colors={[colors.purple, colors.pink]}
+                colors={[theme.accent, colors.pink]}
                 style={{
                   width: 40,
                   height: 40,
@@ -226,7 +228,7 @@ export function AdminPanelScreen({ navigation }: any) {
                   <Ionicons
                     name="swap-horizontal"
                     size={22}
-                    color={colors.purpleLight}
+                    color={theme.accentLight}
                   />
                 </Pressable>
               )}

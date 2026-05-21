@@ -3,23 +3,36 @@
  * Реальный backend endpoint /programs/share + /programs/clone-by-code будет добавлен отдельно.
  */
 import React, { useState } from 'react';
-import { Alert, Pressable, ScrollView, Share, Text, TextInput, View } from 'react-native';
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  Share,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../components/common/Card';
 import { GradientButton } from '../components/common/GradientButton';
 import { ScreenHeader } from '../components/layout/ScreenHeader';
 import { colors, radii } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import { t, useLang } from '../i18n';
 
 function genCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  return Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+  return Array.from(
+    { length: 8 },
+    () => chars[Math.floor(Math.random() * chars.length)],
+  ).join('');
 }
 
 export function ShareProgramScreen() {
   useLang();
+  const theme = useTheme();
   const route = useRoute<any>();
   const nav = useNavigation<any>();
   const programId: string | undefined = route.params?.programId;
@@ -45,7 +58,13 @@ export function ShareProgramScreen() {
         {code ? (
           <View style={{ paddingHorizontal: 16, marginTop: 10 }}>
             <Card variant="secondary" style={{ padding: 16 }}>
-              <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, fontSize: 12 }}>
+              <Text
+                style={{
+                  color: colors.textSecondary,
+                  fontFamily: fontFamilies.body,
+                  fontSize: 12,
+                }}
+              >
                 {t('share.codeHint')}
               </Text>
               <Text
@@ -73,7 +92,13 @@ export function ShareProgramScreen() {
                     alignItems: 'center',
                   }}
                 >
-                  <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body700, fontSize: 12 }}>
+                  <Text
+                    style={{
+                      color: colors.textSecondary,
+                      fontFamily: fontFamilies.body700,
+                      fontSize: 12,
+                    }}
+                  >
                     {t('share.newCode')}
                   </Text>
                 </Pressable>
@@ -84,7 +109,7 @@ export function ShareProgramScreen() {
                     paddingVertical: 12,
                     borderRadius: 12,
                     borderWidth: 1,
-                    borderColor: colors.borderNeon,
+                    borderColor: theme.borderNeon,
                     backgroundColor: 'rgba(157,107,255,0.18)',
                     alignItems: 'center',
                     flexDirection: 'row',
@@ -92,8 +117,18 @@ export function ShareProgramScreen() {
                     gap: 6,
                   }}
                 >
-                  <Ionicons name="share-social" size={14} color={colors.purpleLight} />
-                  <Text style={{ color: colors.purpleLight, fontFamily: fontFamilies.body700, fontSize: 12 }}>
+                  <Ionicons
+                    name="share-social"
+                    size={14}
+                    color={theme.accentLight}
+                  />
+                  <Text
+                    style={{
+                      color: theme.accentLight,
+                      fontFamily: fontFamilies.body700,
+                      fontSize: 12,
+                    }}
+                  >
                     {t('share.shareBtn')}
                   </Text>
                 </Pressable>
@@ -104,10 +139,23 @@ export function ShareProgramScreen() {
 
         <View style={{ paddingHorizontal: 16, marginTop: 14 }}>
           <Card variant="secondary" style={{ padding: 16 }}>
-            <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 14 }}>
+            <Text
+              style={{
+                color: colors.text,
+                fontFamily: fontFamilies.body700,
+                fontSize: 14,
+              }}
+            >
               {t('share.applyTitle')}
             </Text>
-            <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11, marginTop: 4 }}>
+            <Text
+              style={{
+                color: colors.textMuted,
+                fontFamily: fontFamilies.body,
+                fontSize: 11,
+                marginTop: 4,
+              }}
+            >
               {t('share.applyHint')}
             </Text>
             <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
@@ -133,7 +181,10 @@ export function ShareProgramScreen() {
               />
               <Pressable
                 onPress={() =>
-                  Alert.alert(t('common.loading'), t('share.inProgress', { code: inputCode || '—' }))
+                  Alert.alert(
+                    t('common.loading'),
+                    t('share.inProgress', { code: inputCode || '—' }),
+                  )
                 }
                 style={{
                   paddingHorizontal: 16,
@@ -144,7 +195,13 @@ export function ShareProgramScreen() {
                   justifyContent: 'center',
                 }}
               >
-                <Text style={{ color: colors.cyan, fontFamily: fontFamilies.body700, fontSize: 12 }}>
+                <Text
+                  style={{
+                    color: colors.cyan,
+                    fontFamily: fontFamilies.body700,
+                    fontSize: 12,
+                  }}
+                >
                   {t('share.applyBtn')}
                 </Text>
               </Pressable>
@@ -154,7 +211,14 @@ export function ShareProgramScreen() {
 
         <View style={{ paddingHorizontal: 16, marginTop: 10 }}>
           <Card variant="secondary">
-            <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11, lineHeight: 16 }}>
+            <Text
+              style={{
+                color: colors.textMuted,
+                fontFamily: fontFamilies.body,
+                fontSize: 11,
+                lineHeight: 16,
+              }}
+            >
               {t('share.note')}
             </Text>
           </Card>

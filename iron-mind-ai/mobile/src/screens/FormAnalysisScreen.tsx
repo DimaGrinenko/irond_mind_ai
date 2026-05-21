@@ -4,7 +4,15 @@
  * Реальная Vision-интеграция планируется отдельно.
  */
 import React, { useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../components/common/Card';
@@ -14,11 +22,13 @@ import { ExercisePickerModal } from '../components/workout/ExercisePickerModal';
 import { api } from '../api/client';
 import { exercises as catalog } from '../data/exercises';
 import { colors, radii } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import { t, useLang } from '../i18n';
 
 export function FormAnalysisScreen() {
   useLang();
+  const theme = useTheme();
   const nav = useNavigation<any>();
   const [exerciseId, setExerciseId] = useState<string>('squat');
   const [description, setDescription] = useState('');
@@ -53,7 +63,14 @@ export function FormAnalysisScreen() {
       <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
         <View style={{ paddingHorizontal: 16, marginTop: 10 }}>
           <Card variant="secondary">
-            <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11, lineHeight: 16 }}>
+            <Text
+              style={{
+                color: colors.textMuted,
+                fontFamily: fontFamilies.body,
+                fontSize: 11,
+                lineHeight: 16,
+              }}
+            >
               {t('form.intro')}
             </Text>
           </Card>
@@ -66,19 +83,33 @@ export function FormAnalysisScreen() {
               padding: 12,
               borderRadius: 14,
               borderWidth: 1,
-              borderColor: colors.borderNeon,
+              borderColor: theme.borderNeon,
               backgroundColor: 'rgba(157,107,255,0.10)',
               flexDirection: 'row',
               alignItems: 'center',
               gap: 10,
             }}
           >
-            <Ionicons name="barbell" size={20} color={colors.purpleLight} />
+            <Ionicons name="barbell" size={20} color={theme.accentLight} />
             <View style={{ flex: 1 }}>
-              <Text style={{ color: colors.textMuted, fontSize: 10, fontFamily: fontFamilies.body500, letterSpacing: 1 }}>
+              <Text
+                style={{
+                  color: colors.textMuted,
+                  fontSize: 10,
+                  fontFamily: fontFamilies.body500,
+                  letterSpacing: 1,
+                }}
+              >
                 {t('form.exercise')}
               </Text>
-              <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 14, marginTop: 2 }}>
+              <Text
+                style={{
+                  color: colors.text,
+                  fontFamily: fontFamilies.body700,
+                  fontSize: 14,
+                  marginTop: 2,
+                }}
+              >
                 {meta?.name ?? exerciseId}
               </Text>
             </View>
@@ -87,7 +118,15 @@ export function FormAnalysisScreen() {
         </View>
 
         <View style={{ paddingHorizontal: 16, marginTop: 12 }}>
-          <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body500, fontSize: 10, letterSpacing: 1, marginBottom: 6 }}>
+          <Text
+            style={{
+              color: colors.textMuted,
+              fontFamily: fontFamilies.body500,
+              fontSize: 10,
+              letterSpacing: 1,
+              marginBottom: 6,
+            }}
+          >
             {t('form.descLabel')}
           </Text>
           <TextInput
@@ -116,7 +155,13 @@ export function FormAnalysisScreen() {
             title={loading ? t('form.analyzing') : t('form.btn')}
             onPress={ask}
             disabled={loading}
-            rightIcon={loading ? <ActivityIndicator color="#fff" size="small" /> : <Ionicons name="sparkles" size={18} color="#fff" />}
+            rightIcon={
+              loading ? (
+                <ActivityIndicator color="#fff" size="small" />
+              ) : (
+                <Ionicons name="sparkles" size={18} color="#fff" />
+              )
+            }
           />
         </View>
 
@@ -125,11 +170,24 @@ export function FormAnalysisScreen() {
             <Card variant="secondary" style={{ padding: 14 }}>
               <View style={{ flexDirection: 'row', gap: 8, marginBottom: 8 }}>
                 <Ionicons name="sparkles" size={16} color={colors.cyan} />
-                <Text style={{ color: colors.cyan, fontFamily: fontFamilies.body700, fontSize: 12 }}>
+                <Text
+                  style={{
+                    color: colors.cyan,
+                    fontFamily: fontFamilies.body700,
+                    fontSize: 12,
+                  }}
+                >
                   {t('form.aiHeader')}
                 </Text>
               </View>
-              <Text style={{ color: colors.text, fontFamily: fontFamilies.body, fontSize: 13, lineHeight: 20 }}>
+              <Text
+                style={{
+                  color: colors.text,
+                  fontFamily: fontFamilies.body,
+                  fontSize: 13,
+                  lineHeight: 20,
+                }}
+              >
                 {analysis}
               </Text>
             </Card>
