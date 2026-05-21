@@ -20,7 +20,8 @@ import Animated, {
   FadeInUp,
   FadeOut,
 } from 'react-native-reanimated';
-import { colors, gradients, radii, spacing } from '../theme/tokens';
+import { colors, radii, spacing } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import { GradientButton } from '../components/common/GradientButton';
 import { CyberAthlete } from '../components/anatomy/CyberAthlete';
@@ -531,6 +532,7 @@ function LoginModal({
 }
 
 function ProgressBar({ value, total }: { value: number; total: number }) {
+  const theme = useTheme();
   const pct = Math.max(0, Math.min(1, value / total));
   return (
     <View
@@ -547,7 +549,7 @@ function ProgressBar({ value, total }: { value: number; total: number }) {
         style={{ width: `${pct * 100}%`, height: '100%' }}
       >
         <LinearGradient
-          colors={gradients.PRIMARY as any}
+          colors={theme.gradientPrimary as any}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={{ flex: 1, borderRadius: 999 }}
@@ -664,6 +666,7 @@ function WelcomeStep({
   onLogin: () => void;
 }) {
   useLang(); // re-render on lang change
+  const theme = useTheme();
   return (
     <StepShell>
       <View style={{ alignItems: 'center', marginTop: 24 }}>
@@ -719,7 +722,7 @@ function WelcomeStep({
         <Pressable onPress={onLogin} hitSlop={10} style={{ marginTop: 8 }}>
           <Text
             style={{
-              color: colors.purpleLight,
+              color: theme.accentLight,
               fontFamily: fontFamilies.body700,
               fontSize: 13,
             }}
@@ -800,6 +803,7 @@ function GenderStep({
   onBack: () => void;
   onNext: () => void;
 }) {
+  const theme = useTheme();
   return (
     <StepShell>
       <HeadingSmall>{t('onb.step2of7')}</HeadingSmall>
@@ -836,7 +840,7 @@ function GenderStep({
                 style={{
                   borderRadius: radii.lg,
                   borderWidth: 1,
-                  borderColor: active ? colors.purpleLight : colors.border,
+                  borderColor: active ? theme.accentLight : colors.border,
                   paddingVertical: 18,
                   paddingHorizontal: 16,
                   flexDirection: 'row',
@@ -851,7 +855,7 @@ function GenderStep({
                     borderRadius: radii.md,
                     backgroundColor: 'rgba(21,21,31,0.85)',
                     borderWidth: 1,
-                    borderColor: active ? colors.purpleLight : colors.border,
+                    borderColor: active ? theme.accentLight : colors.border,
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}
@@ -859,7 +863,7 @@ function GenderStep({
                   <Ionicons
                     name={g.icon}
                     size={20}
-                    color={active ? colors.purpleLight : colors.text}
+                    color={active ? theme.accentLight : colors.text}
                   />
                 </View>
                 <Text
@@ -876,7 +880,7 @@ function GenderStep({
                   <Ionicons
                     name="checkmark-circle"
                     size={22}
-                    color={colors.purpleLight}
+                    color={theme.accentLight}
                   />
                 ) : null}
               </LinearGradient>
@@ -1036,6 +1040,7 @@ function GoalStep({
   onBack: () => void;
   onNext: () => void;
 }) {
+  const theme = useTheme();
   return (
     <StepShell>
       <HeadingSmall>{t('onb.step5of7')}</HeadingSmall>
@@ -1075,7 +1080,7 @@ function GoalStep({
                 style={{
                   borderRadius: radii.lg,
                   borderWidth: 1,
-                  borderColor: active ? colors.purpleLight : colors.border,
+                  borderColor: active ? theme.accentLight : colors.border,
                   padding: 14,
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -1091,13 +1096,13 @@ function GoalStep({
                     alignItems: 'center',
                     justifyContent: 'center',
                     borderWidth: 1,
-                    borderColor: active ? colors.purpleLight : colors.border,
+                    borderColor: active ? theme.accentLight : colors.border,
                   }}
                 >
                   <Ionicons
                     name={g.icon}
                     size={20}
-                    color={active ? colors.purpleLight : colors.text}
+                    color={active ? theme.accentLight : colors.text}
                   />
                 </View>
                 <View style={{ flex: 1 }}>
@@ -1125,7 +1130,7 @@ function GoalStep({
                   <Ionicons
                     name="checkmark-circle"
                     size={22}
-                    color={colors.purpleLight}
+                    color={theme.accentLight}
                   />
                 ) : null}
               </LinearGradient>
@@ -1150,6 +1155,7 @@ function LevelStep({
   onBack: () => void;
   onNext: () => void;
 }) {
+  const theme = useTheme();
   return (
     <StepShell>
       <HeadingSmall>{t('onb.step6of7')}</HeadingSmall>
@@ -1186,7 +1192,7 @@ function LevelStep({
                 style={{
                   borderRadius: radii.lg,
                   borderWidth: 1,
-                  borderColor: active ? colors.purpleLight : colors.border,
+                  borderColor: active ? theme.accentLight : colors.border,
                   padding: 16,
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -1217,7 +1223,7 @@ function LevelStep({
                   <Ionicons
                     name="checkmark-circle"
                     size={22}
-                    color={colors.purpleLight}
+                    color={theme.accentLight}
                   />
                 ) : null}
               </LinearGradient>
@@ -1446,6 +1452,7 @@ function ActivityStep({
   onBack: () => void;
   onNext: () => void;
 }) {
+  const theme = useTheme();
   return (
     <StepShell>
       <HeadingSmall>{t('onb.step4of7')}</HeadingSmall>
@@ -1482,7 +1489,7 @@ function ActivityStep({
                 style={{
                   borderRadius: radii.lg,
                   borderWidth: 1,
-                  borderColor: active ? colors.purpleLight : colors.border,
+                  borderColor: active ? theme.accentLight : colors.border,
                   padding: 14,
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -1498,13 +1505,13 @@ function ActivityStep({
                     alignItems: 'center',
                     justifyContent: 'center',
                     borderWidth: 1,
-                    borderColor: active ? colors.purpleLight : colors.border,
+                    borderColor: active ? theme.accentLight : colors.border,
                   }}
                 >
                   <Ionicons
                     name={a.icon}
                     size={20}
-                    color={active ? colors.purpleLight : colors.text}
+                    color={active ? theme.accentLight : colors.text}
                   />
                 </View>
                 <View style={{ flex: 1 }}>
@@ -1532,7 +1539,7 @@ function ActivityStep({
                   <Ionicons
                     name="checkmark-circle"
                     size={22}
-                    color={colors.purpleLight}
+                    color={theme.accentLight}
                   />
                 ) : null}
               </LinearGradient>
@@ -1553,6 +1560,7 @@ function SummaryStep({
   onBack: () => void;
   onNext: () => void;
 }) {
+  const theme = useTheme();
   const u = useUserStore();
   const [plan, setPlan] = useState<OnboardingPlan | null>(null);
   const [loading, setLoading] = useState(true);
@@ -1595,7 +1603,7 @@ function SummaryStep({
 
       {loading ? (
         <View style={{ marginTop: 40, alignItems: 'center' }}>
-          <ActivityIndicator color={colors.purpleLight} />
+          <ActivityIndicator color={theme.accentLight} />
         </View>
       ) : error ? (
         <View style={{ marginTop: 40 }}>
@@ -1664,6 +1672,7 @@ function SummaryCard({
   icon: keyof typeof Ionicons.glyphMap;
   small?: boolean;
 }) {
+  const theme = useTheme();
   return (
     <LinearGradient
       colors={['rgba(123,63,228,0.18)', 'rgba(255,63,203,0.08)']}
@@ -1681,7 +1690,7 @@ function SummaryCard({
         <Ionicons
           name={icon}
           size={small ? 16 : 20}
-          color={colors.purpleLight}
+          color={theme.accentLight}
         />
         <Text
           style={{
@@ -1775,6 +1784,7 @@ function calculatePlanLocally(p: OnboardingPayload): OnboardingPlan {
 }
 
 function FinishStep({ onStart }: { onStart: () => void }) {
+  const theme = useTheme();
   return (
     <StepShell>
       <View style={{ alignItems: 'center', marginTop: 12 }}>
@@ -1795,7 +1805,7 @@ function FinishStep({ onStart }: { onStart: () => void }) {
               justifyContent: 'center',
             }}
           >
-            <Ionicons name="sparkles" size={64} color={colors.purpleLight} />
+            <Ionicons name="sparkles" size={64} color={theme.accentLight} />
           </LinearGradient>
         </Animated.View>
       </View>
