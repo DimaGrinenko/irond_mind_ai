@@ -19,18 +19,29 @@ import { ScreenHeader } from '../components/layout/ScreenHeader';
 import { colors, radii } from '../theme/tokens';
 import { fontFamilies } from '../theme/typography';
 import { exercises as exerciseCatalog } from '../data/exercises';
+import { localizedExercise } from '../data/exercises_en';
 import {
   api,
   type ProgramDayWithExercises,
   type ProgramExercise,
   type ProgramFull,
 } from '../api/client';
+import { t, useLang, muscleLabel, difficultyLabel } from '../i18n';
 
 type R = RouteProp<RootStackParamList, 'ProgramEdit'>;
 
-const WEEK_LABELS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+const weekLabels = () => [
+  t('wd.mon'),
+  t('wd.tue'),
+  t('wd.wed'),
+  t('wd.thu'),
+  t('wd.fri'),
+  t('wd.sat'),
+  t('wd.sun'),
+];
 
 export function ProgramEditScreen() {
+  useLang();
   const route = useRoute<R>();
   const navigation = useNavigation<any>();
 
@@ -45,7 +56,9 @@ export function ProgramEditScreen() {
 
   const [addDayOpen, setAddDayOpen] = useState(false);
   const [pickExerciseFor, setPickExerciseFor] = useState<string | null>(null);
-  const [editExercise, setEditExercise] = useState<ProgramExercise | null>(null);
+  const [editExercise, setEditExercise] = useState<ProgramExercise | null>(
+    null,
+  );
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -56,7 +69,7 @@ export function ProgramEditScreen() {
       setSubtitleDraft(p.subtitle);
       setDescriptionDraft(p.description);
     } catch (e) {
-      Alert.alert('Не удалось загрузить', (e as Error).message);
+      Alert.alert(t('progEdit.loadFailed'), (e as Error).message);
     } finally {
       setLoading(false);
     }
@@ -75,10 +88,12 @@ export function ProgramEditScreen() {
         subtitle: subtitleDraft.trim(),
         description: descriptionDraft.trim(),
       });
-      setProgram((prev) => (prev ? { ...prev, ...updated, days: prev.days } : prev));
+      setProgram((prev) =>
+        prev ? { ...prev, ...updated, days: prev.days } : prev,
+      );
       setEditTitle(false);
     } catch (e) {
-      Alert.alert('Не получилось сохранить', (e as Error).message);
+      Alert.alert(t('progEdit.saveFailed'), (e as Error).message);
     } finally {
       setBusy(false);
     }
@@ -93,17 +108,25 @@ export function ProgramEditScreen() {
         weekday: weekday ?? undefined,
       });
       setProgram((prev) =>
-        prev ? { ...prev, days: [...prev.days, day].sort((a, b) => a.order - b.order) } : prev,
+        prev
+          ? {
+              ...prev,
+              days: [...prev.days, day].sort((a, b) => a.order - b.order),
+            }
+          : prev,
       );
       setAddDayOpen(false);
     } catch (e) {
-      Alert.alert('Ошибка', (e as Error).message);
+      Alert.alert(t('common.error'), (e as Error).message);
     } finally {
       setBusy(false);
     }
   };
 
-  const updateDay = async (dayId: string, patch: { title?: string; weekday?: number | null }) => {
+  const updateDay = async (
+    dayId: string,
+    patch: { title?: string; weekday?: number | null },
+  ) => {
     setBusy(true);
     try {
       const updated = await api.programs.updateDay(dayId, {
@@ -111,30 +134,37 @@ export function ProgramEditScreen() {
         weekday: patch.weekday ?? undefined,
       });
       setProgram((prev) =>
-        prev ? { ...prev, days: prev.days.map((d) => (d.id === dayId ? updated : d)) } : prev,
+        prev
+          ? {
+              ...prev,
+              days: prev.days.map((d) => (d.id === dayId ? updated : d)),
+            }
+          : prev,
       );
     } catch (e) {
-      Alert.alert('Ошибка', (e as Error).message);
+      Alert.alert(t('common.error'), (e as Error).message);
     } finally {
       setBusy(false);
     }
   };
 
   const removeDay = (dayId: string) => {
-    Alert.alert('Удалить день?', 'Вместе со всеми упражнениями.', [
-      { text: 'Отмена', style: 'cancel' },
+    Alert.alert(t('progEdit.deleteDayConfirm'), t('progEdit.deleteDayMsg'), [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Удалить',
+        text: t('common.delete'),
         style: 'destructive',
         onPress: async () => {
           setBusy(true);
           try {
             await api.programs.removeDay(dayId);
             setProgram((prev) =>
-              prev ? { ...prev, days: prev.days.filter((d) => d.id !== dayId) } : prev,
+              prev
+                ? { ...prev, days: prev.days.filter((d) => d.id !== dayId) }
+                : prev,
             );
           } catch (e) {
-            Alert.alert('Ошибка', (e as Error).message);
+            Alert.alert(t('common.error'), (e as Error).message);
           } finally {
             setBusy(false);
           }
@@ -158,14 +188,16 @@ export function ProgramEditScreen() {
           ? {
               ...prev,
               days: prev.days.map((d) =>
-                d.id === dayId ? { ...d, exercises: [...d.exercises, created] } : d,
+                d.id === dayId
+                  ? { ...d, exercises: [...d.exercises, created] }
+                  : d,
               ),
             }
           : prev,
       );
       setPickExerciseFor(null);
     } catch (e) {
-      Alert.alert('Ошибка', (e as Error).message);
+      Alert.alert(t('common.error'), (e as Error).message);
     } finally {
       setBusy(false);
     }
@@ -188,7 +220,12 @@ export function ProgramEditScreen() {
               ...prev,
               days: prev.days.map((d) =>
                 d.id === updated.dayId
-                  ? { ...d, exercises: d.exercises.map((x) => (x.id === updated.id ? updated : x)) }
+                  ? {
+                      ...d,
+                      exercises: d.exercises.map((x) =>
+                        x.id === updated.id ? updated : x,
+                      ),
+                    }
                   : d,
               ),
             }
@@ -196,17 +233,17 @@ export function ProgramEditScreen() {
       );
       setEditExercise(null);
     } catch (e) {
-      Alert.alert('Не сохранилось', (e as Error).message);
+      Alert.alert(t('progEdit.notSaved'), (e as Error).message);
     } finally {
       setBusy(false);
     }
   };
 
   const removeExercise = (exId: string, dayId: string) => {
-    Alert.alert('Удалить упражнение?', undefined, [
-      { text: 'Отмена', style: 'cancel' },
+    Alert.alert(t('progEdit.deleteExerciseConfirm'), undefined, [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Удалить',
+        text: t('common.delete'),
         style: 'destructive',
         onPress: async () => {
           setBusy(true);
@@ -218,14 +255,17 @@ export function ProgramEditScreen() {
                     ...prev,
                     days: prev.days.map((d) =>
                       d.id === dayId
-                        ? { ...d, exercises: d.exercises.filter((x) => x.id !== exId) }
+                        ? {
+                            ...d,
+                            exercises: d.exercises.filter((x) => x.id !== exId),
+                          }
                         : d,
                     ),
                   }
                 : prev,
             );
           } catch (e) {
-            Alert.alert('Ошибка', (e as Error).message);
+            Alert.alert(t('common.error'), (e as Error).message);
           } finally {
             setBusy(false);
           }
@@ -237,8 +277,13 @@ export function ProgramEditScreen() {
   if (loading || !program) {
     return (
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
-        <ScreenHeader title="Редактор" onBack={() => navigation.goBack()} />
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <ScreenHeader
+          title={t('pe.editorShort')}
+          onBack={() => navigation.goBack()}
+        />
+        <View
+          style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+        >
           <ActivityIndicator color={colors.purpleLight} />
         </View>
       </View>
@@ -248,21 +293,20 @@ export function ProgramEditScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
       <ScreenHeader
-        title="Редактор программы"
+        title={t('pe.title')}
         onBack={() => navigation.goBack()}
-        right={
-          busy ? (
-            <ActivityIndicator color={colors.purpleLight} />
-          ) : null
-        }
+        right={busy ? <ActivityIndicator color={colors.purpleLight} /> : null}
       />
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 140 }} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 140 }}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={{ paddingHorizontal: 16, marginTop: 12 }}>
           <Card style={{ padding: 16 }}>
             {editTitle ? (
               <View style={{ gap: 10 }}>
-                <Field label="Название">
+                <Field label={t('common.name')}>
                   <TextInput
                     value={titleDraft}
                     onChangeText={setTitleDraft}
@@ -270,7 +314,7 @@ export function ProgramEditScreen() {
                     maxLength={80}
                   />
                 </Field>
-                <Field label="Подзаголовок">
+                <Field label={t('pe.subtitle')}>
                   <TextInput
                     value={subtitleDraft}
                     onChangeText={setSubtitleDraft}
@@ -278,11 +322,14 @@ export function ProgramEditScreen() {
                     maxLength={140}
                   />
                 </Field>
-                <Field label="Описание">
+                <Field label={t('pe.description')}>
                   <TextInput
                     value={descriptionDraft}
                     onChangeText={setDescriptionDraft}
-                    style={[inputStyle, { height: 96, paddingTop: 12, textAlignVertical: 'top' }]}
+                    style={[
+                      inputStyle,
+                      { height: 96, paddingTop: 12, textAlignVertical: 'top' },
+                    ]}
                     multiline
                     maxLength={500}
                   />
@@ -304,12 +351,21 @@ export function ProgramEditScreen() {
                       borderColor: colors.border,
                     }}
                   >
-                    <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body600 }}>
-                      Отмена
+                    <Text
+                      style={{
+                        color: colors.textSecondary,
+                        fontFamily: fontFamilies.body600,
+                      }}
+                    >
+                      {t('common.cancel')}
                     </Text>
                   </Pressable>
                   <View style={{ flex: 1 }}>
-                    <GradientButton title="Сохранить" onPress={saveMeta} disabled={busy} />
+                    <GradientButton
+                      title={t('common.save')}
+                      onPress={saveMeta}
+                      disabled={busy}
+                    />
                   </View>
                 </View>
               </View>
@@ -317,11 +373,24 @@ export function ProgramEditScreen() {
               <View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <View style={{ flex: 1 }}>
-                    <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 22 }}>
+                    <Text
+                      style={{
+                        color: colors.text,
+                        fontFamily: fontFamilies.body700,
+                        fontSize: 22,
+                      }}
+                    >
                       {program.title}
                     </Text>
                     {program.subtitle ? (
-                      <Text style={{ marginTop: 4, color: colors.textSecondary, fontFamily: fontFamilies.body, fontSize: 13 }}>
+                      <Text
+                        style={{
+                          marginTop: 4,
+                          color: colors.textSecondary,
+                          fontFamily: fontFamilies.body,
+                          fontSize: 13,
+                        }}
+                      >
                         {program.subtitle}
                       </Text>
                     ) : null}
@@ -338,11 +407,22 @@ export function ProgramEditScreen() {
                       justifyContent: 'center',
                     }}
                   >
-                    <Ionicons name="create-outline" size={18} color={colors.purpleLight} />
+                    <Ionicons
+                      name="create-outline"
+                      size={18}
+                      color={colors.purpleLight}
+                    />
                   </Pressable>
                 </View>
                 {program.description ? (
-                  <Text style={{ marginTop: 10, color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 12 }}>
+                  <Text
+                    style={{
+                      marginTop: 10,
+                      color: colors.textMuted,
+                      fontFamily: fontFamilies.body,
+                      fontSize: 12,
+                    }}
+                  >
                     {program.description}
                   </Text>
                 ) : null}
@@ -351,9 +431,24 @@ export function ProgramEditScreen() {
           </Card>
         </View>
 
-        <View style={{ paddingHorizontal: 16, marginTop: 18, flexDirection: 'row', alignItems: 'center' }}>
-          <Text style={{ flex: 1, color: colors.textSecondary, fontFamily: fontFamilies.body600, fontSize: 12, letterSpacing: 1 }}>
-            ДНИ ({program.days.length})
+        <View
+          style={{
+            paddingHorizontal: 16,
+            marginTop: 18,
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}
+        >
+          <Text
+            style={{
+              flex: 1,
+              color: colors.textSecondary,
+              fontFamily: fontFamilies.body600,
+              fontSize: 12,
+              letterSpacing: 1,
+            }}
+          >
+            {t('pe.daysCount', { n: program.days.length })}
           </Text>
           <Pressable
             onPress={() => setAddDayOpen(true)}
@@ -369,8 +464,15 @@ export function ProgramEditScreen() {
             }}
           >
             <Ionicons name="add" size={16} color={colors.purpleLight} />
-            <Text style={{ marginLeft: 4, color: colors.purpleLight, fontFamily: fontFamilies.body700, fontSize: 12 }}>
-              День
+            <Text
+              style={{
+                marginLeft: 4,
+                color: colors.purpleLight,
+                fontFamily: fontFamilies.body700,
+                fontSize: 12,
+              }}
+            >
+              {t('plan.day')}
             </Text>
           </Pressable>
         </View>
@@ -390,15 +492,26 @@ export function ProgramEditScreen() {
           ))}
           {program.days.length === 0 ? (
             <Card>
-              <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, textAlign: 'center' }}>
-                Пока ни одного дня. Добавь первый ↑
+              <Text
+                style={{
+                  color: colors.textSecondary,
+                  fontFamily: fontFamilies.body,
+                  textAlign: 'center',
+                }}
+              >
+                {t('pe.noDays')}
               </Text>
             </Card>
           ) : null}
         </View>
       </ScrollView>
 
-      <AddDayModal visible={addDayOpen} onClose={() => setAddDayOpen(false)} onAdd={addDay} busy={busy} />
+      <AddDayModal
+        visible={addDayOpen}
+        onClose={() => setAddDayOpen(false)}
+        onAdd={addDay}
+        busy={busy}
+      />
 
       <PickExerciseModal
         visible={pickExerciseFor !== null}
@@ -442,7 +555,9 @@ function DayCard({
 
   return (
     <Card style={{ padding: 14 }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+      <View
+        style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}
+      >
         <View style={{ flex: 1 }}>
           {editing ? (
             <TextInput
@@ -450,7 +565,8 @@ function DayCard({
               onChangeText={setDraft}
               onBlur={() => {
                 setEditing(false);
-                if (draft.trim() && draft.trim() !== day.title) onRename(draft.trim());
+                if (draft.trim() && draft.trim() !== day.title)
+                  onRename(draft.trim());
                 else setDraft(day.title);
               }}
               autoFocus
@@ -459,30 +575,57 @@ function DayCard({
             />
           ) : (
             <Pressable onPress={() => setEditing(true)}>
-              <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 16 }}>
+              <Text
+                style={{
+                  color: colors.text,
+                  fontFamily: fontFamilies.body700,
+                  fontSize: 16,
+                }}
+              >
                 {day.title}
               </Text>
             </Pressable>
           )}
         </View>
-        <Pressable onPress={onRemove} hitSlop={10} style={{ paddingHorizontal: 6 }}>
+        <Pressable
+          onPress={onRemove}
+          hitSlop={10}
+          style={{ paddingHorizontal: 6 }}
+        >
           <Ionicons name="trash-outline" size={18} color={colors.pink} />
         </Pressable>
       </View>
 
-      <View style={{ flexDirection: 'row', gap: 6, marginBottom: 12, flexWrap: 'wrap' }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          gap: 6,
+          marginBottom: 12,
+          flexWrap: 'wrap',
+        }}
+      >
         <Pressable
           onPress={() => onWeekday(null)}
           style={[
             chipStyle,
-            day.weekday === null && { borderColor: colors.borderNeon, backgroundColor: 'rgba(157,107,255,0.18)' },
+            day.weekday === null && {
+              borderColor: colors.borderNeon,
+              backgroundColor: 'rgba(157,107,255,0.18)',
+            },
           ]}
         >
-          <Text style={{ color: day.weekday === null ? colors.purpleLight : colors.textMuted, fontFamily: fontFamilies.body600, fontSize: 11 }}>
+          <Text
+            style={{
+              color:
+                day.weekday === null ? colors.purpleLight : colors.textMuted,
+              fontFamily: fontFamilies.body600,
+              fontSize: 11,
+            }}
+          >
             —
           </Text>
         </Pressable>
-        {WEEK_LABELS.map((l, i) => {
+        {weekLabels().map((l, i) => {
           const active = day.weekday === i;
           return (
             <Pressable
@@ -490,7 +633,10 @@ function DayCard({
               onPress={() => onWeekday(i)}
               style={[
                 chipStyle,
-                active && { borderColor: colors.borderNeon, backgroundColor: 'rgba(157,107,255,0.18)' },
+                active && {
+                  borderColor: colors.borderNeon,
+                  backgroundColor: 'rgba(157,107,255,0.18)',
+                },
               ]}
             >
               <Text
@@ -521,14 +667,32 @@ function DayCard({
             }}
           >
             <Pressable style={{ flex: 1 }} onPress={() => onEditExercise(e)}>
-              <Text style={{ color: colors.text, fontFamily: fontFamilies.body600, fontSize: 13 }}>
+              <Text
+                style={{
+                  color: colors.text,
+                  fontFamily: fontFamilies.body600,
+                  fontSize: 13,
+                }}
+              >
                 {e.exerciseName}
               </Text>
-              <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11, marginTop: 2 }}>
-                {e.sets}×{e.repsMin}-{e.repsMax} · отдых {e.restSeconds}с
+              <Text
+                style={{
+                  color: colors.textMuted,
+                  fontFamily: fontFamilies.body,
+                  fontSize: 11,
+                  marginTop: 2,
+                }}
+              >
+                {e.sets}×{e.repsMin}-{e.repsMax} ·{' '}
+                {t('pe.restLine', { s: e.restSeconds })}
               </Text>
             </Pressable>
-            <Pressable onPress={() => onRemoveExercise(e.id)} hitSlop={10} style={{ paddingHorizontal: 6 }}>
+            <Pressable
+              onPress={() => onRemoveExercise(e.id)}
+              hitSlop={10}
+              style={{ paddingHorizontal: 6 }}
+            >
               <Ionicons name="close" size={16} color={colors.textMuted} />
             </Pressable>
           </View>
@@ -546,8 +710,14 @@ function DayCard({
             borderColor: colors.border,
           }}
         >
-          <Text style={{ color: colors.purpleLight, fontFamily: fontFamilies.body600, fontSize: 12 }}>
-            + Добавить упражнение
+          <Text
+            style={{
+              color: colors.purpleLight,
+              fontFamily: fontFamilies.body600,
+              fontSize: 12,
+            }}
+          >
+            {t('pe.addExercise')}
           </Text>
         </Pressable>
       </View>
@@ -577,8 +747,19 @@ function AddDayModal({
   }, [visible]);
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'flex-end' }}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+    >
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: 'rgba(0,0,0,0.7)',
+          justifyContent: 'flex-end',
+        }}
+      >
         <View
           style={{
             backgroundColor: colors.bg,
@@ -592,37 +773,53 @@ function AddDayModal({
           }}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ flex: 1, color: colors.text, fontFamily: fontFamilies.heading, fontSize: 20 }}>
-              Новый день
+            <Text
+              style={{
+                flex: 1,
+                color: colors.text,
+                fontFamily: fontFamilies.heading,
+                fontSize: 20,
+              }}
+            >
+              {t('pe.newDay')}
             </Text>
             <Pressable onPress={onClose} hitSlop={12}>
               <Ionicons name="close" size={22} color={colors.textSecondary} />
             </Pressable>
           </View>
-          <Field label="Название">
+          <Field label={t('common.name')}>
             <TextInput
               value={title}
               onChangeText={setTitle}
-              placeholder="Например: Грудь+трицепс"
+              placeholder={t('pe.dayNamePh')}
               placeholderTextColor={colors.textMuted}
               style={inputStyle}
               maxLength={60}
             />
           </Field>
-          <Field label="День недели (опционально)">
+          <Field label={t('pe.weekdayOptional')}>
             <View style={{ flexDirection: 'row', gap: 6, flexWrap: 'wrap' }}>
               <Pressable
                 onPress={() => setWd(null)}
                 style={[
                   chipStyle,
-                  wd === null && { borderColor: colors.borderNeon, backgroundColor: 'rgba(157,107,255,0.18)' },
+                  wd === null && {
+                    borderColor: colors.borderNeon,
+                    backgroundColor: 'rgba(157,107,255,0.18)',
+                  },
                 ]}
               >
-                <Text style={{ color: wd === null ? colors.purpleLight : colors.textMuted, fontFamily: fontFamilies.body600, fontSize: 11 }}>
+                <Text
+                  style={{
+                    color: wd === null ? colors.purpleLight : colors.textMuted,
+                    fontFamily: fontFamilies.body600,
+                    fontSize: 11,
+                  }}
+                >
                   —
                 </Text>
               </Pressable>
-              {WEEK_LABELS.map((l, i) => {
+              {weekLabels().map((l, i) => {
                 const active = wd === i;
                 return (
                   <Pressable
@@ -630,12 +827,17 @@ function AddDayModal({
                     onPress={() => setWd(i)}
                     style={[
                       chipStyle,
-                      active && { borderColor: colors.borderNeon, backgroundColor: 'rgba(157,107,255,0.18)' },
+                      active && {
+                        borderColor: colors.borderNeon,
+                        backgroundColor: 'rgba(157,107,255,0.18)',
+                      },
                     ]}
                   >
                     <Text
                       style={{
-                        color: active ? colors.purpleLight : colors.textSecondary,
+                        color: active
+                          ? colors.purpleLight
+                          : colors.textSecondary,
                         fontFamily: fontFamilies.body600,
                         fontSize: 11,
                       }}
@@ -648,14 +850,14 @@ function AddDayModal({
             </View>
           </Field>
           <GradientButton
-            title="Добавить"
+            title={t('common.add')}
             onPress={() => {
-              const t = title.trim();
-              if (!t) {
-                Alert.alert('Укажи название');
+              const trimmed = title.trim();
+              if (!trimmed) {
+                Alert.alert(t('common.nameRequired'));
                 return;
               }
-              onAdd(t, wd);
+              onAdd(trimmed, wd);
             }}
             disabled={busy}
           />
@@ -674,6 +876,7 @@ function PickExerciseModal({
   onClose: () => void;
   onPick: (cat: { id: string; name: string }) => void;
 }) {
+  const lang = useLang();
   const [q, setQ] = useState('');
 
   useEffect(() => {
@@ -684,13 +887,25 @@ function PickExerciseModal({
     const t = q.trim().toLowerCase();
     if (!t) return exerciseCatalog;
     return exerciseCatalog.filter(
-      (e) => e.name.toLowerCase().includes(t) || e.primary.toLowerCase().includes(t),
+      (e) =>
+        e.name.toLowerCase().includes(t) || e.primary.toLowerCase().includes(t),
     );
   }, [q]);
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.75)', justifyContent: 'flex-end' }}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+    >
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: 'rgba(0,0,0,0.75)',
+          justifyContent: 'flex-end',
+        }}
+      >
         <View
           style={{
             backgroundColor: colors.bg,
@@ -705,8 +920,15 @@ function PickExerciseModal({
           }}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ flex: 1, color: colors.text, fontFamily: fontFamilies.heading, fontSize: 20 }}>
-              Выбрать упражнение
+            <Text
+              style={{
+                flex: 1,
+                color: colors.text,
+                fontFamily: fontFamilies.heading,
+                fontSize: 20,
+              }}
+            >
+              {t('pe.pickExercise')}
             </Text>
             <Pressable onPress={onClose} hitSlop={12}>
               <Ionicons name="close" size={22} color={colors.textSecondary} />
@@ -715,11 +937,14 @@ function PickExerciseModal({
           <TextInput
             value={q}
             onChangeText={setQ}
-            placeholder="Поиск…"
+            placeholder={t('common.search')}
             placeholderTextColor={colors.textMuted}
             style={inputStyle}
           />
-          <ScrollView contentContainerStyle={{ paddingBottom: 16 }} showsVerticalScrollIndicator={false}>
+          <ScrollView
+            contentContainerStyle={{ paddingBottom: 16 }}
+            showsVerticalScrollIndicator={false}
+          >
             {filtered.map((e) => (
               <Pressable
                 key={e.id}
@@ -733,21 +958,49 @@ function PickExerciseModal({
                   borderBottomColor: colors.border,
                 }}
               >
-                <Ionicons name="barbell-outline" size={18} color={colors.purpleLight} style={{ marginRight: 10 }} />
+                <Ionicons
+                  name="barbell-outline"
+                  size={18}
+                  color={colors.purpleLight}
+                  style={{ marginRight: 10 }}
+                />
                 <View style={{ flex: 1 }}>
-                  <Text style={{ color: colors.text, fontFamily: fontFamilies.body600, fontSize: 14 }}>
-                    {e.name}
+                  <Text
+                    style={{
+                      color: colors.text,
+                      fontFamily: fontFamilies.body600,
+                      fontSize: 14,
+                    }}
+                  >
+                    {localizedExercise(e, lang).name}
                   </Text>
-                  <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11, marginTop: 2 }}>
-                    {e.primary} · {e.difficulty}
+                  <Text
+                    style={{
+                      color: colors.textMuted,
+                      fontFamily: fontFamilies.body,
+                      fontSize: 11,
+                      marginTop: 2,
+                    }}
+                  >
+                    {muscleLabel(e.primary)} · {difficultyLabel(e.difficulty)}
                   </Text>
                 </View>
-                <Ionicons name="add-circle" size={20} color={colors.purpleLight} />
+                <Ionicons
+                  name="add-circle"
+                  size={20}
+                  color={colors.purpleLight}
+                />
               </Pressable>
             ))}
             {filtered.length === 0 ? (
-              <Text style={{ color: colors.textMuted, textAlign: 'center', paddingVertical: 24 }}>
-                Ничего не найдено
+              <Text
+                style={{
+                  color: colors.textMuted,
+                  textAlign: 'center',
+                  paddingVertical: 24,
+                }}
+              >
+                {t('pe.nothingFound')}
               </Text>
             ) : null}
           </ScrollView>
@@ -778,8 +1031,19 @@ function EditExerciseModal({
   if (!draft) return null;
 
   return (
-    <Modal visible={!!exercise} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.75)', justifyContent: 'flex-end' }}>
+    <Modal
+      visible={!!exercise}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+    >
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: 'rgba(0,0,0,0.75)',
+          justifyContent: 'flex-end',
+        }}
+      >
         <View
           style={{
             backgroundColor: colors.bg,
@@ -794,16 +1058,37 @@ function EditExerciseModal({
         >
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <View style={{ flex: 1 }}>
-              <Text style={{ color: colors.text, fontFamily: fontFamilies.heading, fontSize: 20 }}>
+              <Text
+                style={{
+                  color: colors.text,
+                  fontFamily: fontFamilies.heading,
+                  fontSize: 20,
+                }}
+              >
                 {draft.exerciseName}
               </Text>
               <Pressable
                 onPress={() => setPickReplace(true)}
-                style={{ marginTop: 4, flexDirection: 'row', alignItems: 'center', gap: 4 }}
+                style={{
+                  marginTop: 4,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 4,
+                }}
               >
-                <Ionicons name="swap-horizontal" size={12} color={colors.purpleLight} />
-                <Text style={{ color: colors.purpleLight, fontFamily: fontFamilies.body600, fontSize: 11 }}>
-                  Заменить упражнение
+                <Ionicons
+                  name="swap-horizontal"
+                  size={12}
+                  color={colors.purpleLight}
+                />
+                <Text
+                  style={{
+                    color: colors.purpleLight,
+                    fontFamily: fontFamilies.body600,
+                    fontSize: 11,
+                  }}
+                >
+                  {t('pe.replaceExercise')}
                 </Text>
               </Pressable>
             </View>
@@ -816,30 +1101,38 @@ function EditExerciseModal({
             visible={pickReplace}
             onClose={() => setPickReplace(false)}
             onPick={(cat) => {
-              setDraft({ ...draft, exerciseId: cat.id, exerciseName: cat.name });
+              setDraft({
+                ...draft,
+                exerciseId: cat.id,
+                exerciseName: cat.name,
+              });
               setPickReplace(false);
             }}
           />
 
           <View style={{ flexDirection: 'row', gap: 10 }}>
             <NumberField
-              label="Подходы"
+              label={t('pe.sets')}
               value={draft.sets}
               onChange={(v) => setDraft({ ...draft, sets: clamp(v, 1, 20) })}
             />
             <NumberField
-              label="Повт. от"
+              label={t('pe.repsFrom')}
               value={draft.repsMin}
-              onChange={(v) => setDraft({ ...draft, repsMin: clamp(v, 1, 100) })}
+              onChange={(v) =>
+                setDraft({ ...draft, repsMin: clamp(v, 1, 100) })
+              }
             />
             <NumberField
-              label="Повт. до"
+              label={t('pe.repsTo')}
               value={draft.repsMax}
-              onChange={(v) => setDraft({ ...draft, repsMax: clamp(v, 1, 100) })}
+              onChange={(v) =>
+                setDraft({ ...draft, repsMax: clamp(v, 1, 100) })
+              }
             />
           </View>
 
-          <Field label="Отдых, сек">
+          <Field label={t('pe.restLabel')}>
             <View style={{ flexDirection: 'row', gap: 8 }}>
               {[45, 60, 90, 120, 180].map((s) => {
                 const active = draft.restSeconds === s;
@@ -850,10 +1143,21 @@ function EditExerciseModal({
                     style={[
                       chipStyle,
                       { flex: 1, paddingVertical: 10 },
-                      active && { borderColor: colors.borderNeon, backgroundColor: 'rgba(157,107,255,0.18)' },
+                      active && {
+                        borderColor: colors.borderNeon,
+                        backgroundColor: 'rgba(157,107,255,0.18)',
+                      },
                     ]}
                   >
-                    <Text style={{ color: active ? colors.purpleLight : colors.textSecondary, fontFamily: fontFamilies.body600, fontSize: 12 }}>
+                    <Text
+                      style={{
+                        color: active
+                          ? colors.purpleLight
+                          : colors.textSecondary,
+                        fontFamily: fontFamilies.body600,
+                        fontSize: 12,
+                      }}
+                    >
                       {s}
                     </Text>
                   </Pressable>
@@ -862,13 +1166,16 @@ function EditExerciseModal({
             </View>
           </Field>
 
-          <Field label="Заметка (опционально)">
+          <Field label={t('pe.noteOptional')}>
             <TextInput
               value={draft.notes ?? ''}
-              onChangeText={(t) => setDraft({ ...draft, notes: t })}
-              placeholder="Напр.: пирамида, последняя — до отказа"
+              onChangeText={(v) => setDraft({ ...draft, notes: v })}
+              placeholder={t('pe.notePh')}
               placeholderTextColor={colors.textMuted}
-              style={[inputStyle, { height: 64, paddingTop: 12, textAlignVertical: 'top' }]}
+              style={[
+                inputStyle,
+                { height: 64, paddingTop: 12, textAlignVertical: 'top' },
+              ]}
               multiline
               maxLength={300}
             />
@@ -886,15 +1193,25 @@ function EditExerciseModal({
                 borderColor: colors.border,
               }}
             >
-              <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body600 }}>Отмена</Text>
+              <Text
+                style={{
+                  color: colors.textSecondary,
+                  fontFamily: fontFamilies.body600,
+                }}
+              >
+                {t('common.cancel')}
+              </Text>
             </Pressable>
             <View style={{ flex: 1 }}>
               <GradientButton
-                title="Сохранить"
+                title={t('common.save')}
                 disabled={busy}
                 onPress={() => {
                   if (draft.repsMin > draft.repsMax) {
-                    Alert.alert('Диапазон повторений', 'repsMin должен быть ≤ repsMax');
+                    Alert.alert(
+                      t('progEdit.repsRangeTitle'),
+                      t('progEdit.repsRangeMsg'),
+                    );
                     return;
                   }
                   onSave(draft);
@@ -919,7 +1236,15 @@ function NumberField({
 }) {
   return (
     <View style={{ flex: 1 }}>
-      <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body500, fontSize: 11, letterSpacing: 1, marginBottom: 6 }}>
+      <Text
+        style={{
+          color: colors.textMuted,
+          fontFamily: fontFamilies.body500,
+          fontSize: 11,
+          letterSpacing: 1,
+          marginBottom: 6,
+        }}
+      >
         {label.toUpperCase()}
       </Text>
       <TextInput
@@ -935,7 +1260,13 @@ function NumberField({
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <View>
       <Text

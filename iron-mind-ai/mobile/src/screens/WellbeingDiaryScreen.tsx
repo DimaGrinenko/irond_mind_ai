@@ -11,9 +11,24 @@ import { t, useLang } from '../i18n';
 
 function sliders() {
   return [
-    { key: 'sleep' as const, label: t('wellbeing.sleep'), emoji: '😴', icon: 'moon-outline' as keyof typeof Ionicons.glyphMap, color: '#9D6BFF' },
-    { key: 'energy' as const, label: t('wellbeing.energy'), emoji: '⚡', icon: 'flash-outline' as keyof typeof Ionicons.glyphMap, color: '#FFB547' },
-    { key: 'stress' as const, label: t('wellbeing.stress'), emoji: '😖', icon: 'pulse-outline' as keyof typeof Ionicons.glyphMap, color: '#FF4DD2' },
+    {
+      key: 'sleep' as const,
+      label: t('wellbeing.sleep'),
+      icon: 'moon-outline' as keyof typeof Ionicons.glyphMap,
+      color: '#9D6BFF',
+    },
+    {
+      key: 'energy' as const,
+      label: t('wellbeing.energy'),
+      icon: 'flash-outline' as keyof typeof Ionicons.glyphMap,
+      color: '#FFB547',
+    },
+    {
+      key: 'stress' as const,
+      label: t('wellbeing.stress'),
+      icon: 'pulse-outline' as keyof typeof Ionicons.glyphMap,
+      color: '#FF4DD2',
+    },
   ];
 }
 
@@ -41,7 +56,9 @@ export function WellbeingDiaryScreen() {
 
   const last7 = useMemo(() => {
     const c = cutoff7Iso();
-    return entries.filter((e) => e.date >= c).sort((a, b) => a.date.localeCompare(b.date));
+    return entries
+      .filter((e) => e.date >= c)
+      .sort((a, b) => a.date.localeCompare(b.date));
   }, [entries]);
 
   const avg = useMemo(() => {
@@ -67,10 +84,23 @@ export function WellbeingDiaryScreen() {
       <ScrollView contentContainerStyle={{ paddingBottom: 60 }}>
         <View style={{ paddingHorizontal: 16, marginTop: 10 }}>
           <Card variant="secondary">
-            <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 14 }}>
+            <Text
+              style={{
+                color: colors.text,
+                fontFamily: fontFamilies.body700,
+                fontSize: 14,
+              }}
+            >
               {t('wellbeing.howToday')}
             </Text>
-            <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11, marginTop: 2 }}>
+            <Text
+              style={{
+                color: colors.textMuted,
+                fontFamily: fontFamilies.body,
+                fontSize: 11,
+                marginTop: 2,
+              }}
+            >
               {t('wellbeing.hint')}
             </Text>
 
@@ -79,12 +109,32 @@ export function WellbeingDiaryScreen() {
                 const value = today?.[s.key] ?? 50;
                 return (
                   <View key={s.key}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
-                      <Text style={{ fontSize: 16 }}>{s.emoji}</Text>
-                      <Text style={{ flex: 1, marginLeft: 8, color: colors.text, fontFamily: fontFamilies.body700, fontSize: 13 }}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        marginBottom: 6,
+                      }}
+                    >
+                      <Ionicons name={s.icon} size={16} color={s.color} />
+                      <Text
+                        style={{
+                          flex: 1,
+                          marginLeft: 8,
+                          color: colors.text,
+                          fontFamily: fontFamilies.body700,
+                          fontSize: 13,
+                        }}
+                      >
                         {s.label}
                       </Text>
-                      <Text style={{ color: s.color, fontFamily: fontFamilies.body700, fontSize: 14 }}>
+                      <Text
+                        style={{
+                          color: s.color,
+                          fontFamily: fontFamilies.body700,
+                          fontSize: 14,
+                        }}
+                      >
                         {value}
                       </Text>
                     </View>
@@ -99,7 +149,9 @@ export function WellbeingDiaryScreen() {
                               flex: 1,
                               height: 36,
                               borderRadius: 8,
-                              backgroundColor: active ? s.color : 'rgba(255,255,255,0.05)',
+                              backgroundColor: active
+                                ? s.color
+                                : 'rgba(255,255,255,0.05)',
                               alignItems: 'center',
                               justifyContent: 'center',
                               borderWidth: 1,
@@ -129,7 +181,15 @@ export function WellbeingDiaryScreen() {
         {avg ? (
           <View style={{ paddingHorizontal: 16, marginTop: 14 }}>
             <Card variant="secondary">
-              <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body600, fontSize: 12, letterSpacing: 1, marginBottom: 8 }}>
+              <Text
+                style={{
+                  color: colors.textSecondary,
+                  fontFamily: fontFamilies.body600,
+                  fontSize: 12,
+                  letterSpacing: 1,
+                  marginBottom: 8,
+                }}
+              >
                 {t('wellbeing.weekAvg')}
               </Text>
               <View style={{ flexDirection: 'row', gap: 10 }}>
@@ -146,11 +206,24 @@ export function WellbeingDiaryScreen() {
                       alignItems: 'center',
                     }}
                   >
-                    <Text style={{ fontSize: 18 }}>{s.emoji}</Text>
-                    <Text style={{ marginTop: 4, color: s.color, fontFamily: fontFamilies.body700, fontSize: 18 }}>
+                    <Ionicons name={s.icon} size={18} color={s.color} />
+                    <Text
+                      style={{
+                        marginTop: 4,
+                        color: s.color,
+                        fontFamily: fontFamilies.body700,
+                        fontSize: 18,
+                      }}
+                    >
                       {avg[s.key]}
                     </Text>
-                    <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 10 }}>
+                    <Text
+                      style={{
+                        color: colors.textMuted,
+                        fontFamily: fontFamilies.body,
+                        fontSize: 10,
+                      }}
+                    >
                       {s.label}
                     </Text>
                   </View>
@@ -163,7 +236,15 @@ export function WellbeingDiaryScreen() {
         {last7.length > 0 ? (
           <View style={{ paddingHorizontal: 16, marginTop: 14 }}>
             <Card variant="secondary">
-              <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body600, fontSize: 12, letterSpacing: 1, marginBottom: 6 }}>
+              <Text
+                style={{
+                  color: colors.textSecondary,
+                  fontFamily: fontFamilies.body600,
+                  fontSize: 12,
+                  letterSpacing: 1,
+                  marginBottom: 6,
+                }}
+              >
                 {t('wellbeing.history')}
               </Text>
               {last7.map((e) => (
@@ -177,18 +258,72 @@ export function WellbeingDiaryScreen() {
                     alignItems: 'center',
                   }}
                 >
-                  <Text style={{ width: 90, color: colors.textSecondary, fontFamily: fontFamilies.body, fontSize: 12 }}>
+                  <Text
+                    style={{
+                      width: 90,
+                      color: colors.textSecondary,
+                      fontFamily: fontFamilies.body,
+                      fontSize: 12,
+                    }}
+                  >
                     {e.date}
                   </Text>
-                  <Text style={{ color: '#9D6BFF', fontFamily: fontFamilies.body700, fontSize: 12 }}>
-                    💤 {e.sleep}
-                  </Text>
-                  <Text style={{ marginLeft: 10, color: '#FFB547', fontFamily: fontFamilies.body700, fontSize: 12 }}>
-                    ⚡ {e.energy}
-                  </Text>
-                  <Text style={{ marginLeft: 10, color: '#FF4DD2', fontFamily: fontFamilies.body700, fontSize: 12 }}>
-                    😖 {e.stress}
-                  </Text>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 3,
+                    }}
+                  >
+                    <Ionicons name="moon-outline" size={12} color="#9D6BFF" />
+                    <Text
+                      style={{
+                        color: '#9D6BFF',
+                        fontFamily: fontFamilies.body700,
+                        fontSize: 12,
+                      }}
+                    >
+                      {e.sleep}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 3,
+                      marginLeft: 10,
+                    }}
+                  >
+                    <Ionicons name="flash-outline" size={12} color="#FFB547" />
+                    <Text
+                      style={{
+                        color: '#FFB547',
+                        fontFamily: fontFamilies.body700,
+                        fontSize: 12,
+                      }}
+                    >
+                      {e.energy}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 3,
+                      marginLeft: 10,
+                    }}
+                  >
+                    <Ionicons name="pulse-outline" size={12} color="#FF4DD2" />
+                    <Text
+                      style={{
+                        color: '#FF4DD2',
+                        fontFamily: fontFamilies.body700,
+                        fontSize: 12,
+                      }}
+                    >
+                      {e.stress}
+                    </Text>
+                  </View>
                 </View>
               ))}
             </Card>

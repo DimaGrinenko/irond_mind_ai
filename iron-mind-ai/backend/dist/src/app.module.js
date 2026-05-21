@@ -28,6 +28,8 @@ const coach_module_1 = require("./coach/coach.module");
 const onboarding_module_1 = require("./onboarding/onboarding.module");
 const achievements_module_1 = require("./achievements/achievements.module");
 const schedule_module_1 = require("./schedule/schedule.module");
+const economy_module_1 = require("./economy/economy.module");
+const cycle_module_1 = require("./cycle/cycle.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -54,6 +56,8 @@ exports.AppModule = AppModule = __decorate([
             onboarding_module_1.OnboardingModule,
             achievements_module_1.AchievementsModule,
             schedule_module_1.ScheduleModule,
+            economy_module_1.EconomyModule,
+            cycle_module_1.CycleModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [

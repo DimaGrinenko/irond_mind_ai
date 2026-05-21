@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { fontFamilies } from '../../theme/typography';
+import { t, useLang } from '../../i18n';
 
 type Props = {
   treeLevel: number;
@@ -27,6 +28,7 @@ export function ShareCard({
   total,
   userName,
 }: Props) {
+  useLang();
   return (
     <View
       style={{
@@ -37,7 +39,11 @@ export function ShareCard({
       }}
     >
       <LinearGradient
-        colors={['rgba(63,255,177,0.35)', 'rgba(15,174,101,0.05)', 'rgba(0,0,0,0)']}
+        colors={[
+          'rgba(63,255,177,0.35)',
+          'rgba(15,174,101,0.05)',
+          'rgba(0,0,0,0)',
+        ]}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 1 }}
         style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 900 }}
@@ -64,7 +70,7 @@ export function ShareCard({
               marginTop: 8,
             }}
           >
-            Дисциплина. Рост. Сила.
+            {t('sc.tagline')}
           </Text>
         </View>
       </View>
@@ -89,16 +95,37 @@ export function ShareCard({
             marginTop: 16,
           }}
         >
-          Уровень{'\n'}
+          {t('sc.level')}
+          {'\n'}
           <Text style={{ color: '#3FFFB1' }}>{treeLevel}</Text>
         </Text>
       </View>
 
       <View style={{ marginTop: 100, gap: 36 }}>
-        <Row icon="flame" label="Серия посещений" value={`${streakDays} дней подряд`} tint="#FFB347" />
-        <Row icon="trophy" label="Достижения" value={`${unlocked} / ${total} разблокированы`} tint="#3FFFB1" />
-        <Row icon="leaf" label="Листья" value={leaves.toLocaleString('ru-RU')} tint="#3FFFB1" />
-        <Row icon="flash" label="Всего опыта" value={`${totalXp.toLocaleString('ru-RU')} XP`} tint="#B14EFF" />
+        <Row
+          icon="flame"
+          label={t('sc.streakLabel')}
+          value={t('sc.streakValue', { n: streakDays })}
+          tint="#FFB347"
+        />
+        <Row
+          icon="trophy"
+          label={t('sc.achievements')}
+          value={t('sc.achievementsValue', { u: unlocked, t: total })}
+          tint="#3FFFB1"
+        />
+        <Row
+          icon="leaf"
+          label={t('sc.leaves')}
+          value={leaves.toLocaleString('ru-RU')}
+          tint="#3FFFB1"
+        />
+        <Row
+          icon="flash"
+          label={t('sc.totalXp')}
+          value={`${totalXp.toLocaleString('ru-RU')} XP`}
+          tint="#B14EFF"
+        />
       </View>
 
       <View
@@ -119,7 +146,7 @@ export function ShareCard({
             lineHeight: 36,
           }}
         >
-          Каждая тренировка — это ещё один кубик{'\n'}на твоём пути к лучшей версии себя.
+          {t('sc.footer')}
         </Text>
         <Text
           style={{

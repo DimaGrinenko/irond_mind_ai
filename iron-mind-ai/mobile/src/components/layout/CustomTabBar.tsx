@@ -4,8 +4,15 @@ import React from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, glowStrong, gradients, neonGlow, neonTextShadow } from '../../theme/tokens';
+import {
+  colors,
+  glowStrong,
+  gradients,
+  neonGlow,
+  neonTextShadow,
+} from '../../theme/tokens';
 import { fontFamilies } from '../../theme/typography';
+import { useTheme } from '../../theme/useTheme';
 import { t, useLang } from '../../i18n';
 
 const TAB_LABELS: Record<string, string> = {
@@ -15,14 +22,29 @@ const TAB_LABELS: Record<string, string> = {
   Analytics: 'tabs.analytics',
   Profile: 'tabs.profile',
 };
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 
-const active = colors.purpleLight;
 const inactive = 'rgba(160,157,190,0.7)';
 
-function TabIcon({ routeName, focused }: { routeName: string; focused: boolean }) {
+function TabIcon({
+  routeName,
+  focused,
+  activeColor,
+  glowColor,
+}: {
+  routeName: string;
+  focused: boolean;
+  activeColor: string;
+  glowColor: string;
+}) {
   const size = 22;
-  const color = focused ? active : inactive;
+  const color = focused ? activeColor : inactive;
   const name =
     routeName === 'Home'
       ? focused
@@ -49,13 +71,23 @@ function TabIcon({ routeName, focused }: { routeName: string; focused: boolean }
       name={name as any}
       size={size}
       color={color}
-      style={focused ? { textShadowColor: colors.purple, textShadowRadius: 14 } : undefined}
+      style={
+        focused
+          ? { textShadowColor: glowColor, textShadowRadius: 14 }
+          : undefined
+      }
     />
   );
 }
 
-export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+export function CustomTabBar({
+  state,
+  descriptors,
+  navigation,
+}: BottomTabBarProps) {
   useLang(); // re-render on lang change
+  const theme = useTheme();
+  const active = theme.accentLight;
   const insets = useSafeAreaInsets();
   const animate = Platform.OS !== 'web';
   const pulse = useSharedValue(0);
@@ -63,8 +95,16 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
 
   React.useEffect(() => {
     if (!animate) return;
-    pulse.value = withRepeat(withTiming(1, { duration: 1600, easing: Easing.inOut(Easing.quad) }), -1, true);
-    ringSpin.value = withRepeat(withTiming(1, { duration: 6000, easing: Easing.linear }), -1, false);
+    pulse.value = withRepeat(
+      withTiming(1, { duration: 1600, easing: Easing.inOut(Easing.quad) }),
+      -1,
+      true,
+    );
+    ringSpin.value = withRepeat(
+      withTiming(1, { duration: 6000, easing: Easing.linear }),
+      -1,
+      false,
+    );
   }, [animate, pulse, ringSpin]);
 
   const centerStyle = useAnimatedStyle(() => {
@@ -91,19 +131,41 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
         paddingTop: 12,
         backgroundColor: 'rgba(3,4,10,0.92)',
         borderTopWidth: 1,
-        borderTopColor: 'rgba(157,107,255,0.4)',
+        borderTopColor: theme.borderNeon,
       }}
     >
       {/* top neon line */}
-      <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, opacity: 0.85 }}>
+      <View
+        pointerEvents="none"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 2,
+          opacity: 0.85,
+        }}
+      >
         <LinearGradient
-          colors={['rgba(157,107,255,0)', 'rgba(157,107,255,1)', 'rgba(255,77,210,1)', 'rgba(0,229,255,1)', 'rgba(157,107,255,0)']}
+          colors={[
+            'rgba(157,107,255,0)',
+            'rgba(157,107,255,1)',
+            'rgba(255,77,210,1)',
+            'rgba(0,229,255,1)',
+            'rgba(157,107,255,0)',
+          ]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={{ flex: 1 }}
         />
       </View>
-      <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'flex-end',
+          justifyContent: 'space-between',
+        }}
+      >
         {state.routes.map((route, index) => {
           const isFocused = state.index === index;
           const { options } = descriptors[route.key];
@@ -113,21 +175,36 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
             : ((options.tabBarLabel ?? options.title ?? route.name) as string);
 
           const onPress = () => {
-            const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
-            if (!isFocused && !event.defaultPrevented) navigation.navigate(route.name);
+            const event = navigation.emit({
+              type: 'tabPress',
+              target: route.key,
+              canPreventDefault: true,
+            });
+            if (!isFocused && !event.defaultPrevented)
+              navigation.navigate(route.name);
           };
 
-          const onLongPress = () => navigation.emit({ type: 'tabLongPress', target: route.key });
+          const onLongPress = () =>
+            navigation.emit({ type: 'tabLongPress', target: route.key });
 
           const isCenter = route.name === 'AiTrainer';
           if (isCenter) {
             return (
               <View key={route.key} style={{ width: 78, alignItems: 'center' }}>
-                <Animated.View style={[centerStyle, { width: 70, height: 70, marginTop: -28 }]}>
+                <Animated.View
+                  style={[
+                    centerStyle,
+                    { width: 70, height: 70, marginTop: -28 },
+                  ]}
+                >
                   {/* spinning aurora ring */}
                   <Animated.View
                     pointerEvents="none"
-                    style={[StyleSheet.absoluteFillObject, { borderRadius: 35, overflow: 'hidden' }, ringStyle]}
+                    style={[
+                      StyleSheet.absoluteFillObject,
+                      { borderRadius: 35, overflow: 'hidden' },
+                      ringStyle,
+                    ]}
                   >
                     <LinearGradient
                       colors={gradients.AURORA as any}
@@ -161,8 +238,11 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
                     <Ionicons
                       name="sparkles"
                       size={28}
-                      color={colors.purpleLight}
-                      style={{ textShadowColor: colors.purple, textShadowRadius: 18 }}
+                      color={active}
+                      style={{
+                        textShadowColor: theme.glow,
+                        textShadowRadius: 18,
+                      }}
                     />
                   </Pressable>
                 </Animated.View>
@@ -175,7 +255,7 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
                       letterSpacing: 1.2,
                       color: isFocused ? colors.text : colors.textSecondary,
                     },
-                    isFocused ? neonTextShadow(colors.purple, 10) : null,
+                    isFocused ? neonTextShadow(theme.glow, 10) : null,
                   ]}
                 >
                   {t('tabs.ai')}
@@ -193,7 +273,12 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
               testID={options.tabBarButtonTestID}
               onPress={onPress}
               onLongPress={onLongPress}
-              style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 6 }}
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingVertical: 6,
+              }}
             >
               {/* active dot */}
               {isFocused ? (
@@ -204,12 +289,17 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
                     width: 28,
                     height: 3,
                     borderRadius: 2,
-                    backgroundColor: colors.purpleLight,
-                    ...neonGlow(colors.purple, 0.95, 12, 6),
+                    backgroundColor: active,
+                    ...neonGlow(theme.glow, 0.95, 12, 6),
                   }}
                 />
               ) : null}
-              <TabIcon routeName={route.name} focused={isFocused} />
+              <TabIcon
+                routeName={route.name}
+                focused={isFocused}
+                activeColor={active}
+                glowColor={theme.glow}
+              />
               <Text
                 style={[
                   {
@@ -218,7 +308,7 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
                     fontFamily: fontFamilies.body500,
                     color: isFocused ? colors.text : colors.textSecondary,
                   },
-                  isFocused ? neonTextShadow(colors.purple, 10) : null,
+                  isFocused ? neonTextShadow(theme.glow, 10) : null,
                 ]}
               >
                 {label}

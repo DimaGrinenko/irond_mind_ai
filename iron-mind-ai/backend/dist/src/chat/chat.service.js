@@ -14,6 +14,13 @@ const common_1 = require("@nestjs/common");
 const client_1 = require("@prisma/client");
 const prisma_service_1 = require("../prisma/prisma.service");
 const ai_provider_1 = require("../ai/ai-provider");
+const cycle_service_1 = require("../cycle/cycle.service");
+const CYCLE_ADVICE = {
+    menstrual: 'Сейчас менструальная фаза — энергия ниже. Лёгкие тренировки, мобилити, прогулки. Не урезай калории, добавь железо.',
+    follicular: 'Сейчас фолликулярная фаза — пик энергии и восстановления. Лучшее окно для силовых PR и интенсивности.',
+    ovulation: 'Сейчас овуляция — связки слабее, риск травм выше. Избегай максимальных весов, следи за техникой.',
+    luteal: 'Сейчас лютеиновая фаза — работоспособность снижается. Умеренная нагрузка, больше кардио, сложные углеводы и магний.',
+};
 const RULES = [
     { regex: /белк|протеин|protein/i, reply: 'Норма белка для силовых: 1.6–2.2 г/кг массы тела. При весе 80 кг — 130-175 г белка в день. Распределяй на 3-5 приёмов.' },
     { regex: /углевод|carb/i, reply: 'Углеводы — 3-6 г/кг в зависимости от объёма тренировок. На массе больше, на сушке меньше. Основные источники: овсянка, рис, картофель, гречка.' },
@@ -58,9 +65,11 @@ const SYSTEM_PROMPT = `Ты — Iron Mind, AI-тренер по силовым �
 let ChatService = class ChatService {
     prisma;
     ai;
-    constructor(prisma, ai) {
+    cycle;
+    constructor(prisma, ai, cycle) {
         this.prisma = prisma;
         this.ai = ai;
+        this.cycle = cycle;
     }
     list(userId, limit = 50) {
         return this.prisma.chatMessage.findMany({
@@ -80,14 +89,25 @@ let ChatService = class ChatService {
         return { userMsg, aiMsg };
     }
     async generateReply(userId, message) {
+        let phase = null;
+        try {
+            const c = await this.cycle.get(userId);
+            if (c.enabled)
+                phase = c.phase;
+        }
+        catch {
+        }
         if (this.ai.isEnabled()) {
             const history = await this.prisma.chatMessage.findMany({
                 where: { userId },
                 orderBy: { createdAt: 'asc' },
                 take: 20,
             });
+            const systemPrompt = phase
+                ? `${SYSTEM_PROMPT}\n\nКонтекст: пользователь отслеживает менструальный цикл, текущая фаза — ${phase}. ${CYCLE_ADVICE[phase]} Учитывай это при рекомендациях по нагрузке и питанию, но не зацикливайся на этом, если вопрос не связан.`
+                : SYSTEM_PROMPT;
             const result = await this.ai.complete({
-                systemPrompt: SYSTEM_PROMPT,
+                systemPrompt,
                 history: history.map((m) => ({
                     role: m.role === client_1.ChatRole.USER ? 'user' : 'assistant',
                     content: m.content,
@@ -97,9 +117,14 @@ let ChatService = class ChatService {
             if (result)
                 return result;
         }
-        return this.fallbackReply(message);
+        return this.fallbackReply(message, phase);
     }
-    fallbackReply(text) {
+    fallbackReply(text, phase) {
+        if (/цикл|месячн|менструал|овуляц|period|menstrual|cycle/i.test(text)) {
+            if (phase)
+                return CYCLE_ADVICE[phase];
+            return 'Если включишь трекинг цикла в профиле, я буду подстраивать советы по нагрузке и питанию под текущую фазу. В целом: фолликулярная фаза — пик силы, лютеиновая — умереннее, овуляция — осторожнее с максимальными весами.';
+        }
         for (const r of RULES)
             if (r.regex.test(text))
                 return r.reply;
@@ -110,6 +135,7 @@ exports.ChatService = ChatService;
 exports.ChatService = ChatService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        ai_provider_1.AiProvider])
+        ai_provider_1.AiProvider,
+        cycle_service_1.CycleService])
 ], ChatService);
 //# sourceMappingURL=chat.service.js.map

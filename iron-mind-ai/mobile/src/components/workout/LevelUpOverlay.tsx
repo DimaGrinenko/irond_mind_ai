@@ -12,8 +12,14 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { colors, gradients, neonGlow, neonTextShadow } from '../../theme/tokens';
+import {
+  colors,
+  gradients,
+  neonGlow,
+  neonTextShadow,
+} from '../../theme/tokens';
 import { fontFamilies } from '../../theme/typography';
+import { t, useLang } from '../../i18n';
 import type { AwardResult } from '../../store/progressStore';
 
 type Props = {
@@ -23,6 +29,7 @@ type Props = {
 
 /** Праздничный оверлей: «+XP» и «Новый уровень» после тренировки. */
 export function LevelUpOverlay({ result }: Props) {
+  useLang();
   const [shown, setShown] = React.useState<AwardResult | null>(null);
 
   React.useEffect(() => {
@@ -62,24 +69,50 @@ function Badge({ result }: { result: AwardResult }) {
   React.useEffect(() => {
     scale.value = withSpring(1, { damping: 11, stiffness: 160 });
     if (Platform.OS !== 'web') {
-      spin.value = withRepeat(withTiming(1, { duration: 6000, easing: Easing.linear }), -1, false);
+      spin.value = withRepeat(
+        withTiming(1, { duration: 6000, easing: Easing.linear }),
+        -1,
+        false,
+      );
     }
   }, [scale, spin]);
 
-  const popStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
-  const ringStyle = useAnimatedStyle(() => ({ transform: [{ rotate: `${spin.value * 360}deg` }] }));
+  const popStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+  const ringStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${spin.value * 360}deg` }],
+  }));
 
   return (
     <Animated.View style={[{ alignItems: 'center' }, popStyle]}>
-      <View style={{ width: 150, height: 150, alignItems: 'center', justifyContent: 'center' }}>
+      <View
+        style={{
+          width: 150,
+          height: 150,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
         {/* вращающееся неоновое кольцо */}
         <Animated.View
           style={[
-            { position: 'absolute', width: 150, height: 150, borderRadius: 75, overflow: 'hidden' },
+            {
+              position: 'absolute',
+              width: 150,
+              height: 150,
+              borderRadius: 75,
+              overflow: 'hidden',
+            },
             ringStyle,
           ]}
         >
-          <LinearGradient colors={gradients.AURORA} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flex: 1 }} />
+          <LinearGradient
+            colors={gradients.AURORA}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{ flex: 1 }}
+          />
         </Animated.View>
         <View
           style={{
@@ -98,11 +131,19 @@ function Badge({ result }: { result: AwardResult }) {
             name={result.leveledUp ? 'trophy' : 'flash'}
             size={40}
             color={result.leveledUp ? colors.amber : colors.cyan}
-            style={{ textShadowColor: result.leveledUp ? colors.amber : colors.cyan, textShadowRadius: 16 }}
+            style={{
+              textShadowColor: result.leveledUp ? colors.amber : colors.cyan,
+              textShadowRadius: 16,
+            }}
           />
           <Text
             style={[
-              { marginTop: 6, color: colors.text, fontFamily: fontFamilies.body700, fontSize: 20 },
+              {
+                marginTop: 6,
+                color: colors.text,
+                fontFamily: fontFamilies.body700,
+                fontSize: 20,
+              },
               neonTextShadow(colors.cyan, 12),
             ]}
           >
@@ -113,14 +154,31 @@ function Badge({ result }: { result: AwardResult }) {
 
       <Text
         style={[
-          { marginTop: 14, color: colors.text, fontFamily: fontFamilies.heading, fontSize: 22, textAlign: 'center' },
+          {
+            marginTop: 14,
+            color: colors.text,
+            fontFamily: fontFamilies.heading,
+            fontSize: 22,
+            textAlign: 'center',
+          },
           neonTextShadow('rgba(157,107,255,0.7)', 16),
         ]}
       >
-        {result.leveledUp ? `УРОВЕНЬ ${result.level}!` : 'ТРЕНИРОВКА ЗАСЧИТАНА'}
+        {result.leveledUp
+          ? t('lu.levelUp', { n: result.level })
+          : t('lu.workoutCounted')}
       </Text>
-      <Text style={{ marginTop: 6, color: colors.textSecondary, fontFamily: fontFamilies.body600, fontSize: 13 }}>
-        {result.streak > 1 ? `🔥 Серия ${result.streak} дней` : 'Так держать!'}
+      <Text
+        style={{
+          marginTop: 6,
+          color: colors.textSecondary,
+          fontFamily: fontFamilies.body600,
+          fontSize: 13,
+        }}
+      >
+        {result.streak > 1
+          ? t('lu.streakN', { n: result.streak })
+          : t('lu.keepGoing')}
       </Text>
     </Animated.View>
   );

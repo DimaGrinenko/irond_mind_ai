@@ -7,13 +7,14 @@ import { colors, neonGlow, neonTextShadow, radii } from '../../theme/tokens';
 import { fontFamilies } from '../../theme/typography';
 import type { WorkoutSummary } from '../../store/activeWorkoutStore';
 import { exercises } from '../../data/exercises';
+import { t, useLang } from '../../i18n';
 
 function fmtDuration(ms: number) {
   const s = Math.floor(ms / 1000);
   const m = Math.floor(s / 60);
   const sec = s % 60;
-  if (m === 0) return `${sec} сек`;
-  return `${m} мин ${sec} сек`;
+  if (m === 0) return `${sec} ${t('common.seconds')}`;
+  return `${m} ${t('common.minutes')} ${sec} ${t('common.seconds')}`;
 }
 
 function exerciseName(id: string): string {
@@ -29,12 +30,20 @@ export function WorkoutSummaryModal({
   summary: WorkoutSummary | null;
   onClose: () => void;
 }) {
+  useLang();
   if (!summary) return null;
   const completionPct =
-    summary.totalSets > 0 ? Math.round((summary.completedSets / summary.totalSets) * 100) : 0;
+    summary.totalSets > 0
+      ? Math.round((summary.completedSets / summary.totalSets) * 100)
+      : 0;
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+    >
       <View
         style={{
           flex: 1,
@@ -54,7 +63,11 @@ export function WorkoutSummaryModal({
           }}
         >
           <LinearGradient
-            colors={['rgba(157,107,255,0.32)', 'rgba(0,229,255,0.18)', 'rgba(0,0,0,0.95)']}
+            colors={[
+              'rgba(157,107,255,0.32)',
+              'rgba(0,229,255,0.18)',
+              'rgba(0,0,0,0.95)',
+            ]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
           >
@@ -66,16 +79,31 @@ export function WorkoutSummaryModal({
                 borderRadius: radii.xl,
               }}
             >
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 14 }}>
-                <Ionicons name="trophy" size={26} color={colors.amber} style={neonTextShadow(colors.amber, 14) as any} />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginBottom: 14,
+                }}
+              >
+                <Ionicons
+                  name="trophy"
+                  size={26}
+                  color={colors.amber}
+                  style={neonTextShadow(colors.amber, 14) as any}
+                />
                 <View style={{ flex: 1, marginLeft: 12 }}>
                   <Text
                     style={[
-                      { color: colors.text, fontFamily: fontFamilies.heading, fontSize: 22 },
+                      {
+                        color: colors.text,
+                        fontFamily: fontFamilies.heading,
+                        fontSize: 22,
+                      },
                       neonTextShadow(colors.purpleLight, 12),
                     ]}
                   >
-                    Тренировка завершена
+                    {t('ws.title')}
                   </Text>
                   <Text
                     style={{
@@ -89,29 +117,41 @@ export function WorkoutSummaryModal({
                   </Text>
                 </View>
                 <Pressable onPress={onClose} hitSlop={10}>
-                  <Ionicons name="close" size={22} color={colors.textSecondary} />
+                  <Ionicons
+                    name="close"
+                    size={22}
+                    color={colors.textSecondary}
+                  />
                 </Pressable>
               </View>
 
               <ScrollView showsVerticalScrollIndicator={false}>
-                <View style={{ flexDirection: 'row', gap: 10, marginBottom: 14 }}>
-                  <StatCell label="Время" value={fmtDuration(summary.durationMs)} icon="time-outline" />
+                <View
+                  style={{ flexDirection: 'row', gap: 10, marginBottom: 14 }}
+                >
                   <StatCell
-                    label="Объём"
-                    value={`${summary.totalVolumeKg.toLocaleString('ru')} кг`}
+                    label={t('ws.time')}
+                    value={fmtDuration(summary.durationMs)}
+                    icon="time-outline"
+                  />
+                  <StatCell
+                    label={t('ws.volume')}
+                    value={`${summary.totalVolumeKg.toLocaleString('ru')} ${t('common.kg')}`}
                     icon="barbell-outline"
                   />
                 </View>
 
-                <View style={{ flexDirection: 'row', gap: 10, marginBottom: 14 }}>
+                <View
+                  style={{ flexDirection: 'row', gap: 10, marginBottom: 14 }}
+                >
                   <StatCell
-                    label="Подходы"
+                    label={t('ws.sets')}
                     value={`${summary.completedSets}/${summary.totalSets}`}
                     icon="checkmark-circle-outline"
                     sub={`${completionPct}%`}
                   />
                   <StatCell
-                    label="Упражнения"
+                    label={t('ws.exercises')}
                     value={summary.exerciseCount.toString()}
                     icon="fitness-outline"
                   />
@@ -128,7 +168,7 @@ export function WorkoutSummaryModal({
                         marginBottom: 8,
                       }}
                     >
-                      🏆 ЛИЧНЫЕ РЕКОРДЫ ({summary.prs.length})
+                      {t('ws.prs', { n: summary.prs.length })}
                     </Text>
                     <View style={{ gap: 8 }}>
                       {summary.prs.map((pr) => (
@@ -144,10 +184,19 @@ export function WorkoutSummaryModal({
                             alignItems: 'center',
                           }}
                         >
-                          <Ionicons name="flame" size={18} color={colors.amber} style={{ marginRight: 10 }} />
+                          <Ionicons
+                            name="flame"
+                            size={18}
+                            color={colors.amber}
+                            style={{ marginRight: 10 }}
+                          />
                           <View style={{ flex: 1 }}>
                             <Text
-                              style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 13 }}
+                              style={{
+                                color: colors.text,
+                                fontFamily: fontFamilies.body700,
+                                fontSize: 13,
+                              }}
                             >
                               {exerciseName(pr.exerciseId)}
                             </Text>
@@ -159,10 +208,10 @@ export function WorkoutSummaryModal({
                                 marginTop: 2,
                               }}
                             >
-                              {pr.weight} кг × {pr.reps}
+                              {pr.weight} {t('common.kg')} × {pr.reps}
                               {pr.previousMax !== null
-                                ? ` (было ${pr.previousMax} кг)`
-                                : ' (первая запись)'}
+                                ? ` ${t('ws.wasKg', { x: pr.previousMax })}`
+                                : ` ${t('ws.firstRecord')}`}
                             </Text>
                           </View>
                         </View>
@@ -182,7 +231,7 @@ export function WorkoutSummaryModal({
                         marginBottom: 8,
                       }}
                     >
-                      📈 В СЛЕДУЮЩИЙ РАЗ
+                      {t('ws.nextTime')}
                     </Text>
                     <View style={{ gap: 8 }}>
                       {summary.suggestions.map((s) => (
@@ -198,12 +247,22 @@ export function WorkoutSummaryModal({
                             alignItems: 'center',
                           }}
                         >
-                          <Ionicons name="trending-up" size={18} color={colors.cyan} style={{ marginRight: 10 }} />
+                          <Ionicons
+                            name="trending-up"
+                            size={18}
+                            color={colors.cyan}
+                            style={{ marginRight: 10 }}
+                          />
                           <View style={{ flex: 1 }}>
                             <Text
-                              style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 13 }}
+                              style={{
+                                color: colors.text,
+                                fontFamily: fontFamilies.body700,
+                                fontSize: 13,
+                              }}
                             >
-                              {exerciseName(s.exerciseId)} · +{s.addKg} кг
+                              {exerciseName(s.exerciseId)} · +{s.addKg}{' '}
+                              {t('common.kg')}
                             </Text>
                             <Text
                               style={{
@@ -224,9 +283,11 @@ export function WorkoutSummaryModal({
               </ScrollView>
 
               <GradientButton
-                title="Готово"
+                title={t('common.done')}
                 onPress={onClose}
-                rightIcon={<Ionicons name="checkmark" size={18} color={colors.text} />}
+                rightIcon={
+                  <Ionicons name="checkmark" size={18} color={colors.text} />
+                }
               />
             </View>
           </LinearGradient>
@@ -273,14 +334,26 @@ function StatCell({
       </View>
       <Text
         style={[
-          { marginTop: 6, color: colors.text, fontFamily: fontFamilies.body700, fontSize: 18 },
+          {
+            marginTop: 6,
+            color: colors.text,
+            fontFamily: fontFamilies.body700,
+            fontSize: 18,
+          },
           neonTextShadow(colors.purpleLight, 8),
         ]}
       >
         {value}
       </Text>
       {sub ? (
-        <Text style={{ marginTop: 2, color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 10 }}>
+        <Text
+          style={{
+            marginTop: 2,
+            color: colors.textMuted,
+            fontFamily: fontFamilies.body,
+            fontSize: 10,
+          }}
+        >
           {sub}
         </Text>
       ) : null}

@@ -1,6 +1,12 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -72,7 +78,10 @@ export function ProgramsScreen() {
   const goalKey = useUserStore((s) => s.goalKey);
   const goalKeyUpper = goalKey ? goalKey.toUpperCase() : null;
 
-  const own = useMemo(() => items.filter((p) => p.ownerUserId === userId), [items, userId]);
+  const own = useMemo(
+    () => items.filter((p) => p.ownerUserId === userId),
+    [items, userId],
+  );
   // Шаблоны со структурой (kind != CUSTOM, т.е. реальные программы с днями)
   const structuredTemplates = useMemo(
     () => items.filter((p) => !p.ownerUserId && p.kind !== 'CUSTOM'),
@@ -94,7 +103,9 @@ export function ProgramsScreen() {
     if (tab === 'Мои') return own;
     if (tab === 'Шаблоны') return [...byGoalFirst, ...legacyTemplates];
     if (tab === 'Новые')
-      return [...structuredTemplates].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+      return [...structuredTemplates].sort((a, b) =>
+        b.createdAt.localeCompare(a.createdAt),
+      );
     return byGoalFirst;
   }, [tab, own, byGoalFirst, legacyTemplates, structuredTemplates]);
 
@@ -103,36 +114,81 @@ export function ProgramsScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
-      <ScrollView contentContainerStyle={{ paddingBottom: 112 }} showsVerticalScrollIndicator={false}>
-        <View style={{ paddingTop: insets.top + 8, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center' }}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 112 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View
+          style={{
+            paddingTop: insets.top + 8,
+            paddingHorizontal: 16,
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}
+        >
           <Pressable
             onPress={() => nav.navigate('RootTabs', { screen: 'Home' })}
             accessibilityRole="button"
-            accessibilityLabel="Назад"
+            accessibilityLabel={t('common.back')}
             hitSlop={12}
             style={{ paddingVertical: 8, paddingRight: 10 }}
           >
             <Ionicons name="chevron-back" size={20} color={colors.text} />
           </Pressable>
           <View style={{ flex: 1, alignItems: 'center' }}>
-            <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 18 }}>{t('programs.title')}</Text>
+            <Text
+              style={{
+                color: colors.text,
+                fontFamily: fontFamilies.body700,
+                fontSize: 18,
+              }}
+            >
+              {t('programs.title')}
+            </Text>
           </View>
-          <Pressable onPress={() => nav.navigate('Calendar')} style={{ paddingVertical: 8, paddingLeft: 10 }}>
-            <Ionicons name="calendar-outline" size={20} color={colors.textSecondary} />
+          <Pressable
+            onPress={() => nav.navigate('Calendar')}
+            style={{ paddingVertical: 8, paddingLeft: 10 }}
+          >
+            <Ionicons
+              name="calendar-outline"
+              size={20}
+              color={colors.textSecondary}
+            />
           </Pressable>
         </View>
 
-        <View style={{ paddingHorizontal: 16, marginTop: 12, flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View
+          style={{
+            paddingHorizontal: 16,
+            marginTop: 12,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}
+        >
           {(['Мои', 'Шаблоны', 'Популярные', 'Новые'] as TabKey[]).map((tk) => {
             const active = tk === tab;
             const label =
-              tk === 'Мои' ? t('programs.tabsMy')
-              : tk === 'Шаблоны' ? t('programs.tabsTemplates')
-              : tk === 'Популярные' ? t('programs.tabsPopular')
-              : t('programs.tabsNew');
+              tk === 'Мои'
+                ? t('programs.tabsMy')
+                : tk === 'Шаблоны'
+                  ? t('programs.tabsTemplates')
+                  : tk === 'Популярные'
+                    ? t('programs.tabsPopular')
+                    : t('programs.tabsNew');
             return (
-              <Pressable key={tk} onPress={() => setTab(tk)} style={{ paddingVertical: 10 }}>
-                <Text style={{ color: active ? colors.text : colors.textSecondary, fontFamily: fontFamilies.body600, fontSize: 12 }}>
+              <Pressable
+                key={tk}
+                onPress={() => setTab(tk)}
+                style={{ paddingVertical: 10 }}
+              >
+                <Text
+                  style={{
+                    color: active ? colors.text : colors.textSecondary,
+                    fontFamily: fontFamilies.body600,
+                    fontSize: 12,
+                  }}
+                >
                   {label}
                 </Text>
                 <View
@@ -140,7 +196,9 @@ export function ProgramsScreen() {
                     marginTop: 8,
                     height: 2,
                     borderRadius: 2,
-                    backgroundColor: active ? colors.purpleLight : 'transparent',
+                    backgroundColor: active
+                      ? colors.purpleLight
+                      : 'transparent',
                   }}
                 />
               </Pressable>
@@ -157,10 +215,18 @@ export function ProgramsScreen() {
         {!loading && visible.length === 0 ? (
           <View style={{ paddingHorizontal: 16, marginTop: 24 }}>
             <Card>
-              <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, textAlign: 'center' }}>
+              <Text
+                style={{
+                  color: colors.textSecondary,
+                  fontFamily: fontFamilies.body,
+                  textAlign: 'center',
+                }}
+              >
                 {loadError
                   ? `${t('common.error')}: ${loadError}`
-                  : tab === 'Мои' ? t('programs.emptyMy') : t('programs.empty')}
+                  : tab === 'Мои'
+                    ? t('programs.emptyMy')
+                    : t('programs.empty')}
               </Text>
               {loadError ? (
                 <Pressable
@@ -175,7 +241,13 @@ export function ProgramsScreen() {
                     backgroundColor: 'rgba(157,107,255,0.12)',
                   }}
                 >
-                  <Text style={{ color: colors.purpleLight, fontFamily: fontFamilies.body700, fontSize: 12 }}>
+                  <Text
+                    style={{
+                      color: colors.purpleLight,
+                      fontFamily: fontFamilies.body700,
+                      fontSize: 12,
+                    }}
+                  >
                     {t('analytics.retry')}
                   </Text>
                 </Pressable>
@@ -187,7 +259,11 @@ export function ProgramsScreen() {
         {featured ? (
           <View style={{ paddingHorizontal: 16, marginTop: 14 }}>
             <Card style={{ padding: 0, overflow: 'hidden', borderRadius: 22 }}>
-              <LinearGradient colors={accentGrad(featured.accent) as any} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+              <LinearGradient
+                colors={accentGrad(featured.accent) as any}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+              >
                 <View style={{ padding: 16, minHeight: 210 }}>
                   {programPhoto(featured.id) ? (
                     <View
@@ -202,12 +278,27 @@ export function ProgramsScreen() {
                         overflow: 'hidden',
                       }}
                     >
-                      <AnimatedPhoto source={programPhoto(featured.id) as any} duration={9000} />
+                      <AnimatedPhoto
+                        source={programPhoto(featured.id) as any}
+                        duration={9000}
+                      />
                       <LinearGradient
-                        colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.05)', accentGradStop(featured.accent)] as any}
+                        colors={
+                          [
+                            'rgba(0,0,0,0)',
+                            'rgba(0,0,0,0.05)',
+                            accentGradStop(featured.accent),
+                          ] as any
+                        }
                         start={{ x: 0, y: 0.5 }}
                         end={{ x: 1, y: 0.5 }}
-                        style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
+                        style={{
+                          position: 'absolute',
+                          left: 0,
+                          right: 0,
+                          top: 0,
+                          bottom: 0,
+                        }}
                       />
                     </View>
                   ) : (
@@ -226,23 +317,58 @@ export function ProgramsScreen() {
                         justifyContent: 'center',
                       }}
                     >
-                      <Ionicons name={(featured.iconName || 'barbell-outline') as any} size={72} color="rgba(255,255,255,0.22)" />
+                      <Ionicons
+                        name={(featured.iconName || 'barbell-outline') as any}
+                        size={72}
+                        color="rgba(255,255,255,0.22)"
+                      />
                     </View>
                   )}
 
-                  <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 28 }}>{programLabel(featured.id, featured.title)}</Text>
-                  <Text style={{ marginTop: 6, color: colors.text, fontFamily: fontFamilies.body600 }}>
-                    {featured.weeks} {t('common.weekShort')} · {featured.daysPerWeek}{t('common.perWeek')}
+                  <Text
+                    style={{
+                      color: colors.text,
+                      fontFamily: fontFamilies.body700,
+                      fontSize: 28,
+                    }}
+                  >
+                    {programLabel(featured.id, featured.title)}
                   </Text>
-                  <Text style={{ marginTop: 6, color: 'rgba(255,255,255,0.85)', fontFamily: fontFamilies.body, maxWidth: 190 }}>
+                  <Text
+                    style={{
+                      marginTop: 6,
+                      color: colors.text,
+                      fontFamily: fontFamilies.body600,
+                    }}
+                  >
+                    {featured.weeks} {t('common.weekShort')} ·{' '}
+                    {featured.daysPerWeek}
+                    {t('common.perWeek')}
+                  </Text>
+                  <Text
+                    style={{
+                      marginTop: 6,
+                      color: 'rgba(255,255,255,0.85)',
+                      fontFamily: fontFamilies.body,
+                      maxWidth: 190,
+                    }}
+                  >
                     {programSubtitle(featured.id, featured.subtitle)}
                   </Text>
 
                   <Pressable
-                    onPress={() => nav.navigate('ProgramDetail', { programId: featured.id })}
-                    style={{ marginTop: 16, borderRadius: radii.md, overflow: 'hidden' }}
+                    onPress={() =>
+                      nav.navigate('ProgramDetail', { programId: featured.id })
+                    }
+                    style={{
+                      marginTop: 16,
+                      borderRadius: radii.md,
+                      overflow: 'hidden',
+                    }}
                   >
-                    <LinearGradient colors={['rgba(0,0,0,0.25)', 'rgba(0,0,0,0.25)']}>
+                    <LinearGradient
+                      colors={['rgba(0,0,0,0.25)', 'rgba(0,0,0,0.25)']}
+                    >
                       <View
                         style={{
                           height: 46,
@@ -253,7 +379,14 @@ export function ProgramsScreen() {
                           borderColor: 'rgba(255,255,255,0.18)',
                         }}
                       >
-                        <Text style={{ color: colors.text, fontFamily: fontFamilies.body700 }}>{t('programs.openProgram')}</Text>
+                        <Text
+                          style={{
+                            color: colors.text,
+                            fontFamily: fontFamilies.body700,
+                          }}
+                        >
+                          {t('programs.openProgram')}
+                        </Text>
                       </View>
                     </LinearGradient>
                   </Pressable>
@@ -266,7 +399,13 @@ export function ProgramsScreen() {
         {rest.length > 0 ? (
           <>
             <View style={{ paddingHorizontal: 16, marginTop: 16 }}>
-              <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body600, fontSize: 12 }}>
+              <Text
+                style={{
+                  color: colors.textSecondary,
+                  fontFamily: fontFamilies.body600,
+                  fontSize: 12,
+                }}
+              >
                 {tab === 'Мои' ? t('programs.allMy') : t('programs.others')}
               </Text>
             </View>
@@ -275,7 +414,9 @@ export function ProgramsScreen() {
               {rest.map((p) => (
                 <Pressable
                   key={p.id}
-                  onPress={() => nav.navigate('ProgramDetail', { programId: p.id })}
+                  onPress={() =>
+                    nav.navigate('ProgramDetail', { programId: p.id })
+                  }
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -288,26 +429,70 @@ export function ProgramsScreen() {
                 >
                   {programPhoto(p.id) ? (
                     <View style={{ width: 90, height: 86, overflow: 'hidden' }}>
-                      <AnimatedPhoto source={programPhoto(p.id) as any} duration={11000} />
+                      <AnimatedPhoto
+                        source={programPhoto(p.id) as any}
+                        duration={11000}
+                      />
                       <LinearGradient
-                        colors={[accentGradStop(p.accent), 'rgba(0,0,0,0)'] as any}
+                        colors={
+                          [accentGradStop(p.accent), 'rgba(0,0,0,0)'] as any
+                        }
                         start={{ x: 0, y: 0.5 }}
                         end={{ x: 1, y: 0.5 }}
-                        style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 36 }}
+                        style={{
+                          position: 'absolute',
+                          left: 0,
+                          top: 0,
+                          bottom: 0,
+                          width: 36,
+                        }}
                       />
                     </View>
                   ) : (
-                    <LinearGradient colors={accentGrad(p.accent) as any} style={{ width: 90, height: 86, alignItems: 'center', justifyContent: 'center' }}>
-                      <Ionicons name={(p.iconName || 'barbell-outline') as any} size={32} color="rgba(255,255,255,0.85)" />
+                    <LinearGradient
+                      colors={accentGrad(p.accent) as any}
+                      style={{
+                        width: 90,
+                        height: 86,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Ionicons
+                        name={(p.iconName || 'barbell-outline') as any}
+                        size={32}
+                        color="rgba(255,255,255,0.85)"
+                      />
                     </LinearGradient>
                   )}
                   <View style={{ flex: 1, paddingHorizontal: 14 }}>
-                    <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 15 }}>{programLabel(p.id, p.title)}</Text>
-                    <Text style={{ marginTop: 4, color: colors.textSecondary, fontFamily: fontFamilies.body, fontSize: 12 }}>
-                      {p.weeks} {t('common.weekShort')} · {programSubtitle(p.id, p.subtitle)}
+                    <Text
+                      style={{
+                        color: colors.text,
+                        fontFamily: fontFamilies.body700,
+                        fontSize: 15,
+                      }}
+                    >
+                      {programLabel(p.id, p.title)}
+                    </Text>
+                    <Text
+                      style={{
+                        marginTop: 4,
+                        color: colors.textSecondary,
+                        fontFamily: fontFamilies.body,
+                        fontSize: 12,
+                      }}
+                    >
+                      {p.weeks} {t('common.weekShort')} ·{' '}
+                      {programSubtitle(p.id, p.subtitle)}
                     </Text>
                   </View>
-                  <Ionicons name="chevron-forward" size={22} color={colors.textMuted} style={{ marginRight: 12 }} />
+                  <Ionicons
+                    name="chevron-forward"
+                    size={22}
+                    color={colors.textMuted}
+                    style={{ marginRight: 12 }}
+                  />
                 </Pressable>
               ))}
             </View>

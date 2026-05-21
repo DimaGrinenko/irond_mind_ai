@@ -2,10 +2,16 @@ import React from 'react';
 import { Platform, Pressable, Text, Vibration, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import Svg, { Circle, Defs, Stop, LinearGradient as SvgGrad } from 'react-native-svg';
+import Svg, {
+  Circle,
+  Defs,
+  Stop,
+  LinearGradient as SvgGrad,
+} from 'react-native-svg';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { colors, neonGlow, neonTextShadow } from '../../theme/tokens';
 import { fontFamilies } from '../../theme/typography';
+import { t, useLang } from '../../i18n';
 
 type Props = {
   triggerKey: number;
@@ -30,7 +36,8 @@ let beepCtx: AudioContext | null = null;
 function beep(freq: number, ms = 120) {
   if (Platform.OS !== 'web') return;
   try {
-    const AC = (window as any).AudioContext || (window as any).webkitAudioContext;
+    const AC =
+      (window as any).AudioContext || (window as any).webkitAudioContext;
     if (!beepCtx) beepCtx = new AC();
     const ctx = beepCtx!;
     const osc = ctx.createOscillator();
@@ -52,6 +59,7 @@ function beep(freq: number, ms = 120) {
  * Появляется когда triggerKey изменился. Останавливается на 0, вибрирует, играет beep в последние 3с.
  */
 export function RestOverlay({ triggerKey, seconds, onSkip, onDone }: Props) {
+  useLang();
   const [preset, setPreset] = React.useState<number>(seconds || 90);
   const [remaining, setRemaining] = React.useState(0);
   const [running, setRunning] = React.useState(false);
@@ -120,7 +128,11 @@ export function RestOverlay({ triggerKey, seconds, onSkip, onDone }: Props) {
       }}
     >
       <LinearGradient
-        colors={['rgba(0,229,255,0.18)', 'rgba(157,107,255,0.12)', 'rgba(3,4,10,0)']}
+        colors={[
+          'rgba(0,229,255,0.18)',
+          'rgba(157,107,255,0.12)',
+          'rgba(3,4,10,0)',
+        ]}
         style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 320 }}
       />
 
@@ -133,10 +145,17 @@ export function RestOverlay({ triggerKey, seconds, onSkip, onDone }: Props) {
           marginBottom: 18,
         }}
       >
-        ОТДЫХ
+        {t('ro.rest')}
       </Text>
 
-      <View style={{ width: SIZE, height: SIZE, alignItems: 'center', justifyContent: 'center' }}>
+      <View
+        style={{
+          width: SIZE,
+          height: SIZE,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
         <Svg width={SIZE} height={SIZE}>
           <Defs>
             <SvgGrad id="restRing" x1="0" y1="0" x2="1" y2="1">
@@ -181,8 +200,15 @@ export function RestOverlay({ triggerKey, seconds, onSkip, onDone }: Props) {
           >
             {fmt(remaining)}
           </Text>
-          <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 12, marginTop: 4 }}>
-            из {fmt(preset)}
+          <Text
+            style={{
+              color: colors.textMuted,
+              fontFamily: fontFamilies.body,
+              fontSize: 12,
+              marginTop: 4,
+            }}
+          >
+            {t('ro.outOf', { x: fmt(preset) })}
           </Text>
         </View>
       </View>
@@ -202,7 +228,15 @@ export function RestOverlay({ triggerKey, seconds, onSkip, onDone }: Props) {
             justifyContent: 'center',
           }}
         >
-          <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 18 }}>−15</Text>
+          <Text
+            style={{
+              color: colors.text,
+              fontFamily: fontFamilies.body700,
+              fontSize: 18,
+            }}
+          >
+            −15
+          </Text>
         </Pressable>
         <Pressable
           onPress={() => setRemaining((r) => r + 15)}
@@ -218,7 +252,15 @@ export function RestOverlay({ triggerKey, seconds, onSkip, onDone }: Props) {
             ...neonGlow(colors.cyan, 0.45, 14, 6),
           }}
         >
-          <Text style={{ color: colors.cyan, fontFamily: fontFamilies.body700, fontSize: 18 }}>+15</Text>
+          <Text
+            style={{
+              color: colors.cyan,
+              fontFamily: fontFamilies.body700,
+              fontSize: 18,
+            }}
+          >
+            +15
+          </Text>
         </Pressable>
       </View>
 
@@ -240,8 +282,12 @@ export function RestOverlay({ triggerKey, seconds, onSkip, onDone }: Props) {
                 paddingVertical: 8,
                 borderRadius: 12,
                 borderWidth: 1,
-                borderColor: active ? 'rgba(0,229,255,0.6)' : 'rgba(255,255,255,0.14)',
-                backgroundColor: active ? 'rgba(0,229,255,0.16)' : 'transparent',
+                borderColor: active
+                  ? 'rgba(0,229,255,0.6)'
+                  : 'rgba(255,255,255,0.14)',
+                backgroundColor: active
+                  ? 'rgba(0,229,255,0.16)'
+                  : 'transparent',
               }}
             >
               <Text
@@ -251,7 +297,7 @@ export function RestOverlay({ triggerKey, seconds, onSkip, onDone }: Props) {
                   fontSize: 12,
                 }}
               >
-                {p < 60 ? `${p}с` : `${p / 60}мин`}
+                {p < 60 ? t('ro.sec', { p }) : t('ro.min', { p: p / 60 })}
               </Text>
             </Pressable>
           );
@@ -277,8 +323,14 @@ export function RestOverlay({ triggerKey, seconds, onSkip, onDone }: Props) {
         }}
       >
         <Ionicons name="play-skip-forward" size={16} color={colors.text} />
-        <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 13 }}>
-          Пропустить отдых
+        <Text
+          style={{
+            color: colors.text,
+            fontFamily: fontFamilies.body700,
+            fontSize: 13,
+          }}
+        >
+          {t('ro.skip')}
         </Text>
       </Pressable>
     </Animated.View>

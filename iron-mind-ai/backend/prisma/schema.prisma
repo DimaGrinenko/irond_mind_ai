@@ -123,6 +123,8 @@ model User {
   progress            UserProgress?
   activityEvents      ActivityEvent[]
   scheduledWorkouts   ScheduledWorkout[]
+  leafTransactions    LeafTransaction[]
+  ownedShopItems      OwnedShopItem[]
 
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
@@ -231,6 +233,15 @@ model UserProgress {
   monthlyGoal     Int      @default(20)
   monthlyDone     Int      @default(0)
   monthAnchor     DateTime @default(now())
+
+  // Daily wheel (server-owned)
+  lastWheelDate   String?  // "YYYY-MM-DD" последнего спина
+  wheelStreak     Int      @default(0)
+
+  // Menstrual cycle tracking (female users; opt-in)
+  cycleEnabled    Boolean  @default(false)
+  cycleLastPeriod String?  // "YYYY-MM-DD" начала последних месячных
+  cycleLength     Int      @default(28)
 
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -437,4 +448,33 @@ model ChatMessage {
   createdAt DateTime @default(now())
 
   @@index([userId, createdAt])
+}
+
+// ===== Leaf economy =====
+
+/** Леджер операций с листьями — аудит и анти-чит (баланс = сумма дельт). */
+model LeafTransaction {
+  id           String   @id @default(cuid())
+  userId       String
+  delta        Int      // +заработал / -потратил
+  reason       String   // 'workout' | 'wheel' | 'shop:<itemId>' | 'admin' | ...
+  balanceAfter Int
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+/** Купленные косметические предметы магазина + слот экипировки. */
+model OwnedShopItem {
+  id       String   @id @default(cuid())
+  userId   String
+  itemId   String   // ShopItemId из каталога (на сервере)
+  /** Слот, если предмет экипирован ('tree' | 'dumbbell' | 'accent'), иначе null. */
+  equipped String?
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, itemId])
+  @@index([userId])
 }

@@ -6,6 +6,7 @@ import Animated, { FadeInDown, FadeOut } from 'react-native-reanimated';
 import { RingChart } from '../charts/RingChart';
 import { colors, neonGlow, neonTextShadow } from '../../theme/tokens';
 import { fontFamilies } from '../../theme/typography';
+import { t, useLang } from '../../i18n';
 
 const PRESETS = [60, 90, 120] as const;
 
@@ -27,6 +28,7 @@ function fmt(s: number) {
  * по окончании вибрирует. Пресеты 60/90/120 секунд.
  */
 export function RestTimer({ triggerKey, seconds }: Props) {
+  useLang();
   const [preset, setPreset] = React.useState<number>(seconds ?? 90);
   const [remaining, setRemaining] = React.useState(0);
   const [running, setRunning] = React.useState(false);
@@ -70,7 +72,11 @@ export function RestTimer({ triggerKey, seconds }: Props) {
     <Animated.View
       entering={Platform.OS === 'web' ? undefined : FadeInDown.duration(280)}
       exiting={Platform.OS === 'web' ? undefined : FadeOut.duration(160)}
-      style={{ borderRadius: 22, overflow: 'hidden', ...neonGlow(colors.cyan, 0.45, 22, 10) }}
+      style={{
+        borderRadius: 22,
+        overflow: 'hidden',
+        ...neonGlow(colors.cyan, 0.45, 22, 10),
+      }}
     >
       <LinearGradient
         colors={['rgba(0,229,255,0.16)', 'rgba(13,16,32,0.96)']}
@@ -89,7 +95,14 @@ export function RestTimer({ triggerKey, seconds }: Props) {
       >
         {running ? (
           <>
-            <View style={{ width: 56, height: 56, alignItems: 'center', justifyContent: 'center' }}>
+            <View
+              style={{
+                width: 56,
+                height: 56,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
               <RingChart size={56} strokeWidth={6} progress={progress} />
               <Text
                 style={[
@@ -106,17 +119,31 @@ export function RestTimer({ triggerKey, seconds }: Props) {
               </Text>
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={{ color: colors.cyan, fontFamily: fontFamilies.body700, fontSize: 12, letterSpacing: 1 }}>
-                ОТДЫХ
+              <Text
+                style={{
+                  color: colors.cyan,
+                  fontFamily: fontFamilies.body700,
+                  fontSize: 12,
+                  letterSpacing: 1,
+                }}
+              >
+                {t('ro.rest')}
               </Text>
-              <Text style={{ marginTop: 2, color: colors.textSecondary, fontFamily: fontFamilies.body, fontSize: 12 }}>
-                Следующий подход через {fmt(remaining)}
+              <Text
+                style={{
+                  marginTop: 2,
+                  color: colors.textSecondary,
+                  fontFamily: fontFamilies.body,
+                  fontSize: 12,
+                }}
+              >
+                {t('rt.nextSetIn', { x: fmt(remaining) })}
               </Text>
             </View>
             <Pressable
               onPress={() => setRemaining((r) => r + 30)}
               accessibilityRole="button"
-              accessibilityLabel="Добавить 30 секунд"
+              accessibilityLabel={t('rt.add30')}
               hitSlop={8}
               style={{
                 width: 40,
@@ -129,7 +156,15 @@ export function RestTimer({ triggerKey, seconds }: Props) {
                 justifyContent: 'center',
               }}
             >
-              <Text style={{ color: colors.cyan, fontFamily: fontFamilies.body700, fontSize: 11 }}>+30</Text>
+              <Text
+                style={{
+                  color: colors.cyan,
+                  fontFamily: fontFamilies.body700,
+                  fontSize: 11,
+                }}
+              >
+                +30
+              </Text>
             </Pressable>
             <Pressable
               onPress={() => {
@@ -137,7 +172,7 @@ export function RestTimer({ triggerKey, seconds }: Props) {
                 setRemaining(0);
               }}
               accessibilityRole="button"
-              accessibilityLabel="Пропустить отдых"
+              accessibilityLabel={t('ro.skip')}
               hitSlop={8}
               style={{
                 width: 40,
@@ -149,7 +184,11 @@ export function RestTimer({ triggerKey, seconds }: Props) {
                 justifyContent: 'center',
               }}
             >
-              <Ionicons name="play-skip-forward" size={16} color={colors.textSecondary} />
+              <Ionicons
+                name="play-skip-forward"
+                size={16}
+                color={colors.textSecondary}
+              />
             </Pressable>
           </>
         ) : (
@@ -169,11 +208,24 @@ export function RestTimer({ triggerKey, seconds }: Props) {
               <Ionicons name="timer-outline" size={22} color={colors.cyan} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 13 }}>
-                Таймер отдыха
+              <Text
+                style={{
+                  color: colors.text,
+                  fontFamily: fontFamilies.body700,
+                  fontSize: 13,
+                }}
+              >
+                {t('rt.title')}
               </Text>
-              <Text style={{ marginTop: 2, color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11 }}>
-                Стартует при отметке подхода
+              <Text
+                style={{
+                  marginTop: 2,
+                  color: colors.textMuted,
+                  fontFamily: fontFamilies.body,
+                  fontSize: 11,
+                }}
+              >
+                {t('rt.startsHint')}
               </Text>
             </View>
             <View style={{ flexDirection: 'row', gap: 6 }}>
@@ -184,15 +236,19 @@ export function RestTimer({ triggerKey, seconds }: Props) {
                     key={p}
                     onPress={() => setPreset(p)}
                     accessibilityRole="button"
-                    accessibilityLabel={`Отдых ${p} секунд`}
+                    accessibilityLabel={t('rt.restPSec', { p })}
                     accessibilityState={{ selected: active }}
                     style={{
                       paddingHorizontal: 10,
                       paddingVertical: 8,
                       borderRadius: 12,
                       borderWidth: 1,
-                      borderColor: active ? 'rgba(0,229,255,0.7)' : 'rgba(255,255,255,0.14)',
-                      backgroundColor: active ? 'rgba(0,229,255,0.16)' : 'transparent',
+                      borderColor: active
+                        ? 'rgba(0,229,255,0.7)'
+                        : 'rgba(255,255,255,0.14)',
+                      backgroundColor: active
+                        ? 'rgba(0,229,255,0.16)'
+                        : 'transparent',
                     }}
                   >
                     <Text

@@ -26,67 +26,69 @@ type TierDef = {
   highlight?: boolean;
 };
 
-const TIERS: TierDef[] = [
-  {
-    id: 'free',
-    name: 'Free',
-    priceMonth: '0 ₽',
-    priceYear: '0 ₽',
-    tagline: 'Базовый функционал — навсегда',
-    features: [
-      { text: 'Все шаблоны программ', included: true },
-      { text: '1 личная программа', included: true },
-      { text: 'Аналитика — 7 дней', included: true },
-      { text: 'AI-тренер — 10 запросов в день', included: true },
-      { text: 'Замеры + питание', included: true },
-      { text: 'Все 67 упражнений с видео', included: true },
-      { text: 'Расширенная аналитика 30+ дней', included: false },
-      { text: 'AI без лимита', included: false },
-      { text: 'Кастомные темы', included: false },
-      { text: 'Экспорт данных', included: false },
-    ],
-    cta: 'Текущий план',
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    priceMonth: '299 ₽',
-    priceYear: '1 990 ₽',
-    tagline: 'Для серьёзных тренировок',
-    highlight: true,
-    features: [
-      { text: 'Всё из Free', included: true },
-      { text: 'Неограниченные программы', included: true },
-      { text: 'Аналитика 30/90/365 дней', included: true },
-      { text: 'AI-тренер без лимита', included: true },
-      { text: 'Расширенный workout history', included: true },
-      { text: 'Журнал добавок', included: true },
-      { text: 'Сравнение «До/После» фото', included: true },
-      { text: 'Уведомления о тренировках', included: true },
-      { text: 'Эксклюзивные программы от тренеров', included: false },
-      { text: 'Видеоразбор техники по фото', included: false },
-    ],
-    cta: 'Получить Pro',
-  },
-  {
-    id: 'elite',
-    name: 'Elite',
-    priceMonth: '799 ₽',
-    priceYear: '5 990 ₽',
-    tagline: 'Полный арсенал атлета',
-    features: [
-      { text: 'Всё из Pro', included: true },
-      { text: 'Эксклюзивные программы тренеров', included: true },
-      { text: 'AI-видеоразбор техники по фото', included: true },
-      { text: 'Персональный план питания', included: true },
-      { text: 'Приоритет в обновлениях', included: true },
-      { text: 'Прямые консультации с тренером (1 раз/мес)', included: true },
-      { text: 'Эксклюзивный мерч и комьюнити', included: true },
-      { text: 'Все будущие фичи без доплат', included: true },
-    ],
-    cta: 'Стать Elite',
-  },
-];
+function tiers(): TierDef[] {
+  return [
+    {
+      id: 'free',
+      name: 'Free',
+      priceMonth: '0 ₽',
+      priceYear: '0 ₽',
+      tagline: t('sub.tagFree'),
+      features: [
+        { text: t('sub.f.allTemplates'), included: true },
+        { text: t('sub.f.onePersonal'), included: true },
+        { text: t('sub.f.analytics7'), included: true },
+        { text: t('sub.f.ai10'), included: true },
+        { text: t('sub.f.measNutri'), included: true },
+        { text: t('sub.f.allExercises'), included: true },
+        { text: t('sub.f.analyticsExt'), included: false },
+        { text: t('sub.f.aiUnlimited'), included: false },
+        { text: t('sub.f.themes'), included: false },
+        { text: t('sub.f.export'), included: false },
+      ],
+      cta: t('sub.ctaFree'),
+    },
+    {
+      id: 'pro',
+      name: 'Pro',
+      priceMonth: '299 ₽',
+      priceYear: '1 990 ₽',
+      tagline: t('sub.tagPro'),
+      highlight: true,
+      features: [
+        { text: t('sub.f.allFree'), included: true },
+        { text: t('sub.f.unlimitedPrograms'), included: true },
+        { text: t('sub.f.analytics3m'), included: true },
+        { text: t('sub.f.aiCoachUnlimited'), included: true },
+        { text: t('sub.f.extHistory'), included: true },
+        { text: t('sub.f.suppLog'), included: true },
+        { text: t('sub.f.photoCompare'), included: true },
+        { text: t('sub.f.workoutNotifs'), included: true },
+        { text: t('sub.f.coachPrograms'), included: false },
+        { text: t('sub.f.formAnalysis'), included: false },
+      ],
+      cta: t('sub.ctaPro'),
+    },
+    {
+      id: 'elite',
+      name: 'Elite',
+      priceMonth: '799 ₽',
+      priceYear: '5 990 ₽',
+      tagline: t('sub.tagElite'),
+      features: [
+        { text: t('sub.f.allPro'), included: true },
+        { text: t('sub.f.coachProgramsElite'), included: true },
+        { text: t('sub.f.aiFormAnalysis'), included: true },
+        { text: t('sub.f.personalNutrition'), included: true },
+        { text: t('sub.f.priorityUpdates'), included: true },
+        { text: t('sub.f.coachConsult'), included: true },
+        { text: t('sub.f.merchCommunity'), included: true },
+        { text: t('sub.f.allFuture'), included: true },
+      ],
+      cta: t('sub.ctaElite'),
+    },
+  ];
+}
 
 export function SubscriptionScreen() {
   useLang();
@@ -95,22 +97,27 @@ export function SubscriptionScreen() {
 
   const onSubscribe = (tier: Tier) => {
     if (tier === 'free') return;
-    Alert.alert(
-      'Скоро',
-      'Подписки в разработке. Сейчас все Pro/Elite фичи доступны в beta-тесте бесплатно.',
-      [{ text: 'OK' }],
-    );
+    Alert.alert(t('sub.soonTitle'), t('sub.soonMsg'), [
+      { text: t('common.ok') },
+    ]);
   };
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
       <ScreenHeader title="Iron Mind Premium" onBack={() => nav.goBack()} />
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 40, paddingHorizontal: 16 }} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 40, paddingHorizontal: 16 }}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={{ marginTop: 12 }}>
           <Card style={{ padding: 0, overflow: 'hidden' }}>
             <LinearGradient
-              colors={['rgba(157,107,255,0.32)', 'rgba(0,229,255,0.18)', 'rgba(255,77,210,0.18)']}
+              colors={[
+                'rgba(157,107,255,0.32)',
+                'rgba(0,229,255,0.18)',
+                'rgba(255,77,210,0.18)',
+              ]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={{ padding: 20 }}
@@ -119,32 +126,72 @@ export function SubscriptionScreen() {
                 name="diamond"
                 size={32}
                 color={colors.cyan}
-                style={[{ marginBottom: 8 }, neonTextShadow(colors.cyan, 16) as any]}
+                style={[
+                  { marginBottom: 8 },
+                  neonTextShadow(colors.cyan, 16) as any,
+                ]}
               />
               <Text
                 style={[
-                  { color: colors.text, fontFamily: fontFamilies.heading, fontSize: 24 },
+                  {
+                    color: colors.text,
+                    fontFamily: fontFamilies.heading,
+                    fontSize: 24,
+                  },
                   neonTextShadow(colors.purpleLight, 12),
                 ]}
               >
-                Выжми максимум из тренировок
+                {t('sub.heroTitle')}
               </Text>
-              <Text style={{ marginTop: 6, color: colors.textSecondary, fontFamily: fontFamilies.body, fontSize: 13 }}>
-                Подписка открывает AI без лимита, расширенную аналитику и эксклюзивные программы.
+              <Text
+                style={{
+                  marginTop: 6,
+                  color: colors.textSecondary,
+                  fontFamily: fontFamilies.body,
+                  fontSize: 13,
+                }}
+              >
+                {t('sub.heroSub')}
               </Text>
             </LinearGradient>
           </Card>
         </View>
 
         <View style={{ marginTop: 18, flexDirection: 'row', gap: 8 }}>
-          <Pressable onPress={() => setPeriod('month')} style={[periodBtnStyle, period === 'month' && periodBtnActive]}>
-            <Text style={{ color: period === 'month' ? colors.purpleLight : colors.textSecondary, fontFamily: fontFamilies.body700, fontSize: 13 }}>
-              Месяц
+          <Pressable
+            onPress={() => setPeriod('month')}
+            style={[periodBtnStyle, period === 'month' && periodBtnActive]}
+          >
+            <Text
+              style={{
+                color:
+                  period === 'month'
+                    ? colors.purpleLight
+                    : colors.textSecondary,
+                fontFamily: fontFamilies.body700,
+                fontSize: 13,
+              }}
+            >
+              {t('sub.month')}
             </Text>
           </Pressable>
-          <Pressable onPress={() => setPeriod('year')} style={[periodBtnStyle, period === 'year' && periodBtnActive, { position: 'relative' }]}>
-            <Text style={{ color: period === 'year' ? colors.purpleLight : colors.textSecondary, fontFamily: fontFamilies.body700, fontSize: 13 }}>
-              Год
+          <Pressable
+            onPress={() => setPeriod('year')}
+            style={[
+              periodBtnStyle,
+              period === 'year' && periodBtnActive,
+              { position: 'relative' },
+            ]}
+          >
+            <Text
+              style={{
+                color:
+                  period === 'year' ? colors.purpleLight : colors.textSecondary,
+                fontFamily: fontFamilies.body700,
+                fontSize: 13,
+              }}
+            >
+              {t('sub.year')}
             </Text>
             <View
               style={{
@@ -157,24 +204,44 @@ export function SubscriptionScreen() {
                 backgroundColor: colors.green,
               }}
             >
-              <Text style={{ color: '#000', fontFamily: fontFamilies.body700, fontSize: 9 }}>−40%</Text>
+              <Text
+                style={{
+                  color: '#000',
+                  fontFamily: fontFamilies.body700,
+                  fontSize: 9,
+                }}
+              >
+                −40%
+              </Text>
             </View>
           </Pressable>
         </View>
 
         <View style={{ marginTop: 16, gap: 12 }}>
-          {TIERS.map((tier) => (
-            <TierCard key={tier.id} tier={tier} period={period} onPress={() => onSubscribe(tier.id)} />
+          {tiers().map((tier) => (
+            <TierCard
+              key={tier.id}
+              tier={tier}
+              period={period}
+              onPress={() => onSubscribe(tier.id)}
+            />
           ))}
         </View>
 
         <View style={{ marginTop: 18 }}>
           <Card variant="secondary">
-            <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 12, lineHeight: 18 }}>
-              • Подписка возобновляется автоматически{'\n'}
-              • Можно отменить в любое время{'\n'}
-              • Pro и Elite дают 7-дневный free trial{'\n'}
-              • Доступ восстанавливается на всех устройствах с одним аккаунтом
+            <Text
+              style={{
+                color: colors.textMuted,
+                fontFamily: fontFamilies.body,
+                fontSize: 12,
+                lineHeight: 18,
+              }}
+            >
+              • {t('sub.note1')}
+              {'\n'}• {t('sub.note2')}
+              {'\n'}• {t('sub.note3')}
+              {'\n'}• {t('sub.note4')}
             </Text>
           </Card>
         </View>
@@ -183,9 +250,17 @@ export function SubscriptionScreen() {
   );
 }
 
-function TierCard({ tier, period, onPress }: { tier: TierDef; period: 'month' | 'year'; onPress: () => void }) {
+function TierCard({
+  tier,
+  period,
+  onPress,
+}: {
+  tier: TierDef;
+  period: 'month' | 'year';
+  onPress: () => void;
+}) {
   const price = period === 'month' ? tier.priceMonth : tier.priceYear;
-  const sub = period === 'month' ? '/мес' : '/год';
+  const sub = period === 'month' ? t('sub.perMonth') : t('sub.perYear');
   return (
     <View
       style={[
@@ -219,42 +294,81 @@ function TierCard({ tier, period, onPress }: { tier: TierDef; period: 'month' | 
               marginBottom: 10,
             }}
           >
-            <Text style={{ color: '#000', fontFamily: fontFamilies.body700, fontSize: 10, letterSpacing: 1 }}>
-              ПОПУЛЯРНЫЙ
+            <Text
+              style={{
+                color: '#000',
+                fontFamily: fontFamilies.body700,
+                fontSize: 10,
+                letterSpacing: 1,
+              }}
+            >
+              {t('sub.popular')}
             </Text>
           </View>
         ) : null}
 
-        <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'flex-end',
+            justifyContent: 'space-between',
+          }}
+        >
           <View>
             <Text
               style={[
-                { color: colors.text, fontFamily: fontFamilies.heading, fontSize: 22 },
+                {
+                  color: colors.text,
+                  fontFamily: fontFamilies.heading,
+                  fontSize: 22,
+                },
                 tier.highlight ? neonTextShadow(colors.purpleLight, 12) : null,
               ]}
             >
               {tier.name}
             </Text>
-            <Text style={{ marginTop: 4, color: colors.textSecondary, fontFamily: fontFamilies.body, fontSize: 12 }}>
+            <Text
+              style={{
+                marginTop: 4,
+                color: colors.textSecondary,
+                fontFamily: fontFamilies.body,
+                fontSize: 12,
+              }}
+            >
               {tier.tagline}
             </Text>
           </View>
           <View style={{ alignItems: 'flex-end' }}>
             <Text
               style={[
-                { color: colors.text, fontFamily: fontFamilies.body700, fontSize: 20 },
+                {
+                  color: colors.text,
+                  fontFamily: fontFamilies.body700,
+                  fontSize: 20,
+                },
                 tier.highlight ? neonTextShadow(colors.purpleLight, 10) : null,
               ]}
             >
               {price}
             </Text>
-            <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11 }}>{sub}</Text>
+            <Text
+              style={{
+                color: colors.textMuted,
+                fontFamily: fontFamilies.body,
+                fontSize: 11,
+              }}
+            >
+              {sub}
+            </Text>
           </View>
         </View>
 
         <View style={{ marginTop: 14, gap: 6 }}>
           {tier.features.map((f, i) => (
-            <View key={`${tier.id}-${i}`} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
+            <View
+              key={`${tier.id}-${i}`}
+              style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}
+            >
               <Ionicons
                 name={f.included ? 'checkmark-circle' : 'close-circle-outline'}
                 size={16}
@@ -288,7 +402,13 @@ function TierCard({ tier, period, onPress }: { tier: TierDef; period: 'month' | 
                 backgroundColor: colors.bgSecondary,
               }}
             >
-              <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body700, fontSize: 13 }}>
+              <Text
+                style={{
+                  color: colors.textSecondary,
+                  fontFamily: fontFamilies.body700,
+                  fontSize: 13,
+                }}
+              >
                 {tier.cta}
               </Text>
             </View>
@@ -297,7 +417,9 @@ function TierCard({ tier, period, onPress }: { tier: TierDef; period: 'month' | 
               title={tier.cta}
               onPress={onPress}
               variant={tier.id === 'elite' ? 'aurora' : 'primary'}
-              rightIcon={<Ionicons name="arrow-forward" size={18} color="#fff" />}
+              rightIcon={
+                <Ionicons name="arrow-forward" size={18} color="#fff" />
+              }
             />
           )}
         </View>

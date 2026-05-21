@@ -9,14 +9,15 @@ import { TapScale } from '../components/anim/TapScale';
 import { motivationQuotes } from '../data/motivation';
 import { colors, glow, radii, spacing } from '../theme/tokens';
 import { fontFamilies } from '../theme/typography';
-
-function pickIndex(seed: number) {
-  return Math.abs(seed) % motivationQuotes.length;
-}
+import { t, useLang } from '../i18n';
 
 export function MotivationScreen({ navigation }: any) {
+  const lang = useLang();
   const [seed, setSeed] = useState(() => Math.floor(Date.now() / 1000));
-  const quote = useMemo(() => motivationQuotes[pickIndex(seed)], [seed]);
+  const quote = useMemo(() => {
+    const quotes = motivationQuotes(lang);
+    return quotes[Math.abs(seed) % quotes.length];
+  }, [seed, lang]);
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
@@ -28,9 +29,15 @@ export function MotivationScreen({ navigation }: any) {
       />
       <Particles count={16} height={420} />
 
-      <ScreenHeader title="Мотивация" onBack={() => navigation.goBack()} />
+      <ScreenHeader title={t('mot.title')} onBack={() => navigation.goBack()} />
 
-      <View style={{ flex: 1, justifyContent: 'center', paddingHorizontal: spacing.md }}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          paddingHorizontal: spacing.md,
+        }}
+      >
         <Animated.View
           key={seed}
           entering={FadeIn.duration(380)}
@@ -44,7 +51,11 @@ export function MotivationScreen({ navigation }: any) {
           }}
         >
           <LinearGradient
-            colors={['rgba(138,92,255,0.20)', 'rgba(255,63,203,0.10)', 'rgba(0,0,0,0.85)']}
+            colors={[
+              'rgba(138,92,255,0.20)',
+              'rgba(255,63,203,0.10)',
+              'rgba(0,0,0,0.85)',
+            ]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{ paddingVertical: 36, paddingHorizontal: 24 }}
@@ -62,7 +73,11 @@ export function MotivationScreen({ navigation }: any) {
                   justifyContent: 'center',
                 }}
               >
-                <Ionicons name="sparkles" size={22} color={colors.purpleLight} />
+                <Ionicons
+                  name="sparkles"
+                  size={22}
+                  color={colors.purpleLight}
+                />
               </View>
             </View>
 
@@ -96,7 +111,9 @@ export function MotivationScreen({ navigation }: any) {
 
       <View style={{ paddingHorizontal: spacing.md, paddingBottom: 32 }}>
         <TapScale
-          onPress={() => setSeed((s) => s + 1 + Math.floor(Math.random() * 1000))}
+          onPress={() =>
+            setSeed((s) => s + 1 + Math.floor(Math.random() * 1000))
+          }
           style={{
             height: 58,
             borderRadius: radii.lg,
@@ -111,7 +128,15 @@ export function MotivationScreen({ navigation }: any) {
           }}
         >
           <Ionicons name="refresh" size={20} color={colors.purpleLight} />
-          <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 15 }}>Ещё цитата</Text>
+          <Text
+            style={{
+              color: colors.text,
+              fontFamily: fontFamilies.body700,
+              fontSize: 15,
+            }}
+          >
+            {t('mot.anotherQuote')}
+          </Text>
         </TapScale>
       </View>
     </View>

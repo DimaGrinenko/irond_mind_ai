@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { api } from '../api/client';
+import { useLeafEconomyStore } from './leafEconomyStore';
 
 function todayIso() {
   return new Date().toISOString().slice(0, 10);
@@ -14,13 +16,13 @@ function yesterdayIso() {
 
 /** Спин-сектора колеса (вес = вероятность). */
 export const WHEEL_SECTORS = [
-  { value: 10,  weight: 28, color: '#9D9DAE' },
-  { value: 25,  weight: 22, color: '#3FA8FF' },
-  { value: 50,  weight: 18, color: '#00E5FF' },
-  { value: 75,  weight: 14, color: '#9D6BFF' },
+  { value: 10, weight: 28, color: '#9D9DAE' },
+  { value: 25, weight: 22, color: '#3FA8FF' },
+  { value: 50, weight: 18, color: '#00E5FF' },
+  { value: 75, weight: 14, color: '#9D6BFF' },
   { value: 100, weight: 10, color: '#FFD27A' },
-  { value: 200, weight: 5,  color: '#FF4DD2' },
-  { value: 500, weight: 2,  color: '#FFB547' },
+  { value: 200, weight: 5, color: '#FF4DD2' },
+  { value: 500, weight: 2, color: '#FFB547' },
   { value: 1000, weight: 1, color: '#FF4D6D' },
 ];
 
@@ -40,8 +42,20 @@ type State = {
   lastSpinDate: string | null;
   /** Сколько дней подряд крутил (множитель ×1, ×1.25, ×1.5, ×2 на 7-й день) */
   streakDays: number;
-  spin: () => { ok: false } | { ok: true; value: number; multiplier: number; total: number };
   canSpinToday: () => boolean;
+  /** Синхронизировать локальный кэш из серверного кошелька. */
+  applyWallet: (canSpinToday: boolean, wheelStreak: number) => void;
+  /** Спин через сервер (сервер владеет RNG/множителем/гардом «раз в день»). */
+  spin: () => Promise<
+    | { ok: false }
+    | {
+        ok: true;
+        value: number;
+        multiplier: number;
+        total: number;
+        sectorIndex: number;
+      }
+  >;
 };
 
 export const useDailyBonusStore = create<State>()(
@@ -50,19 +64,27 @@ export const useDailyBonusStore = create<State>()(
       lastSpinDate: null,
       streakDays: 0,
       canSpinToday: () => get().lastSpinDate !== todayIso(),
-      spin: () => {
-        if (get().lastSpinDate === todayIso()) return { ok: false };
-        const last = get().lastSpinDate;
-        const nextStreak = last === yesterdayIso() ? get().streakDays + 1 : 1;
-        const multiplier =
-          nextStreak >= 7 ? 2 :
-          nextStreak >= 5 ? 1.5 :
-          nextStreak >= 3 ? 1.25 :
-          1;
-        const { value } = spinWheel();
-        const total = Math.round(value * multiplier);
-        set({ lastSpinDate: todayIso(), streakDays: nextStreak });
-        return { ok: true, value, multiplier, total };
+      applyWallet: (canSpin, wheelStreak) =>
+        set({
+          lastSpinDate: canSpin ? null : todayIso(),
+          streakDays: wheelStreak,
+        }),
+      spin: async () => {
+        if (!get().canSpinToday()) return { ok: false };
+        try {
+          const r = await api.economy.spinWheel();
+          set({ lastSpinDate: todayIso(), streakDays: r.wheelStreak });
+          useLeafEconomyStore.setState({ leaves: r.leaves });
+          return {
+            ok: true,
+            value: r.value,
+            multiplier: r.multiplier,
+            total: r.total,
+            sectorIndex: r.sectorIndex,
+          };
+        } catch {
+          return { ok: false };
+        }
       },
     }),
     {

@@ -15,14 +15,19 @@ import { Card } from '../components/common/Card';
 import { ProgressBar } from '../components/common/ProgressBar';
 import { RingChart } from '../components/charts/RingChart';
 import { GradientButton } from '../components/common/GradientButton';
+import { CyclePhaseBanner } from '../components/common/CyclePhaseBanner';
 import { colors, radii } from '../theme/tokens';
 import { fontFamilies } from '../theme/typography';
 import { useNutritionStore } from '../store/nutritionStore';
 import { useUserStore } from '../store/userStore';
 import { foods, type Food, searchFoods, macrosFor } from '../data/foods';
+import { localizedFoodName } from '../data/foods_en';
 import { useCustomFoodsStore } from '../store/customFoodsStore';
 import { useWaterStore } from '../store/waterStore';
-import { useMealTemplatesStore, type MealTemplate } from '../store/mealTemplatesStore';
+import {
+  useMealTemplatesStore,
+  type MealTemplate,
+} from '../store/mealTemplatesStore';
 import { BarcodeScannerModal } from '../components/nutrition/BarcodeScannerModal';
 import { t, useLang } from '../i18n';
 
@@ -36,7 +41,7 @@ function mealTitle(t_: typeof t, m: string) {
 }
 
 export function NutritionScreen({ navigation }: any) {
-  useLang();
+  const lang = useLang();
   const insets = useSafeAreaInsets();
   const date = useNutritionStore((s) => s.date);
   const entries = useNutritionStore((s) => s.entries);
@@ -75,8 +80,13 @@ export function NutritionScreen({ navigation }: any) {
   const grouped = useMemo(() => {
     const order: MealType[] = ['breakfast', 'lunch', 'dinner', 'snack'];
     const map = new Map<string, typeof entries>();
-    for (const e of entries) map.set(e.meal_type, [...(map.get(e.meal_type) ?? []), e]);
-    return order.map((k) => ({ key: k, title: mealTitle(t, k), items: map.get(k) ?? [] }));
+    for (const e of entries)
+      map.set(e.meal_type, [...(map.get(e.meal_type) ?? []), e]);
+    return order.map((k) => ({
+      key: k,
+      title: mealTitle(t, k),
+      items: map.get(k) ?? [],
+    }));
   }, [entries]);
 
   const progress = goalCalories > 0 ? totals.calories / goalCalories : 0;
@@ -84,17 +94,40 @@ export function NutritionScreen({ navigation }: any) {
   const onDeleteEntry = (id: number, name: string | null) => {
     Alert.alert(t('nutrition.confirmDelete'), name ?? '', [
       { text: t('common.cancel'), style: 'cancel' },
-      { text: t('common.delete'), style: 'destructive', onPress: () => remove(id) },
+      {
+        text: t('common.delete'),
+        style: 'destructive',
+        onPress: () => remove(id),
+      },
     ]);
   };
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
-      <View style={{ paddingTop: insets.top + 8, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center' }}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={12} style={{ paddingVertical: 8, paddingRight: 10 }}>
+      <View
+        style={{
+          paddingTop: insets.top + 8,
+          paddingHorizontal: 16,
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}
+      >
+        <Pressable
+          onPress={() => navigation.goBack()}
+          hitSlop={12}
+          style={{ paddingVertical: 8, paddingRight: 10 }}
+        >
           <Ionicons name="chevron-back" size={20} color={colors.text} />
         </Pressable>
-        <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 18 }}>{t('nutrition.title')}</Text>
+        <Text
+          style={{
+            color: colors.text,
+            fontFamily: fontFamilies.body700,
+            fontSize: 18,
+          }}
+        >
+          {t('nutrition.title')}
+        </Text>
         <View style={{ flex: 1 }} />
         <View
           style={{
@@ -109,24 +142,57 @@ export function NutritionScreen({ navigation }: any) {
             backgroundColor: colors.bgSecondary,
           }}
         >
-          <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body600, fontSize: 12 }}>
+          <Text
+            style={{
+              color: colors.textSecondary,
+              fontFamily: fontFamilies.body600,
+              fontSize: 12,
+            }}
+          >
             {t('common.today')}
           </Text>
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 120 }} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 120 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <CyclePhaseBanner context="nutrition" />
         <View style={{ paddingHorizontal: 16, marginTop: 10 }}>
           <Card style={{ padding: 0, overflow: 'hidden' }}>
-            <LinearGradient colors={['rgba(21,21,31,0.85)', 'rgba(0,0,0,0.95)']} style={{ padding: 16 }}>
-              <View style={{ flexDirection: 'row', gap: 16, alignItems: 'center' }}>
-                <View style={{ width: 96, alignItems: 'center', justifyContent: 'center' }}>
+            <LinearGradient
+              colors={['rgba(21,21,31,0.85)', 'rgba(0,0,0,0.95)']}
+              style={{ padding: 16 }}
+            >
+              <View
+                style={{ flexDirection: 'row', gap: 16, alignItems: 'center' }}
+              >
+                <View
+                  style={{
+                    width: 96,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
                   <RingChart size={92} strokeWidth={7} progress={progress} />
                   <View style={{ position: 'absolute', alignItems: 'center' }}>
-                    <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 20 }}>
+                    <Text
+                      style={{
+                        color: colors.text,
+                        fontFamily: fontFamilies.body700,
+                        fontSize: 20,
+                      }}
+                    >
                       {totals.calories}
                     </Text>
-                    <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body600, fontSize: 11 }}>
+                    <Text
+                      style={{
+                        color: colors.textMuted,
+                        fontFamily: fontFamilies.body600,
+                        fontSize: 11,
+                      }}
+                    >
                       / {goalCalories} {t('common.kcal')}
                     </Text>
                   </View>
@@ -134,20 +200,53 @@ export function NutritionScreen({ navigation }: any) {
 
                 <View style={{ flex: 1, gap: 10 }}>
                   {[
-                    { label: t('nutrition.proteins'), v: totals.protein, target: goalProtein, c: colors.blue },
-                    { label: t('nutrition.fats'), v: totals.fats, target: goalFats, c: colors.pink },
-                    { label: t('nutrition.carbs'), v: totals.carbs, target: goalCarbs, c: colors.purpleLight },
+                    {
+                      label: t('nutrition.proteins'),
+                      v: totals.protein,
+                      target: goalProtein,
+                      c: colors.blue,
+                    },
+                    {
+                      label: t('nutrition.fats'),
+                      v: totals.fats,
+                      target: goalFats,
+                      c: colors.pink,
+                    },
+                    {
+                      label: t('nutrition.carbs'),
+                      v: totals.carbs,
+                      target: goalCarbs,
+                      c: colors.purpleLight,
+                    },
                   ].map((x) => (
                     <View key={x.label} style={{ gap: 6 }}>
-                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Text style={{ flex: 1, color: colors.textSecondary, fontFamily: fontFamilies.body600, fontSize: 12 }}>
+                      <View
+                        style={{ flexDirection: 'row', alignItems: 'center' }}
+                      >
+                        <Text
+                          style={{
+                            flex: 1,
+                            color: colors.textSecondary,
+                            fontFamily: fontFamilies.body600,
+                            fontSize: 12,
+                          }}
+                        >
                           {x.label}
                         </Text>
-                        <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body700, fontSize: 12 }}>
-                          {Math.round(x.v)} / {x.target} г
+                        <Text
+                          style={{
+                            color: colors.textSecondary,
+                            fontFamily: fontFamilies.body700,
+                            fontSize: 12,
+                          }}
+                        >
+                          {Math.round(x.v)} / {x.target} {t('common.gram')}
                         </Text>
                       </View>
-                      <ProgressBar value={x.target > 0 ? x.v / x.target : 0} color={x.c} />
+                      <ProgressBar
+                        value={x.target > 0 ? x.v / x.target : 0}
+                        color={x.c}
+                      />
                     </View>
                   ))}
                 </View>
@@ -159,7 +258,13 @@ export function NutritionScreen({ navigation }: any) {
         <WaterPanel />
 
         <View style={{ paddingHorizontal: 16, marginTop: 14 }}>
-          <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body600, fontSize: 12 }}>
+          <Text
+            style={{
+              color: colors.textSecondary,
+              fontFamily: fontFamilies.body600,
+              fontSize: 12,
+            }}
+          >
             {t('nutrition.mealsHeader')}
           </Text>
         </View>
@@ -169,34 +274,68 @@ export function NutritionScreen({ navigation }: any) {
             const kcal = g.items.reduce((s, x) => s + (x.calories ?? 0), 0);
             return (
               <Card key={g.key} variant="secondary" style={{ padding: 14 }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginBottom: 8,
+                  }}
+                >
                   <View
                     style={{
-                      width: 36, height: 36, borderRadius: 12,
+                      width: 36,
+                      height: 36,
+                      borderRadius: 12,
                       backgroundColor: 'rgba(123,63,228,0.18)',
-                      borderWidth: 1, borderColor: colors.borderNeon,
-                      alignItems: 'center', justifyContent: 'center',
+                      borderWidth: 1,
+                      borderColor: colors.borderNeon,
+                      alignItems: 'center',
+                      justifyContent: 'center',
                       marginRight: 10,
                     }}
                   >
-                    <Ionicons name="restaurant" size={16} color={colors.purpleLight} />
+                    <Ionicons
+                      name="restaurant"
+                      size={16}
+                      color={colors.purpleLight}
+                    />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 14 }}>
+                    <Text
+                      style={{
+                        color: colors.text,
+                        fontFamily: fontFamilies.body700,
+                        fontSize: 14,
+                      }}
+                    >
                       {g.title}
                     </Text>
-                    <Text style={{ marginTop: 2, color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11 }}>
-                      {g.items.length} {t('nutrition.entries').toLowerCase()} · {kcal} {t('common.kcal')}
+                    <Text
+                      style={{
+                        marginTop: 2,
+                        color: colors.textMuted,
+                        fontFamily: fontFamilies.body,
+                        fontSize: 11,
+                      }}
+                    >
+                      {g.items.length} {t('nutrition.entries').toLowerCase()} ·{' '}
+                      {kcal} {t('common.kcal')}
                     </Text>
                   </View>
                   <Pressable
-                    onPress={() => setPicker({ visible: true, meal: g.key as MealType })}
+                    onPress={() =>
+                      setPicker({ visible: true, meal: g.key as MealType })
+                    }
                     hitSlop={10}
                     style={{
-                      width: 32, height: 32, borderRadius: 10,
+                      width: 32,
+                      height: 32,
+                      borderRadius: 10,
                       backgroundColor: 'rgba(157,107,255,0.18)',
-                      borderWidth: 1, borderColor: colors.borderNeon,
-                      alignItems: 'center', justifyContent: 'center',
+                      borderWidth: 1,
+                      borderColor: colors.borderNeon,
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     }}
                   >
                     <Ionicons name="add" size={18} color={colors.purpleLight} />
@@ -210,7 +349,7 @@ export function NutritionScreen({ navigation }: any) {
                         onPress={() =>
                           Alert.alert(
                             e.name ?? '—',
-                            `${e.calories ?? 0} ккал · Б ${Math.round(e.protein ?? 0)} · Ж ${Math.round(e.fats ?? 0)} · У ${Math.round(e.carbs ?? 0)}`,
+                            `${e.calories ?? 0} ${t('common.kcal')} · ${t('nut.pShort')} ${Math.round(e.protein ?? 0)} · ${t('nut.fShort')} ${Math.round(e.fats ?? 0)} · ${t('nut.cShort')} ${Math.round(e.carbs ?? 0)}`,
                             [
                               { text: t('common.cancel'), style: 'cancel' },
                               {
@@ -231,14 +370,35 @@ export function NutritionScreen({ navigation }: any) {
                         }}
                       >
                         <View style={{ flex: 1 }}>
-                          <Text style={{ color: colors.text, fontFamily: fontFamilies.body600, fontSize: 13 }}>
+                          <Text
+                            style={{
+                              color: colors.text,
+                              fontFamily: fontFamilies.body600,
+                              fontSize: 13,
+                            }}
+                          >
                             {e.name ?? '—'}
                           </Text>
-                          <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11, marginTop: 2 }}>
-                            {e.calories ?? 0} {t('common.kcal')} · Б {Math.round(e.protein ?? 0)} · Ж {Math.round(e.fats ?? 0)} · У {Math.round(e.carbs ?? 0)}
+                          <Text
+                            style={{
+                              color: colors.textMuted,
+                              fontFamily: fontFamilies.body,
+                              fontSize: 11,
+                              marginTop: 2,
+                            }}
+                          >
+                            {e.calories ?? 0} {t('common.kcal')} ·{' '}
+                            {t('nut.pShort')} {Math.round(e.protein ?? 0)} ·{' '}
+                            {t('nut.fShort')} {Math.round(e.fats ?? 0)} ·{' '}
+                            {t('nut.cShort')} {Math.round(e.carbs ?? 0)}
                           </Text>
                         </View>
-                        <Ionicons name="chevron-forward" size={14} color={colors.textMuted} style={{ marginLeft: 4 }} />
+                        <Ionicons
+                          name="chevron-forward"
+                          size={14}
+                          color={colors.textMuted}
+                          style={{ marginLeft: 4 }}
+                        />
                       </Pressable>
                     ))}
                   </View>
@@ -249,7 +409,14 @@ export function NutritionScreen({ navigation }: any) {
         </View>
       </ScrollView>
 
-      <View style={{ position: 'absolute', left: 16, right: 16, bottom: Math.max(insets.bottom, 12) + 6 }}>
+      <View
+        style={{
+          position: 'absolute',
+          left: 16,
+          right: 16,
+          bottom: Math.max(insets.bottom, 12) + 6,
+        }}
+      >
         <GradientButton
           title={t('nutrition.addMeal')}
           onPress={() => setPicker({ visible: true, meal: 'snack' })}
@@ -266,7 +433,7 @@ export function NutritionScreen({ navigation }: any) {
           const time = new Date().toTimeString().slice(0, 5);
           await addEntry({
             meal_type: meal,
-            name: `${food.name} (${grams} г)`,
+            name: `${localizedFoodName(food, lang)} (${grams} ${t('common.gram')})`,
             calories: m.calories,
             protein: m.protein,
             fats: m.fats,
@@ -277,9 +444,7 @@ export function NutritionScreen({ navigation }: any) {
         }}
       />
 
-      <SaveAsTemplatePrompt
-        entries={entries}
-      />
+      <SaveAsTemplatePrompt entries={entries} />
     </View>
   );
 }
@@ -310,13 +475,24 @@ function SaveAsTemplatePrompt({ entries }: { entries: any[] }) {
           alignItems: 'center',
           justifyContent: 'center',
         }}
-        accessibilityLabel="Сохранить как шаблон"
+        accessibilityLabel={t('nut.saveAsTemplate')}
       >
         <Ionicons name="bookmark" size={18} color={colors.amber} />
       </Pressable>
 
-      <Modal visible={visible} transparent animationType="slide" onRequestClose={() => setVisible(false)}>
-        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.85)', justifyContent: 'flex-end' }}>
+      <Modal
+        visible={visible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setVisible(false)}
+      >
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.85)',
+            justifyContent: 'flex-end',
+          }}
+        >
           <View
             style={{
               backgroundColor: colors.bg,
@@ -328,52 +504,88 @@ function SaveAsTemplatePrompt({ entries }: { entries: any[] }) {
               paddingBottom: 24,
             }}
           >
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-              <Text style={{ flex: 1, color: colors.text, fontFamily: fontFamilies.heading, fontSize: 18 }}>
-                Сохранить как шаблон
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginBottom: 12,
+              }}
+            >
+              <Text
+                style={{
+                  flex: 1,
+                  color: colors.text,
+                  fontFamily: fontFamilies.heading,
+                  fontSize: 18,
+                }}
+              >
+                {t('nut.saveAsTemplate')}
               </Text>
               <Pressable onPress={() => setVisible(false)} hitSlop={12}>
                 <Ionicons name="close" size={22} color={colors.textSecondary} />
               </Pressable>
             </View>
-            <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 12, marginBottom: 10 }}>
-              Выбери приём пищи — все его продукты сохранятся как один шаблон, который потом можно применить одной кнопкой.
+            <Text
+              style={{
+                color: colors.textMuted,
+                fontFamily: fontFamilies.body,
+                fontSize: 12,
+                marginBottom: 10,
+              }}
+            >
+              {t('nut.saveTemplateHint')}
             </Text>
 
             <View style={{ flexDirection: 'row', gap: 6, marginBottom: 10 }}>
-              {(['breakfast', 'lunch', 'dinner', 'snack'] as MealType[]).map((m) => {
-                const active = m === selectedMeal;
-                const label =
-                  m === 'breakfast' ? t('nutrition.breakfast')
-                  : m === 'lunch' ? t('nutrition.lunch')
-                  : m === 'dinner' ? t('nutrition.dinner')
-                  : t('nutrition.snack');
-                return (
-                  <Pressable
-                    key={m}
-                    onPress={() => setSelectedMeal(m)}
-                    style={{
-                      flex: 1,
-                      paddingVertical: 8,
-                      borderRadius: 10,
-                      borderWidth: 1,
-                      borderColor: active ? colors.borderNeon : colors.border,
-                      backgroundColor: active ? 'rgba(157,107,255,0.18)' : colors.bgSecondary,
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Text style={{ color: active ? colors.purpleLight : colors.textSecondary, fontFamily: fontFamilies.body700, fontSize: 11 }}>
-                      {label} ({entries.filter((e) => e.meal_type === m).length})
-                    </Text>
-                  </Pressable>
-                );
-              })}
+              {(['breakfast', 'lunch', 'dinner', 'snack'] as MealType[]).map(
+                (m) => {
+                  const active = m === selectedMeal;
+                  const label =
+                    m === 'breakfast'
+                      ? t('nutrition.breakfast')
+                      : m === 'lunch'
+                        ? t('nutrition.lunch')
+                        : m === 'dinner'
+                          ? t('nutrition.dinner')
+                          : t('nutrition.snack');
+                  return (
+                    <Pressable
+                      key={m}
+                      onPress={() => setSelectedMeal(m)}
+                      style={{
+                        flex: 1,
+                        paddingVertical: 8,
+                        borderRadius: 10,
+                        borderWidth: 1,
+                        borderColor: active ? colors.borderNeon : colors.border,
+                        backgroundColor: active
+                          ? 'rgba(157,107,255,0.18)'
+                          : colors.bgSecondary,
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: active
+                            ? colors.purpleLight
+                            : colors.textSecondary,
+                          fontFamily: fontFamilies.body700,
+                          fontSize: 11,
+                        }}
+                      >
+                        {label} (
+                        {entries.filter((e) => e.meal_type === m).length})
+                      </Text>
+                    </Pressable>
+                  );
+                },
+              )}
             </View>
 
             <TextInput
               value={title}
               onChangeText={setTitle}
-              placeholder="Название (например, «Овсянка + банан»)"
+              placeholder={t('nut.templateNamePh')}
               placeholderTextColor={colors.textMuted}
               style={{
                 color: colors.text,
@@ -395,10 +607,14 @@ function SaveAsTemplatePrompt({ entries }: { entries: any[] }) {
                   title.trim(),
                   itemsForMeal.map((e) => {
                     // Извлекаем граммовку из name "Курица (150 г)"
-                    const match = (e.name as string)?.match(/\((\d+)\s*г\)$/);
+                    const match = (e.name as string)?.match(
+                      /\((\d+)\s*[гg]\)$/,
+                    );
                     const grams = match ? parseInt(match[1], 10) : 100;
                     return {
-                      name: (e.name as string)?.replace(/\s*\(\d+\s*г\)$/, '') ?? '—',
+                      name:
+                        (e.name as string)?.replace(/\s*\(\d+\s*[гg]\)$/, '') ??
+                        '—',
                       grams,
                       calories: e.calories ?? 0,
                       protein: e.protein ?? 0,
@@ -415,13 +631,21 @@ function SaveAsTemplatePrompt({ entries }: { entries: any[] }) {
                 borderRadius: 14,
                 borderWidth: 1,
                 borderColor: canSave ? colors.amber : colors.border,
-                backgroundColor: canSave ? 'rgba(255,181,71,0.18)' : colors.bgSecondary,
+                backgroundColor: canSave
+                  ? 'rgba(255,181,71,0.18)'
+                  : colors.bgSecondary,
                 alignItems: 'center',
                 opacity: canSave ? 1 : 0.5,
               }}
             >
-              <Text style={{ color: canSave ? colors.amber : colors.textMuted, fontFamily: fontFamilies.body700, fontSize: 13 }}>
-                Сохранить шаблон
+              <Text
+                style={{
+                  color: canSave ? colors.amber : colors.textMuted,
+                  fontFamily: fontFamilies.body700,
+                  fontSize: 13,
+                }}
+              >
+                {t('nut.saveTemplateBtn')}
               </Text>
             </Pressable>
           </View>
@@ -433,15 +657,19 @@ function SaveAsTemplatePrompt({ entries }: { entries: any[] }) {
 
 function WaterPanel() {
   const userWeight = useUserStore((s) => s.weightKg);
-  const glasses = useWaterStore((s) =>
-    s.history.find((d) => d.date === new Date().toISOString().slice(0, 10))?.glasses ?? 0,
+  const glasses = useWaterStore(
+    (s) =>
+      s.history.find((d) => d.date === new Date().toISOString().slice(0, 10))
+        ?.glasses ?? 0,
   );
   const glassMl = useWaterStore((s) => s.glassMl);
   const target = useWaterStore((s) => s.dailyTargetMl);
   const autoTarget = useWaterStore((s) => s.autoTarget);
   const add = useWaterStore((s) => s.add);
   const remove = useWaterStore((s) => s.remove);
-  const computeTargetFromWeight = useWaterStore((s) => s.computeTargetFromWeight);
+  const computeTargetFromWeight = useWaterStore(
+    (s) => s.computeTargetFromWeight,
+  );
 
   // Авто-пересчёт цели при изменении веса
   React.useEffect(() => {
@@ -465,23 +693,52 @@ function WaterPanel() {
               borderRadius: 28,
               borderWidth: 2,
               borderColor: done ? colors.green : colors.cyan,
-              backgroundColor: done ? 'rgba(63,255,150,0.20)' : 'rgba(0,229,255,0.14)',
+              backgroundColor: done
+                ? 'rgba(63,255,150,0.20)'
+                : 'rgba(0,229,255,0.14)',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <Ionicons name="water" size={28} color={done ? colors.green : colors.cyan} />
+            <Ionicons
+              name="water"
+              size={28}
+              color={done ? colors.green : colors.cyan}
+            />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 14 }}>
+            <Text
+              style={{
+                color: colors.text,
+                fontFamily: fontFamilies.body700,
+                fontSize: 14,
+              }}
+            >
               {t('foods.water')}
             </Text>
-            <Text style={{ marginTop: 2, color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11 }}>
-              {cur} / {target} мл · {pct}%
-              {userWeight && autoTarget ? ` · из ${userWeight} кг × 35` : ''}
+            <Text
+              style={{
+                marginTop: 2,
+                color: colors.textMuted,
+                fontFamily: fontFamilies.body,
+                fontSize: 11,
+              }}
+            >
+              {cur} / {target} {t('common.ml')} · {pct}%
+              {userWeight && autoTarget
+                ? ` · ${t('nut.waterFromWeight', { kg: userWeight })}`
+                : ''}
             </Text>
             {/* progress bar */}
-            <View style={{ marginTop: 6, height: 6, borderRadius: 3, backgroundColor: 'rgba(0,229,255,0.10)', overflow: 'hidden' }}>
+            <View
+              style={{
+                marginTop: 6,
+                height: 6,
+                borderRadius: 3,
+                backgroundColor: 'rgba(0,229,255,0.10)',
+                overflow: 'hidden',
+              }}
+            >
               <View
                 style={{
                   width: `${pct}%`,
@@ -504,11 +761,25 @@ function WaterPanel() {
               minWidth: 80,
             }}
           >
-            <Text style={{ color: colors.cyan, fontFamily: fontFamilies.body700, fontSize: 13 }}>
-              +{glassMl}мл
+            <Text
+              style={{
+                color: colors.cyan,
+                fontFamily: fontFamilies.body700,
+                fontSize: 13,
+              }}
+            >
+              +{glassMl}
+              {t('common.ml')}
             </Text>
-            <Text style={{ marginTop: 2, color: colors.cyan, fontFamily: fontFamilies.body, fontSize: 9 }}>
-              Выпил
+            <Text
+              style={{
+                marginTop: 2,
+                color: colors.cyan,
+                fontFamily: fontFamilies.body,
+                fontSize: 9,
+              }}
+            >
+              {t('nut.drank')}
             </Text>
           </Pressable>
           <Pressable
@@ -547,7 +818,7 @@ function FoodPickerModal({
   onClose: () => void;
   onAdd: (food: Food, grams: number, meal: MealType) => void;
 }) {
-  useLang();
+  const lang = useLang();
   const [q, setQ] = useState('');
   const [selected, setSelected] = useState<Food | null>(null);
   const [grams, setGrams] = useState('100');
@@ -605,8 +876,19 @@ function FoodPickerModal({
   ];
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.78)', justifyContent: 'flex-end' }}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+    >
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: 'rgba(0,0,0,0.78)',
+          justifyContent: 'flex-end',
+        }}
+      >
         <View
           style={{
             backgroundColor: colors.bg,
@@ -619,8 +901,21 @@ function FoodPickerModal({
             maxHeight: '92%',
           }}
         >
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-            <Text style={{ flex: 1, color: colors.text, fontFamily: fontFamilies.heading, fontSize: 20 }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginBottom: 12,
+            }}
+          >
+            <Text
+              style={{
+                flex: 1,
+                color: colors.text,
+                fontFamily: fontFamilies.heading,
+                fontSize: 20,
+              }}
+            >
               {t('nutrition.pickFood')}
             </Text>
             <Pressable onPress={onClose} hitSlop={12}>
@@ -629,7 +924,14 @@ function FoodPickerModal({
           </View>
 
           {/* meal selector */}
-          <View style={{ flexDirection: 'row', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              gap: 6,
+              flexWrap: 'wrap',
+              marginBottom: 12,
+            }}
+          >
             {meals.map((m) => {
               const active = selMeal === m.key;
               return (
@@ -642,10 +944,18 @@ function FoodPickerModal({
                     borderRadius: 12,
                     borderWidth: 1,
                     borderColor: active ? colors.borderNeon : colors.border,
-                    backgroundColor: active ? 'rgba(157,107,255,0.18)' : colors.bgSecondary,
+                    backgroundColor: active
+                      ? 'rgba(157,107,255,0.18)'
+                      : colors.bgSecondary,
                   }}
                 >
-                  <Text style={{ color: active ? colors.purpleLight : colors.textSecondary, fontFamily: fontFamilies.body700, fontSize: 12 }}>
+                  <Text
+                    style={{
+                      color: active ? colors.purpleLight : colors.textSecondary,
+                      fontFamily: fontFamilies.body700,
+                      fontSize: 12,
+                    }}
+                  >
                     {m.label}
                   </Text>
                 </Pressable>
@@ -660,14 +970,19 @@ function FoodPickerModal({
               return (
                 <Pressable
                   key={ft.key}
-                  onPress={() => { setTab(ft.key); setSelected(null); }}
+                  onPress={() => {
+                    setTab(ft.key);
+                    setSelected(null);
+                  }}
                   style={{
                     flex: 1,
                     paddingVertical: 8,
                     borderRadius: 10,
                     borderWidth: 1,
                     borderColor: active ? colors.borderNeon : colors.border,
-                    backgroundColor: active ? 'rgba(157,107,255,0.18)' : colors.bgSecondary,
+                    backgroundColor: active
+                      ? 'rgba(157,107,255,0.18)'
+                      : colors.bgSecondary,
                     alignItems: 'center',
                   }}
                 >
@@ -702,7 +1017,12 @@ function FoodPickerModal({
                 onChangeText={setQ}
                 placeholder={t('nutrition.search')}
                 placeholderTextColor={colors.textMuted}
-                style={{ color: colors.text, fontFamily: fontFamilies.body600, fontSize: 15, height: 46 }}
+                style={{
+                  color: colors.text,
+                  fontFamily: fontFamilies.body600,
+                  fontSize: 15,
+                  height: 46,
+                }}
               />
             </View>
             <Pressable
@@ -725,11 +1045,17 @@ function FoodPickerModal({
                 borderRadius: radii.md,
                 borderWidth: 1,
                 borderColor: showTemplates ? colors.amber : colors.border,
-                backgroundColor: showTemplates ? 'rgba(255,181,71,0.16)' : colors.bgSecondary,
+                backgroundColor: showTemplates
+                  ? 'rgba(255,181,71,0.16)'
+                  : colors.bgSecondary,
                 justifyContent: 'center',
               }}
             >
-              <Ionicons name="bookmarks-outline" size={18} color={showTemplates ? colors.amber : colors.textSecondary} />
+              <Ionicons
+                name="bookmarks-outline"
+                size={18}
+                color={showTemplates ? colors.amber : colors.textSecondary}
+              />
             </Pressable>
             <Pressable
               onPress={() => setShowCustomForm((v) => !v)}
@@ -738,7 +1064,9 @@ function FoodPickerModal({
                 borderRadius: radii.md,
                 borderWidth: 1,
                 borderColor: showCustomForm ? '#FFB547' : colors.borderNeon,
-                backgroundColor: showCustomForm ? 'rgba(255,181,71,0.16)' : 'rgba(157,107,255,0.16)',
+                backgroundColor: showCustomForm
+                  ? 'rgba(255,181,71,0.16)'
+                  : 'rgba(157,107,255,0.16)',
                 justifyContent: 'center',
               }}
             >
@@ -765,25 +1093,59 @@ function FoodPickerModal({
                 marginBottom: 12,
               }}
             >
-              <Text style={{ color: colors.amber, fontFamily: fontFamilies.body700, fontSize: 11, marginBottom: 8 }}>
-                ШАБЛОНЫ БЛЮД
+              <Text
+                style={{
+                  color: colors.amber,
+                  fontFamily: fontFamilies.body700,
+                  fontSize: 11,
+                  marginBottom: 8,
+                }}
+              >
+                {t('nut.mealTemplates')}
               </Text>
               {templates.length === 0 ? (
-                <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 12 }}>
-                  Шаблонов пока нет. Добавь в обычный приём пищи несколько продуктов и сохрани комбинацию как
-                  шаблон в трёх точках.
+                <Text
+                  style={{
+                    color: colors.textMuted,
+                    fontFamily: fontFamilies.body,
+                    fontSize: 12,
+                  }}
+                >
+                  {t('nut.noTemplates')}
                 </Text>
               ) : (
                 templates.map((tpl) => (
-                  <View key={tpl.id} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 6 }}>
+                  <View
+                    key={tpl.id}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      paddingVertical: 6,
+                    }}
+                  >
                     <View style={{ flex: 1 }}>
-                      <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 13 }}>
+                      <Text
+                        style={{
+                          color: colors.text,
+                          fontFamily: fontFamilies.body700,
+                          fontSize: 13,
+                        }}
+                      >
                         {tpl.title}
                       </Text>
-                      <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 10, marginTop: 2 }}>
-                        {tpl.items.length} продукта · {Math.round(tpl.totals.calories)} ккал · Б{' '}
-                        {Math.round(tpl.totals.protein)} Ж {Math.round(tpl.totals.fats)} У{' '}
-                        {Math.round(tpl.totals.carbs)}
+                      <Text
+                        style={{
+                          color: colors.textMuted,
+                          fontFamily: fontFamilies.body,
+                          fontSize: 10,
+                          marginTop: 2,
+                        }}
+                      >
+                        {t('nut.productsCount', { n: tpl.items.length })} ·{' '}
+                        {Math.round(tpl.totals.calories)} {t('common.kcal')} ·{' '}
+                        {t('nut.pShort')} {Math.round(tpl.totals.protein)}{' '}
+                        {t('nut.fShort')} {Math.round(tpl.totals.fats)}{' '}
+                        {t('nut.cShort')} {Math.round(tpl.totals.carbs)}
                       </Text>
                     </View>
                     <Pressable
@@ -794,7 +1156,9 @@ function FoodPickerModal({
                             {
                               id: `tpl_${tpl.id}_${it.name}`,
                               name: it.name,
-                              kcal: Math.round((it.calories * 100) / Math.max(1, it.grams)),
+                              kcal: Math.round(
+                                (it.calories * 100) / Math.max(1, it.grams),
+                              ),
                               protein: it.protein,
                               fats: it.fats,
                               carbs: it.carbs,
@@ -815,12 +1179,26 @@ function FoodPickerModal({
                         backgroundColor: 'rgba(255,181,71,0.18)',
                       }}
                     >
-                      <Text style={{ color: colors.amber, fontFamily: fontFamilies.body700, fontSize: 11 }}>
-                        Применить
+                      <Text
+                        style={{
+                          color: colors.amber,
+                          fontFamily: fontFamilies.body700,
+                          fontSize: 11,
+                        }}
+                      >
+                        {t('common.apply')}
                       </Text>
                     </Pressable>
-                    <Pressable onPress={() => removeTemplate(tpl.id)} hitSlop={8} style={{ marginLeft: 6 }}>
-                      <Ionicons name="trash-outline" size={14} color={colors.pink} />
+                    <Pressable
+                      onPress={() => removeTemplate(tpl.id)}
+                      hitSlop={8}
+                      style={{ marginLeft: 6 }}
+                    >
+                      <Ionicons
+                        name="trash-outline"
+                        size={14}
+                        color={colors.pink}
+                      />
                     </Pressable>
                   </View>
                 ))
@@ -850,16 +1228,37 @@ function FoodPickerModal({
                 marginBottom: 12,
               }}
             >
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                <Text style={{ flex: 1, color: colors.text, fontFamily: fontFamilies.body700, fontSize: 14 }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginBottom: 8,
+                }}
+              >
+                <Text
+                  style={{
+                    flex: 1,
+                    color: colors.text,
+                    fontFamily: fontFamilies.body700,
+                    fontSize: 14,
+                  }}
+                >
                   {selected.emoji ?? ''} {selected.name}
                 </Text>
                 <Pressable onPress={() => setSelected(null)} hitSlop={8}>
                   <Ionicons name="close" size={18} color={colors.textMuted} />
                 </Pressable>
               </View>
-              <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body500, fontSize: 11 }}>
+              <View
+                style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}
+              >
+                <Text
+                  style={{
+                    color: colors.textMuted,
+                    fontFamily: fontFamilies.body500,
+                    fontSize: 11,
+                  }}
+                >
                   {t('nutrition.grams').toUpperCase()}
                 </Text>
                 <TextInput
@@ -882,10 +1281,26 @@ function FoodPickerModal({
               </View>
               {macros ? (
                 <View style={{ marginTop: 10, flexDirection: 'row', gap: 12 }}>
-                  <MacroPill label={t('common.kcal')} value={macros.calories} tint={colors.amber} />
-                  <MacroPill label="Б" value={macros.protein} tint={colors.blue} />
-                  <MacroPill label="Ж" value={macros.fats} tint={colors.pink} />
-                  <MacroPill label="У" value={macros.carbs} tint={colors.purpleLight} />
+                  <MacroPill
+                    label={t('common.kcal')}
+                    value={macros.calories}
+                    tint={colors.amber}
+                  />
+                  <MacroPill
+                    label={t('nut.pShort')}
+                    value={macros.protein}
+                    tint={colors.blue}
+                  />
+                  <MacroPill
+                    label={t('nut.fShort')}
+                    value={macros.fats}
+                    tint={colors.pink}
+                  />
+                  <MacroPill
+                    label={t('nut.cShort')}
+                    value={macros.carbs}
+                    tint={colors.purpleLight}
+                  />
                 </View>
               ) : null}
               <View style={{ marginTop: 14 }}>
@@ -926,7 +1341,10 @@ function FoodPickerModal({
           />
 
           {/* список продуктов */}
-          <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 360 }}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={{ maxHeight: 360 }}
+          >
             {filtered.map((f) => (
               <Pressable
                 key={f.id}
@@ -935,7 +1353,11 @@ function FoodPickerModal({
                   if (tab === 'my' || (f as any).custom) {
                     Alert.alert(f.name, t('foods.delMy'), [
                       { text: t('common.cancel'), style: 'cancel' },
-                      { text: t('common.delete'), style: 'destructive', onPress: () => removeCustom(f.id) },
+                      {
+                        text: t('common.delete'),
+                        style: 'destructive',
+                        onPress: () => removeCustom(f.id),
+                      },
                     ]);
                   }
                 }}
@@ -951,24 +1373,63 @@ function FoodPickerModal({
               >
                 <Text style={{ fontSize: 18 }}>{f.emoji ?? '🍽'}</Text>
                 <View style={{ flex: 1 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <Text style={{ color: colors.text, fontFamily: fontFamilies.body600, fontSize: 14 }}>
-                      {f.name}
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 6,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: colors.text,
+                        fontFamily: fontFamilies.body600,
+                        fontSize: 14,
+                      }}
+                    >
+                      {localizedFoodName(f, lang)}
                     </Text>
                     {(f as any).custom ? (
-                      <Text style={{ color: colors.amber, fontSize: 10, fontFamily: fontFamilies.body700 }}>★</Text>
+                      <Text
+                        style={{
+                          color: colors.amber,
+                          fontSize: 10,
+                          fontFamily: fontFamilies.body700,
+                        }}
+                      >
+                        ★
+                      </Text>
                     ) : null}
                   </View>
-                  <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11, marginTop: 2 }}>
-                    {f.kcal} {t('common.kcal')} · Б {f.protein} · Ж {f.fats} · У {f.carbs} (100 г)
+                  <Text
+                    style={{
+                      color: colors.textMuted,
+                      fontFamily: fontFamilies.body,
+                      fontSize: 11,
+                      marginTop: 2,
+                    }}
+                  >
+                    {f.kcal} {t('common.kcal')} · {t('nut.pShort')} {f.protein}{' '}
+                    · {t('nut.fShort')} {f.fats} · {t('nut.cShort')} {f.carbs}{' '}
+                    {t('nut.per100g')}
                     {f.brand ? ` · ${f.brand}` : ''}
                   </Text>
                 </View>
-                <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+                <Ionicons
+                  name="chevron-forward"
+                  size={18}
+                  color={colors.textMuted}
+                />
               </Pressable>
             ))}
             {filtered.length === 0 ? (
-              <Text style={{ color: colors.textMuted, textAlign: 'center', paddingVertical: 24 }}>
+              <Text
+                style={{
+                  color: colors.textMuted,
+                  textAlign: 'center',
+                  paddingVertical: 24,
+                }}
+              >
                 {tab === 'my' ? t('foods.myEmpty') : '—'}
               </Text>
             ) : null}
@@ -1008,10 +1469,24 @@ function CustomFoodForm({
         marginBottom: 12,
       }}
     >
-      <Text style={{ color: '#FFB547', fontFamily: fontFamilies.body700, fontSize: 12, marginBottom: 8 }}>
+      <Text
+        style={{
+          color: '#FFB547',
+          fontFamily: fontFamilies.body700,
+          fontSize: 12,
+          marginBottom: 8,
+        }}
+      >
         {t('foods.customTitle')}
       </Text>
-      <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11, marginBottom: 8 }}>
+      <Text
+        style={{
+          color: colors.textMuted,
+          fontFamily: fontFamilies.body,
+          fontSize: 11,
+          marginBottom: 8,
+        }}
+      >
         {t('foods.savedToMy')}
       </Text>
 
@@ -1036,13 +1511,34 @@ function CustomFoodForm({
 
       <View style={{ flexDirection: 'row', gap: 6, marginBottom: 8 }}>
         <NutInput label={t('foods.kcal100')} value={kcal} onChange={setKcal} />
-        <NutInput label={t('foods.protein100')} value={protein} onChange={setProtein} />
+        <NutInput
+          label={t('foods.protein100')}
+          value={protein}
+          onChange={setProtein}
+        />
         <NutInput label={t('foods.fats100')} value={fats} onChange={setFats} />
-        <NutInput label={t('foods.carbs100')} value={carbs} onChange={setCarbs} />
+        <NutInput
+          label={t('foods.carbs100')}
+          value={carbs}
+          onChange={setCarbs}
+        />
       </View>
 
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-        <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body500, fontSize: 11 }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 8,
+          marginBottom: 10,
+        }}
+      >
+        <Text
+          style={{
+            color: colors.textMuted,
+            fontFamily: fontFamilies.body500,
+            fontSize: 11,
+          }}
+        >
           {t('nutrition.grams').toUpperCase()}
         </Text>
         <TextInput
@@ -1077,7 +1573,13 @@ function CustomFoodForm({
             alignItems: 'center',
           }}
         >
-          <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body700, fontSize: 12 }}>
+          <Text
+            style={{
+              color: colors.textSecondary,
+              fontFamily: fontFamilies.body700,
+              fontSize: 12,
+            }}
+          >
             {t('common.cancel')}
           </Text>
         </Pressable>
@@ -1106,7 +1608,13 @@ function CustomFoodForm({
             opacity: ok ? 1 : 0.5,
           }}
         >
-          <Text style={{ color: ok ? '#FFB547' : colors.textMuted, fontFamily: fontFamilies.body700, fontSize: 12 }}>
+          <Text
+            style={{
+              color: ok ? '#FFB547' : colors.textMuted,
+              fontFamily: fontFamilies.body700,
+              fontSize: 12,
+            }}
+          >
             {t('foods.saveCustom')}
           </Text>
         </Pressable>
@@ -1115,10 +1623,26 @@ function CustomFoodForm({
   );
 }
 
-function NutInput({ label, value, onChange }: { label: string; value: string; onChange: (s: string) => void }) {
+function NutInput({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (s: string) => void;
+}) {
   return (
     <View style={{ flex: 1 }}>
-      <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body500, fontSize: 9, marginBottom: 4, letterSpacing: 0.5 }}>
+      <Text
+        style={{
+          color: colors.textMuted,
+          fontFamily: fontFamilies.body500,
+          fontSize: 9,
+          marginBottom: 4,
+          letterSpacing: 0.5,
+        }}
+      >
         {label}
       </Text>
       <TextInput
@@ -1142,7 +1666,15 @@ function NutInput({ label, value, onChange }: { label: string; value: string; on
   );
 }
 
-function MacroPill({ label, value, tint }: { label: string; value: number; tint: string }) {
+function MacroPill({
+  label,
+  value,
+  tint,
+}: {
+  label: string;
+  value: number;
+  tint: string;
+}) {
   return (
     <View
       style={{
@@ -1155,10 +1687,24 @@ function MacroPill({ label, value, tint }: { label: string; value: number; tint:
         alignItems: 'center',
       }}
     >
-      <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body500, fontSize: 10, letterSpacing: 1 }}>
+      <Text
+        style={{
+          color: colors.textMuted,
+          fontFamily: fontFamilies.body500,
+          fontSize: 10,
+          letterSpacing: 1,
+        }}
+      >
         {label.toUpperCase()}
       </Text>
-      <Text style={{ marginTop: 2, color: tint, fontFamily: fontFamilies.body700, fontSize: 14 }}>
+      <Text
+        style={{
+          marginTop: 2,
+          color: tint,
+          fontFamily: fontFamilies.body700,
+          fontSize: 14,
+        }}
+      >
         {value}
       </Text>
     </View>

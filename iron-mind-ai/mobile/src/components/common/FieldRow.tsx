@@ -2,6 +2,7 @@ import React from 'react';
 import { Text, TextInput, View } from 'react-native';
 import { colors, radii } from '../../theme/tokens';
 import { fontFamilies } from '../../theme/typography';
+import { t } from '../../i18n';
 
 type Props = {
   label: string;
@@ -11,11 +12,27 @@ type Props = {
   compact?: boolean;
 };
 
-export function FieldRow({ label, value, onChange, suffix = 'см', compact }: Props) {
+export function FieldRow({ label, value, onChange, suffix, compact }: Props) {
+  const suffixLabel = suffix ?? t('common.cm');
   return (
     <View style={{ marginBottom: compact ? 8 : 12 }}>
-      <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body500, fontSize: 11 }}>{label}</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 6 }}>
+      <Text
+        style={{
+          color: colors.textMuted,
+          fontFamily: fontFamilies.body500,
+          fontSize: 11,
+        }}
+      >
+        {label}
+      </Text>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 8,
+          marginTop: 6,
+        }}
+      >
         <TextInput
           value={value}
           onChangeText={onChange}
@@ -35,9 +52,16 @@ export function FieldRow({ label, value, onChange, suffix = 'см', compact }: P
             fontSize: 13,
           }}
         />
-        <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body600, fontSize: 12 }}>{suffix}</Text>
+        <Text
+          style={{
+            color: colors.textSecondary,
+            fontFamily: fontFamilies.body600,
+            fontSize: 12,
+          }}
+        >
+          {suffixLabel}
+        </Text>
       </View>
     </View>
   );
 }
-

@@ -2,10 +2,18 @@
  * Экспорт данных в CSV. На web — скачивание через blob, на native — share через expo-sharing.
  */
 import React, { useState } from 'react';
-import { Alert, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import {
+  Alert,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import * as FileSystem from 'expo-file-system';
+// SDK 54: legacy file API (cacheDirectory / writeAsStringAsync) lives under /legacy
+import * as FileSystem from 'expo-file-system/legacy';
 import { Card } from '../components/common/Card';
 import { GradientButton } from '../components/common/GradientButton';
 import { ScreenHeader } from '../components/layout/ScreenHeader';
@@ -39,18 +47,28 @@ async function downloadCsv(filename: string, csv: string) {
     return;
   }
   try {
-    const dir = (FileSystem as any).cacheDirectory || (FileSystem as any).documentDirectory;
+    const dir =
+      (FileSystem as any).cacheDirectory ||
+      (FileSystem as any).documentDirectory;
     if (!dir) throw new Error('FS not available');
     const path = `${dir}${filename}`;
-    await (FileSystem as any).writeAsStringAsync(path, csv, { encoding: 'utf8' });
+    await (FileSystem as any).writeAsStringAsync(path, csv, {
+      encoding: 'utf8',
+    });
     const Sharing = await import('expo-sharing');
     if (await Sharing.isAvailableAsync()) {
-      await Sharing.shareAsync(path, { mimeType: 'text/csv', dialogTitle: filename });
+      await Sharing.shareAsync(path, {
+        mimeType: 'text/csv',
+        dialogTitle: filename,
+      });
     } else {
-      Alert.alert(t('dataExport.savedTitle'), t('dataExport.savedAlert', { path }));
+      Alert.alert(
+        t('dataExport.savedTitle'),
+        t('dataExport.savedAlert', { path }),
+      );
     }
   } catch (e) {
-    Alert.alert('Ошибка', (e as Error).message);
+    Alert.alert(t('common.error'), (e as Error).message);
   }
 }
 
@@ -72,7 +90,10 @@ export function DataExportScreen() {
         sets: w.totalSets ?? '',
         volumeKg: w.volumeKg ?? '',
       }));
-      await downloadCsv(`workouts_${new Date().toISOString().slice(0, 10)}.csv`, toCsv(rows));
+      await downloadCsv(
+        `workouts_${new Date().toISOString().slice(0, 10)}.csv`,
+        toCsv(rows),
+      );
     } catch (e) {
       Alert.alert(t('common.error'), (e as Error).message);
     } finally {
@@ -93,7 +114,10 @@ export function DataExportScreen() {
         fats: n.fats,
         carbs: n.carbs,
       }));
-      await downloadCsv(`nutrition_${new Date().toISOString().slice(0, 10)}.csv`, toCsv(rows));
+      await downloadCsv(
+        `nutrition_${new Date().toISOString().slice(0, 10)}.csv`,
+        toCsv(rows),
+      );
     } catch (e) {
       Alert.alert(t('common.error'), (e as Error).message);
     } finally {
@@ -118,7 +142,10 @@ export function DataExportScreen() {
         neck: m.neck,
         forearm: m.forearm,
       }));
-      await downloadCsv(`measurements_${new Date().toISOString().slice(0, 10)}.csv`, toCsv(rows));
+      await downloadCsv(
+        `measurements_${new Date().toISOString().slice(0, 10)}.csv`,
+        toCsv(rows),
+      );
     } catch (e) {
       Alert.alert(t('common.error'), (e as Error).message);
     } finally {
@@ -132,7 +159,14 @@ export function DataExportScreen() {
       <ScrollView contentContainerStyle={{ paddingBottom: 60 }}>
         <View style={{ paddingHorizontal: 16, marginTop: 14, gap: 12 }}>
           <Card variant="secondary">
-            <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, fontSize: 13, lineHeight: 19 }}>
+            <Text
+              style={{
+                color: colors.textSecondary,
+                fontFamily: fontFamilies.body,
+                fontSize: 13,
+                lineHeight: 19,
+              }}
+            >
               {t('dataExport.intro')}
             </Text>
           </Card>
@@ -168,10 +202,19 @@ export function DataExportScreen() {
 }
 
 function ExportRow({
-  label, sub, icon, tint, onPress, busy,
+  label,
+  sub,
+  icon,
+  tint,
+  onPress,
+  busy,
 }: {
-  label: string; sub: string; icon: keyof typeof import('@expo/vector-icons').Ionicons.glyphMap;
-  tint: string; onPress: () => void; busy: boolean;
+  label: string;
+  sub: string;
+  icon: keyof typeof import('@expo/vector-icons').Ionicons.glyphMap;
+  tint: string;
+  onPress: () => void;
+  busy: boolean;
 }) {
   return (
     <Pressable
@@ -204,8 +247,25 @@ function ExportRow({
         <Ionicons name={icon} size={20} color={tint} />
       </View>
       <View style={{ flex: 1 }}>
-        <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 14 }}>{label}</Text>
-        <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11, marginTop: 2 }}>{sub}</Text>
+        <Text
+          style={{
+            color: colors.text,
+            fontFamily: fontFamilies.body700,
+            fontSize: 14,
+          }}
+        >
+          {label}
+        </Text>
+        <Text
+          style={{
+            color: colors.textMuted,
+            fontFamily: fontFamilies.body,
+            fontSize: 11,
+            marginTop: 2,
+          }}
+        >
+          {sub}
+        </Text>
       </View>
       <Ionicons name={busy ? 'hourglass' : 'download'} size={18} color={tint} />
     </Pressable>

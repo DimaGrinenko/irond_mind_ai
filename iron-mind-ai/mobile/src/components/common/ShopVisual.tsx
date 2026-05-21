@@ -25,7 +25,8 @@ import Animated, {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import type { DumbbellAura } from './StreakDumbbell';
+import { auraName, type DumbbellAura } from './StreakDumbbell';
+import { t } from '../../i18n';
 import { colors } from '../../theme/tokens';
 import { fontFamilies } from '../../theme/typography';
 
@@ -37,14 +38,27 @@ type AuraBadgeProps = {
 };
 
 /** Большой круглый бейдж ауры с уникальным паттерном внутри. */
-export function AuraBadge({ aura, size = 96, locked = false, showLabel = false }: AuraBadgeProps) {
+export function AuraBadge({
+  aura,
+  size = 96,
+  locked = false,
+  showLabel = false,
+}: AuraBadgeProps) {
   const spin = useSharedValue(0);
   const pulse = useSharedValue(0);
 
   useEffect(() => {
     if (locked || Platform.OS === 'web') return;
-    spin.value = withRepeat(withTiming(1, { duration: 12000, easing: Easing.linear }), -1, false);
-    pulse.value = withRepeat(withTiming(1, { duration: 1800, easing: Easing.inOut(Easing.quad) }), -1, true);
+    spin.value = withRepeat(
+      withTiming(1, { duration: 12000, easing: Easing.linear }),
+      -1,
+      false,
+    );
+    pulse.value = withRepeat(
+      withTiming(1, { duration: 1800, easing: Easing.inOut(Easing.quad) }),
+      -1,
+      true,
+    );
   }, [spin, pulse, locked]);
 
   const orbitalStyle = useAnimatedStyle(() => ({
@@ -100,7 +114,15 @@ export function AuraBadge({ aura, size = 96, locked = false, showLabel = false }
           </Defs>
 
           {/* Outer ring */}
-          <Circle cx="50" cy="50" r="44" fill="none" stroke={`url(#ring-${aura.id})`} strokeWidth="2" opacity="0.6" />
+          <Circle
+            cx="50"
+            cy="50"
+            r="44"
+            fill="none"
+            stroke={`url(#ring-${aura.id})`}
+            strokeWidth="2"
+            opacity="0.6"
+          />
           {/* Inner core */}
           <Circle cx="50" cy="50" r="34" fill={`url(#core-${aura.id})`} />
 
@@ -109,11 +131,46 @@ export function AuraBadge({ aura, size = 96, locked = false, showLabel = false }
 
           {/* Mini dumbbell inside */}
           <G>
-            <Rect x="22" y="46" width="6" height="8" rx="1.5" fill={`url(#bell-${aura.id})`} />
-            <Rect x="28" y="48" width="3" height="4" rx="1" fill={`url(#bell-${aura.id})`} />
-            <Rect x="31" y="49" width="38" height="2" rx="1" fill={`url(#bell-${aura.id})`} />
-            <Rect x="69" y="48" width="3" height="4" rx="1" fill={`url(#bell-${aura.id})`} />
-            <Rect x="72" y="46" width="6" height="8" rx="1.5" fill={`url(#bell-${aura.id})`} />
+            <Rect
+              x="22"
+              y="46"
+              width="6"
+              height="8"
+              rx="1.5"
+              fill={`url(#bell-${aura.id})`}
+            />
+            <Rect
+              x="28"
+              y="48"
+              width="3"
+              height="4"
+              rx="1"
+              fill={`url(#bell-${aura.id})`}
+            />
+            <Rect
+              x="31"
+              y="49"
+              width="38"
+              height="2"
+              rx="1"
+              fill={`url(#bell-${aura.id})`}
+            />
+            <Rect
+              x="69"
+              y="48"
+              width="3"
+              height="4"
+              rx="1"
+              fill={`url(#bell-${aura.id})`}
+            />
+            <Rect
+              x="72"
+              y="46"
+              width="6"
+              height="8"
+              rx="1.5"
+              fill={`url(#bell-${aura.id})`}
+            />
           </G>
         </Svg>
 
@@ -159,7 +216,13 @@ export function AuraBadge({ aura, size = 96, locked = false, showLabel = false }
         ) : null}
 
         {locked ? (
-          <View style={{ position: 'absolute', alignItems: 'center', justifyContent: 'center' }}>
+          <View
+            style={{
+              position: 'absolute',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
             <Svg width={20} height={20} viewBox="0 0 24 24">
               <Path
                 d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm-3 8V7a3 3 0 1 1 6 0v3H9z"
@@ -182,10 +245,16 @@ export function AuraBadge({ aura, size = 96, locked = false, showLabel = false }
               textShadowRadius: 8,
             }}
           >
-            {aura.name}
+            {auraName(aura)}
           </Text>
-          <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 9 }}>
-            {aura.days}+ дн
+          <Text
+            style={{
+              color: colors.textMuted,
+              fontFamily: fontFamilies.body,
+              fontSize: 9,
+            }}
+          >
+            {t('shop.daysPlus', { days: aura.days })}
           </Text>
         </>
       ) : null}
@@ -202,7 +271,16 @@ function renderTierPattern(aura: DumbbellAura) {
       const angle = (i / 6) * Math.PI * 2;
       const x = 50 + Math.cos(angle) * 36;
       const y = 50 + Math.sin(angle) * 36;
-      return <Circle key={i} cx={x} cy={y} r="1.5" fill={aura.primary} opacity="0.6" />;
+      return (
+        <Circle
+          key={i}
+          cx={x}
+          cy={y}
+          r="1.5"
+          fill={aura.primary}
+          opacity="0.6"
+        />
+      );
     });
   }
   // Mid tiers — рунные знаки 4 направления
@@ -211,7 +289,14 @@ function renderTierPattern(aura: DumbbellAura) {
       const angle = (i / 4) * Math.PI * 2 - Math.PI / 2;
       const cx = 50 + Math.cos(angle) * 38;
       const cy = 50 + Math.sin(angle) * 38;
-      return <Polygon key={i} points={`${cx},${cy - 3} ${cx + 3},${cy} ${cx},${cy + 3} ${cx - 3},${cy}`} fill={aura.primary} opacity="0.85" />;
+      return (
+        <Polygon
+          key={i}
+          points={`${cx},${cy - 3} ${cx + 3},${cy} ${cx},${cy + 3} ${cx - 3},${cy}`}
+          fill={aura.primary}
+          opacity="0.85"
+        />
+      );
     });
   }
   // High tiers — лучи + кристаллы
@@ -224,7 +309,15 @@ function renderTierPattern(aura: DumbbellAura) {
           const y1 = 50 + Math.sin(angle) * 36;
           const x2 = 50 + Math.cos(angle) * 44;
           const y2 = 50 + Math.sin(angle) * 44;
-          return <Path key={i} d={`M${x1} ${y1} L${x2} ${y2}`} stroke={aura.primary} strokeWidth="1.5" opacity="0.9" />;
+          return (
+            <Path
+              key={i}
+              d={`M${x1} ${y1} L${x2} ${y2}`}
+              stroke={aura.primary}
+              strokeWidth="1.5"
+              opacity="0.9"
+            />
+          );
         })}
       </G>
     );
@@ -238,13 +331,28 @@ function renderTierPattern(aura: DumbbellAura) {
         const y1 = 50 + Math.sin(angle) * 34;
         const x2 = 50 + Math.cos(angle) * 46;
         const y2 = 50 + Math.sin(angle) * 46;
-        return <Path key={i} d={`M${x1} ${y1} L${x2} ${y2}`} stroke={aura.primary} strokeWidth="1.2" opacity="0.95" />;
+        return (
+          <Path
+            key={i}
+            d={`M${x1} ${y1} L${x2} ${y2}`}
+            stroke={aura.primary}
+            strokeWidth="1.2"
+            opacity="0.95"
+          />
+        );
       })}
       {Array.from({ length: 6 }).map((_, i) => {
         const angle = (i / 6) * Math.PI * 2 + Math.PI / 12;
         const cx = 50 + Math.cos(angle) * 40;
         const cy = 50 + Math.sin(angle) * 40;
-        return <Polygon key={`d${i}`} points={`${cx},${cy - 2.5} ${cx + 2},${cy} ${cx},${cy + 2.5} ${cx - 2},${cy}`} fill={aura.secondary} opacity="0.95" />;
+        return (
+          <Polygon
+            key={`d${i}`}
+            points={`${cx},${cy - 2.5} ${cx + 2},${cy} ${cx},${cy + 2.5} ${cx - 2},${cy}`}
+            fill={aura.secondary}
+            opacity="0.95"
+          />
+        );
       })}
     </G>
   );
@@ -253,13 +361,34 @@ function renderTierPattern(aura: DumbbellAura) {
 // ============= TREE SKIN VISUAL =============
 type TreeSkinId = 'tree_skin_aurora' | 'tree_skin_gold' | 'tree_skin_neon_red';
 
-export function TreeSkinVisual({ id, size = 84 }: { id: TreeSkinId; size?: number }) {
+export function TreeSkinVisual({
+  id,
+  size = 84,
+}: {
+  id: TreeSkinId;
+  size?: number;
+}) {
   const palette =
     id === 'tree_skin_aurora'
-      ? { trunk: '#6B3FFF', leaf1: '#00E5FF', leaf2: '#FF4DD2', leaf3: '#FFD27A' }
+      ? {
+          trunk: '#6B3FFF',
+          leaf1: '#00E5FF',
+          leaf2: '#FF4DD2',
+          leaf3: '#FFD27A',
+        }
       : id === 'tree_skin_gold'
-        ? { trunk: '#8A6B1F', leaf1: '#FFD27A', leaf2: '#FFB547', leaf3: '#FFFFFF' }
-        : { trunk: '#5C1F26', leaf1: '#FF4D6D', leaf2: '#FF8042', leaf3: '#9D2D3B' };
+        ? {
+            trunk: '#8A6B1F',
+            leaf1: '#FFD27A',
+            leaf2: '#FFB547',
+            leaf3: '#FFFFFF',
+          }
+        : {
+            trunk: '#5C1F26',
+            leaf1: '#FF4D6D',
+            leaf2: '#FF8042',
+            leaf3: '#9D2D3B',
+          };
 
   return (
     <Svg width={size} height={size * 1.2} viewBox="0 0 100 120">
@@ -276,22 +405,58 @@ export function TreeSkinVisual({ id, size = 84 }: { id: TreeSkinId; size?: numbe
       </Defs>
       {/* Crown */}
       <Circle cx="50" cy="38" r="32" fill={`url(#crown-${id})`} />
-      <Circle cx="34" cy="46" r="20" fill={`url(#crown-${id})`} opacity="0.85" />
-      <Circle cx="66" cy="46" r="20" fill={`url(#crown-${id})`} opacity="0.85" />
+      <Circle
+        cx="34"
+        cy="46"
+        r="20"
+        fill={`url(#crown-${id})`}
+        opacity="0.85"
+      />
+      <Circle
+        cx="66"
+        cy="46"
+        r="20"
+        fill={`url(#crown-${id})`}
+        opacity="0.85"
+      />
       {/* Trunk */}
-      <Rect x="46" y="60" width="8" height="44" rx="2" fill={`url(#trunk-${id})`} />
+      <Rect
+        x="46"
+        y="60"
+        width="8"
+        height="44"
+        rx="2"
+        fill={`url(#trunk-${id})`}
+      />
       {/* Branches */}
       <Path d="M50 75 L34 70" stroke={palette.trunk} strokeWidth="2.5" />
       <Path d="M50 75 L66 70" stroke={palette.trunk} strokeWidth="2.5" />
       {/* Ground */}
-      <Rect x="20" y="102" width="60" height="3" rx="1.5" fill={palette.trunk} opacity="0.4" />
+      <Rect
+        x="20"
+        y="102"
+        width="60"
+        height="3"
+        rx="1.5"
+        fill={palette.trunk}
+        opacity="0.4"
+      />
       {/* Sparkles for aurora/gold */}
       {(id === 'tree_skin_aurora' || id === 'tree_skin_gold') && (
         <G>
           {Array.from({ length: 5 }).map((_, i) => {
             const cx = 25 + i * 12;
             const cy = 12 + (i % 2) * 8;
-            return <Circle key={i} cx={cx} cy={cy} r="1.5" fill={palette.leaf3} opacity="0.9" />;
+            return (
+              <Circle
+                key={i}
+                cx={cx}
+                cy={cy}
+                r="1.5"
+                fill={palette.leaf3}
+                opacity="0.9"
+              />
+            );
           })}
         </G>
       )}
@@ -302,11 +467,27 @@ export function TreeSkinVisual({ id, size = 84 }: { id: TreeSkinId; size?: numbe
 // ============= DUMBBELL SKIN VISUAL =============
 type DumbbellSkinId = 'dumbbell_chrome' | 'dumbbell_gold';
 
-export function DumbbellSkinVisual({ id, size = 84 }: { id: DumbbellSkinId; size?: number }) {
+export function DumbbellSkinVisual({
+  id,
+  size = 84,
+}: {
+  id: DumbbellSkinId;
+  size?: number;
+}) {
   const palette =
     id === 'dumbbell_chrome'
-      ? { primary: '#E8E8F0', secondary: '#909098', highlight: '#FFFFFF', glow: 'rgba(232,232,240,0.45)' }
-      : { primary: '#FFD27A', secondary: '#B8821F', highlight: '#FFF7D6', glow: 'rgba(255,210,122,0.55)' };
+      ? {
+          primary: '#E8E8F0',
+          secondary: '#909098',
+          highlight: '#FFFFFF',
+          glow: 'rgba(232,232,240,0.45)',
+        }
+      : {
+          primary: '#FFD27A',
+          secondary: '#B8821F',
+          highlight: '#FFF7D6',
+          glow: 'rgba(255,210,122,0.55)',
+        };
 
   return (
     <Svg width={size} height={size} viewBox="0 0 100 100">
@@ -328,16 +509,73 @@ export function DumbbellSkinVisual({ id, size = 84 }: { id: DumbbellSkinId; size
       </Defs>
       <Circle cx="50" cy="50" r="48" fill={palette.glow} opacity="0.5" />
       <G>
-        <Rect x="8" y="32" width="16" height="36" rx="4" fill={`url(#b-${id})`} />
-        <Rect x="24" y="40" width="7" height="20" rx="2.5" fill={`url(#b-${id})`} />
-        <Rect x="10" y="34" width="10" height="16" rx="3" fill={`url(#shine-${id})`} />
+        <Rect
+          x="8"
+          y="32"
+          width="16"
+          height="36"
+          rx="4"
+          fill={`url(#b-${id})`}
+        />
+        <Rect
+          x="24"
+          y="40"
+          width="7"
+          height="20"
+          rx="2.5"
+          fill={`url(#b-${id})`}
+        />
+        <Rect
+          x="10"
+          y="34"
+          width="10"
+          height="16"
+          rx="3"
+          fill={`url(#shine-${id})`}
+        />
       </G>
-      <Rect x="31" y="46" width="38" height="8" rx="3" fill={`url(#bar-${id})`} />
-      <Rect x="34" y="47" width="32" height="2" rx="1" fill="#FFFFFF" fillOpacity="0.4" />
+      <Rect
+        x="31"
+        y="46"
+        width="38"
+        height="8"
+        rx="3"
+        fill={`url(#bar-${id})`}
+      />
+      <Rect
+        x="34"
+        y="47"
+        width="32"
+        height="2"
+        rx="1"
+        fill="#FFFFFF"
+        fillOpacity="0.4"
+      />
       <G>
-        <Rect x="76" y="32" width="16" height="36" rx="4" fill={`url(#b-${id})`} />
-        <Rect x="69" y="40" width="7" height="20" rx="2.5" fill={`url(#b-${id})`} />
-        <Rect x="80" y="34" width="10" height="16" rx="3" fill={`url(#shine-${id})`} />
+        <Rect
+          x="76"
+          y="32"
+          width="16"
+          height="36"
+          rx="4"
+          fill={`url(#b-${id})`}
+        />
+        <Rect
+          x="69"
+          y="40"
+          width="7"
+          height="20"
+          rx="2.5"
+          fill={`url(#b-${id})`}
+        />
+        <Rect
+          x="80"
+          y="34"
+          width="10"
+          height="16"
+          rx="3"
+          fill={`url(#shine-${id})`}
+        />
       </G>
     </Svg>
   );
@@ -346,8 +584,19 @@ export function DumbbellSkinVisual({ id, size = 84 }: { id: DumbbellSkinId; size
 // ============= ACCENT SWATCH =============
 type AccentId = 'accent_cyan' | 'accent_pink' | 'accent_amber';
 
-export function AccentSwatch({ id, size = 84 }: { id: AccentId; size?: number }) {
-  const color = id === 'accent_cyan' ? '#00E5FF' : id === 'accent_pink' ? '#FF4DD2' : '#FFB547';
+export function AccentSwatch({
+  id,
+  size = 84,
+}: {
+  id: AccentId;
+  size?: number;
+}) {
+  const color =
+    id === 'accent_cyan'
+      ? '#00E5FF'
+      : id === 'accent_pink'
+        ? '#FF4DD2'
+        : '#FFB547';
   return (
     <Svg width={size} height={size} viewBox="0 0 100 100">
       <Defs>
@@ -357,9 +606,32 @@ export function AccentSwatch({ id, size = 84 }: { id: AccentId; size?: number })
         </LinearGradient>
       </Defs>
       {/* Sample UI elements with the accent color */}
-      <Rect x="14" y="20" width="72" height="12" rx="6" fill={`url(#a-${id})`} />
-      <Rect x="14" y="40" width="56" height="8" rx="4" fill={color} opacity="0.5" />
-      <Rect x="14" y="56" width="42" height="8" rx="4" fill={color} opacity="0.3" />
+      <Rect
+        x="14"
+        y="20"
+        width="72"
+        height="12"
+        rx="6"
+        fill={`url(#a-${id})`}
+      />
+      <Rect
+        x="14"
+        y="40"
+        width="56"
+        height="8"
+        rx="4"
+        fill={color}
+        opacity="0.5"
+      />
+      <Rect
+        x="14"
+        y="56"
+        width="42"
+        height="8"
+        rx="4"
+        fill={color}
+        opacity="0.3"
+      />
       <Circle cx="50" cy="82" r="10" fill={color} opacity="0.85" />
       <Circle cx="50" cy="82" r="5" fill="#FFFFFF" opacity="0.9" />
     </Svg>
@@ -368,13 +640,17 @@ export function AccentSwatch({ id, size = 84 }: { id: AccentId; size?: number })
 
 /** Универсальная обёртка — выбирает визуал по category+id. */
 export function ShopItemVisual({
-  category, id, size = 60,
+  category,
+  id,
+  size = 60,
 }: {
   category: 'tree' | 'dumbbell' | 'accent';
   id: string;
   size?: number;
 }) {
-  if (category === 'tree') return <TreeSkinVisual id={id as TreeSkinId} size={size} />;
-  if (category === 'dumbbell') return <DumbbellSkinVisual id={id as DumbbellSkinId} size={size} />;
+  if (category === 'tree')
+    return <TreeSkinVisual id={id as TreeSkinId} size={size} />;
+  if (category === 'dumbbell')
+    return <DumbbellSkinVisual id={id as DumbbellSkinId} size={size} />;
   return <AccentSwatch id={id as AccentId} size={size} />;
 }

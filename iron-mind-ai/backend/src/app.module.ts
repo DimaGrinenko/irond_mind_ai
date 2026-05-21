@@ -19,6 +19,8 @@ import { CoachModule } from './coach/coach.module';
 import { OnboardingModule } from './onboarding/onboarding.module';
 import { AchievementsModule } from './achievements/achievements.module';
 import { ScheduleModule } from './schedule/schedule.module';
+import { EconomyModule } from './economy/economy.module';
+import { CycleModule } from './cycle/cycle.module';
 
 @Module({
   imports: [
@@ -42,6 +44,8 @@ import { ScheduleModule } from './schedule/schedule.module';
     OnboardingModule,
     AchievementsModule,
     ScheduleModule,
+    EconomyModule,
+    CycleModule,
   ],
   controllers: [AppController],
   providers: [

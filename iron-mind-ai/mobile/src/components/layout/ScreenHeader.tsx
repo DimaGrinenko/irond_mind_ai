@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../../theme/tokens';
 import { fontFamilies } from '../../theme/typography';
+import { t } from '../../i18n';
 
 export function ScreenHeader({
   title,
@@ -29,7 +30,7 @@ export function ScreenHeader({
           <Pressable
             onPress={onBack}
             accessibilityRole="button"
-            accessibilityLabel="Назад"
+            accessibilityLabel={t('common.back')}
             hitSlop={12}
             style={{ paddingVertical: 8, paddingRight: 10 }}
           >
@@ -38,7 +39,15 @@ export function ScreenHeader({
         ) : null}
       </View>
       <View style={{ flex: 1, alignItems: 'center' }}>
-        <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 18 }}>{title}</Text>
+        <Text
+          style={{
+            color: colors.text,
+            fontFamily: fontFamilies.body700,
+            fontSize: 18,
+          }}
+        >
+          {title}
+        </Text>
       </View>
       <View style={{ width: 40, alignItems: 'flex-end' }}>{right ?? null}</View>
     </View>

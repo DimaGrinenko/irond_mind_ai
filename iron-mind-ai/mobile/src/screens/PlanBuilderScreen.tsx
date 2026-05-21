@@ -4,7 +4,15 @@
  * Создаёт личную программу на backend и сразу её use().
  */
 import React, { useMemo, useState } from 'react';
-import { Alert, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import {
+  Alert,
+  Modal,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -14,13 +22,22 @@ import { GradientButton } from '../components/common/GradientButton';
 import { colors, neonGlow, radii } from '../theme/tokens';
 import { fontFamilies } from '../theme/typography';
 import { exercises as catalog } from '../data/exercises';
+import { localizedExercise } from '../data/exercises_en';
 import { api } from '../api/client';
 import { useUserStore } from '../store/userStore';
-import { t, useLang } from '../i18n';
+import { t, useLang, muscleLabel, difficultyLabel } from '../i18n';
 
 type Step = 'name' | 'days' | 'exercises' | 'review';
 
-const WEEKDAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+const weekdaysShort = () => [
+  t('wd.mon'),
+  t('wd.tue'),
+  t('wd.wed'),
+  t('wd.thu'),
+  t('wd.fri'),
+  t('wd.sat'),
+  t('wd.sun'),
+];
 
 type DayDraft = {
   title: string;
@@ -35,11 +52,11 @@ export function PlanBuilderScreen() {
   const setProgram = useUserStore((s) => s.setProgram);
 
   const [step, setStep] = useState<Step>('name');
-  const [planTitle, setPlanTitle] = useState('Мой план');
+  const [planTitle, setPlanTitle] = useState(t('plan.defaultTitle'));
   const [days, setDays] = useState<DayDraft[]>([
-    { title: 'День A', weekday: 0, exerciseIds: [] },
-    { title: 'День B', weekday: 2, exerciseIds: [] },
-    { title: 'День C', weekday: 4, exerciseIds: [] },
+    { title: t('plan.dayN', { x: 'A' }), weekday: 0, exerciseIds: [] },
+    { title: t('plan.dayN', { x: 'B' }), weekday: 2, exerciseIds: [] },
+    { title: t('plan.dayN', { x: 'C' }), weekday: 4, exerciseIds: [] },
   ]);
   const [editingDayIdx, setEditingDayIdx] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -54,14 +71,24 @@ export function PlanBuilderScreen() {
     return c;
   }, [days]);
 
-  const canProceedDays = days.length > 0 && conflicts.size === 0 && days.every((d) => d.title.trim());
+  const canProceedDays =
+    days.length > 0 &&
+    conflicts.size === 0 &&
+    days.every((d) => d.title.trim());
   const canProceedExercises = days.every((d) => d.exerciseIds.length > 0);
 
   const addDay = () => {
     if (days.length >= 6) return;
     const usedWeekdays = new Set(days.map((d) => d.weekday));
     const nextWd = [0, 1, 2, 3, 4, 5, 6].find((w) => !usedWeekdays.has(w)) ?? 0;
-    setDays([...days, { title: `День ${String.fromCharCode(65 + days.length)}`, weekday: nextWd, exerciseIds: [] }]);
+    setDays([
+      ...days,
+      {
+        title: t('plan.dayN', { x: String.fromCharCode(65 + days.length) }),
+        weekday: nextWd,
+        exerciseIds: [],
+      },
+    ]);
   };
 
   const removeDay = (idx: number) => {
@@ -78,9 +105,9 @@ export function PlanBuilderScreen() {
     try {
       // 1. Создаём личную программу с нуля
       const created = await api.programs.create({
-        title: planTitle.trim() || 'Мой план',
-        subtitle: 'Личный план',
-        description: 'Составлен в конструкторе плана',
+        title: planTitle.trim() || t('plan.defaultTitle'),
+        subtitle: t('plan.subtitle'),
+        description: t('plan.description'),
         daysPerWeek: days.length,
         weeks: 8,
         kind: 'CUSTOM',
@@ -88,7 +115,7 @@ export function PlanBuilderScreen() {
       // 2. Добавляем дни и упражнения
       for (const d of days) {
         const dayRow = await api.programs.addDay(created.id, {
-          title: d.title.trim() || 'День',
+          title: d.title.trim() || t('plan.day'),
           weekday: d.weekday,
         });
         for (const exId of d.exerciseIds) {
@@ -112,8 +139,8 @@ export function PlanBuilderScreen() {
       });
 
       setProgram(created.id, 1);
-      Alert.alert(planTitle, 'План создан и запущен в календаре!', [
-        { text: 'OK', onPress: () => nav.goBack() },
+      Alert.alert(planTitle, t('plan.createdMsg'), [
+        { text: t('common.ok'), onPress: () => nav.goBack() },
       ]);
     } catch (e) {
       Alert.alert(t('common.error'), (e as Error).message);
@@ -129,20 +156,45 @@ export function PlanBuilderScreen() {
         style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 280 }}
       />
 
-      <View style={{ paddingTop: insets.top + 8, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center' }}>
-        <Pressable onPress={() => nav.goBack()} hitSlop={12} style={{ paddingVertical: 8, paddingRight: 10 }}>
+      <View
+        style={{
+          paddingTop: insets.top + 8,
+          paddingHorizontal: 16,
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}
+      >
+        <Pressable
+          onPress={() => nav.goBack()}
+          hitSlop={12}
+          style={{ paddingVertical: 8, paddingRight: 10 }}
+        >
           <Ionicons name="chevron-back" size={20} color={colors.text} />
         </Pressable>
-        <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 18 }}>
+        <Text
+          style={{
+            color: colors.text,
+            fontFamily: fontFamilies.body700,
+            fontSize: 18,
+          }}
+        >
           {t('home.composePlan')}
         </Text>
       </View>
 
       {/* шаги */}
-      <View style={{ paddingHorizontal: 16, marginTop: 14, flexDirection: 'row', gap: 6 }}>
+      <View
+        style={{
+          paddingHorizontal: 16,
+          marginTop: 14,
+          flexDirection: 'row',
+          gap: 6,
+        }}
+      >
         {(['name', 'days', 'exercises', 'review'] as Step[]).map((s, i) => {
           const active = step === s;
-          const done = ['name', 'days', 'exercises', 'review'].indexOf(step) > i;
+          const done =
+            ['name', 'days', 'exercises', 'review'].indexOf(step) > i;
           return (
             <View
               key={s}
@@ -150,28 +202,68 @@ export function PlanBuilderScreen() {
                 flex: 1,
                 height: 4,
                 borderRadius: 2,
-                backgroundColor: done ? colors.green : active ? colors.purpleLight : 'rgba(255,255,255,0.08)',
+                backgroundColor: done
+                  ? colors.green
+                  : active
+                    ? colors.purpleLight
+                    : 'rgba(255,255,255,0.08)',
               }}
             />
           );
         })}
       </View>
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 180 }} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 180 }}
+        showsVerticalScrollIndicator={false}
+      >
         {step === 'name' && (
           <View style={{ paddingHorizontal: 16, marginTop: 20, gap: 14 }}>
-            <Text style={{ color: colors.text, fontFamily: fontFamilies.heading, fontSize: 24 }}>
-              Как назовём план?
+            <Text
+              style={{
+                color: colors.text,
+                fontFamily: fontFamilies.heading,
+                fontSize: 24,
+              }}
+            >
+              {t('plan.q1')}
             </Text>
-            <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 13 }}>
-              Например «Утро на массу» или «Среда — спина». Это название будет видно на главной и в календаре.
+            <Text
+              style={{
+                color: colors.textMuted,
+                fontFamily: fontFamilies.body,
+                fontSize: 13,
+              }}
+            >
+              {t('plan.q1hint')}
             </Text>
-            <View style={{ padding: 12, borderRadius: 12, borderWidth: 1, borderColor: colors.borderNeon, backgroundColor: 'rgba(157,107,255,0.08)' }}>
-              <Text style={{ color: colors.purpleLight, fontFamily: fontFamilies.body700, fontSize: 11, marginBottom: 4 }}>
-                💡 СОВЕТ
+            <View
+              style={{
+                padding: 12,
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: colors.borderNeon,
+                backgroundColor: 'rgba(157,107,255,0.08)',
+              }}
+            >
+              <Text
+                style={{
+                  color: colors.purpleLight,
+                  fontFamily: fontFamilies.body700,
+                  fontSize: 11,
+                  marginBottom: 4,
+                }}
+              >
+                {t('plan.tipLabel')}
               </Text>
-              <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, fontSize: 12 }}>
-                Не пытайся сделать идеально с первого раза — план можно полностью переделать в редакторе. Главное — начать.
+              <Text
+                style={{
+                  color: colors.textSecondary,
+                  fontFamily: fontFamilies.body,
+                  fontSize: 12,
+                }}
+              >
+                {t('plan.q1tip')}
               </Text>
             </View>
             <View
@@ -186,10 +278,15 @@ export function PlanBuilderScreen() {
               <TextInput
                 value={planTitle}
                 onChangeText={setPlanTitle}
-                placeholder="Мой план"
+                placeholder={t('plan.defaultTitle')}
                 placeholderTextColor={colors.textMuted}
                 autoFocus
-                style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 18, height: 56 }}
+                style={{
+                  color: colors.text,
+                  fontFamily: fontFamilies.body700,
+                  fontSize: 18,
+                  height: 56,
+                }}
                 maxLength={60}
               />
             </View>
@@ -198,16 +295,34 @@ export function PlanBuilderScreen() {
 
         {step === 'days' && (
           <View style={{ paddingHorizontal: 16, marginTop: 20, gap: 12 }}>
-            <Text style={{ color: colors.text, fontFamily: fontFamilies.heading, fontSize: 22 }}>
-              Тренировочные дни
+            <Text
+              style={{
+                color: colors.text,
+                fontFamily: fontFamilies.heading,
+                fontSize: 22,
+              }}
+            >
+              {t('plan.step2title')}
             </Text>
-            <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 13 }}>
-              Сколько тренировок в неделю и в какие дни? Оптимум для новичков — 3 раза, для прогресса — 4-5.
+            <Text
+              style={{
+                color: colors.textMuted,
+                fontFamily: fontFamilies.body,
+                fontSize: 13,
+              }}
+            >
+              {t('plan.step2hint')}
             </Text>
 
             {days.map((d, idx) => (
               <Card key={idx} style={{ padding: 12 }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginBottom: 10,
+                  }}
+                >
                   <TextInput
                     value={d.title}
                     onChangeText={(v) => updateDay(idx, { title: v })}
@@ -220,12 +335,22 @@ export function PlanBuilderScreen() {
                     }}
                     maxLength={40}
                   />
-                  <Pressable onPress={() => removeDay(idx)} hitSlop={10} style={{ paddingHorizontal: 6 }}>
-                    <Ionicons name="trash-outline" size={16} color={colors.pink} />
+                  <Pressable
+                    onPress={() => removeDay(idx)}
+                    hitSlop={10}
+                    style={{ paddingHorizontal: 6 }}
+                  >
+                    <Ionicons
+                      name="trash-outline"
+                      size={16}
+                      color={colors.pink}
+                    />
                   </Pressable>
                 </View>
-                <View style={{ flexDirection: 'row', gap: 5, flexWrap: 'wrap' }}>
-                  {WEEKDAYS.map((l, i) => {
+                <View
+                  style={{ flexDirection: 'row', gap: 5, flexWrap: 'wrap' }}
+                >
+                  {weekdaysShort().map((l, i) => {
                     const active = d.weekday === i;
                     const isConflict = conflicts.has(i) && active;
                     return (
@@ -237,13 +362,21 @@ export function PlanBuilderScreen() {
                           paddingVertical: 8,
                           borderRadius: 10,
                           borderWidth: 1,
-                          borderColor: isConflict ? colors.red : active ? colors.borderNeon : colors.border,
-                          backgroundColor: active ? 'rgba(157,107,255,0.22)' : 'rgba(0,0,0,0.2)',
+                          borderColor: isConflict
+                            ? colors.red
+                            : active
+                              ? colors.borderNeon
+                              : colors.border,
+                          backgroundColor: active
+                            ? 'rgba(157,107,255,0.22)'
+                            : 'rgba(0,0,0,0.2)',
                         }}
                       >
                         <Text
                           style={{
-                            color: active ? colors.purpleLight : colors.textSecondary,
+                            color: active
+                              ? colors.purpleLight
+                              : colors.textSecondary,
                             fontFamily: fontFamilies.body700,
                             fontSize: 12,
                           }}
@@ -270,15 +403,27 @@ export function PlanBuilderScreen() {
                   backgroundColor: 'rgba(157,107,255,0.08)',
                 }}
               >
-                <Text style={{ color: colors.purpleLight, fontFamily: fontFamilies.body700, fontSize: 13 }}>
-                  + Добавить день
+                <Text
+                  style={{
+                    color: colors.purpleLight,
+                    fontFamily: fontFamilies.body700,
+                    fontSize: 13,
+                  }}
+                >
+                  {t('plan.addDay')}
                 </Text>
               </Pressable>
             ) : null}
 
             {conflicts.size > 0 ? (
-              <Text style={{ color: colors.red, fontFamily: fontFamilies.body600, fontSize: 12 }}>
-                Два дня на один день недели. Выбери разные.
+              <Text
+                style={{
+                  color: colors.red,
+                  fontFamily: fontFamilies.body600,
+                  fontSize: 12,
+                }}
+              >
+                {t('plan.conflictMsg')}
               </Text>
             ) : null}
           </View>
@@ -286,11 +431,23 @@ export function PlanBuilderScreen() {
 
         {step === 'exercises' && (
           <View style={{ paddingHorizontal: 16, marginTop: 20, gap: 12 }}>
-            <Text style={{ color: colors.text, fontFamily: fontFamilies.heading, fontSize: 22 }}>
-              Упражнения для каждого дня
+            <Text
+              style={{
+                color: colors.text,
+                fontFamily: fontFamilies.heading,
+                fontSize: 22,
+              }}
+            >
+              {t('plan.step3title')}
             </Text>
-            <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 13 }}>
-              Тапни день — выбери упражнения. По умолчанию 3×8-12 с 90 сек отдыха (можно править позже в редакторе).
+            <Text
+              style={{
+                color: colors.textMuted,
+                fontFamily: fontFamilies.body,
+                fontSize: 13,
+              }}
+            >
+              {t('plan.step3hint')}
             </Text>
 
             {days.map((d, idx) => (
@@ -302,26 +459,50 @@ export function PlanBuilderScreen() {
                   borderRadius: radii.md,
                   borderWidth: 1,
                   borderColor:
-                    d.exerciseIds.length > 0 ? 'rgba(63,255,150,0.45)' : colors.border,
+                    d.exerciseIds.length > 0
+                      ? 'rgba(63,255,150,0.45)'
+                      : colors.border,
                   backgroundColor:
-                    d.exerciseIds.length > 0 ? 'rgba(63,255,150,0.08)' : colors.bgSecondary,
+                    d.exerciseIds.length > 0
+                      ? 'rgba(63,255,150,0.08)'
+                      : colors.bgSecondary,
                 }}
               >
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <View style={{ flex: 1 }}>
-                    <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 14 }}>
-                      {d.title} · {WEEKDAYS[d.weekday]}
+                    <Text
+                      style={{
+                        color: colors.text,
+                        fontFamily: fontFamilies.body700,
+                        fontSize: 14,
+                      }}
+                    >
+                      {d.title} · {weekdaysShort()[d.weekday]}
                     </Text>
-                    <Text style={{ marginTop: 4, color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11 }}>
+                    <Text
+                      style={{
+                        marginTop: 4,
+                        color: colors.textMuted,
+                        fontFamily: fontFamilies.body,
+                        fontSize: 11,
+                      }}
+                    >
                       {d.exerciseIds.length > 0
                         ? `${d.exerciseIds.length} ${t('common.exShort')}: ${d.exerciseIds
                             .slice(0, 3)
-                            .map((id) => catalog.find((e) => e.id === id)?.name ?? id)
+                            .map(
+                              (id) =>
+                                catalog.find((e) => e.id === id)?.name ?? id,
+                            )
                             .join(', ')}${d.exerciseIds.length > 3 ? '…' : ''}`
-                        : 'Тапни чтобы добавить упражнения'}
+                        : t('plan.tapToAdd')}
                     </Text>
                   </View>
-                  <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+                  <Ionicons
+                    name="chevron-forward"
+                    size={18}
+                    color={colors.textMuted}
+                  />
                 </View>
               </Pressable>
             ))}
@@ -330,27 +511,57 @@ export function PlanBuilderScreen() {
 
         {step === 'review' && (
           <View style={{ paddingHorizontal: 16, marginTop: 20, gap: 14 }}>
-            <Text style={{ color: colors.text, fontFamily: fontFamilies.heading, fontSize: 22 }}>
-              Готово к запуску
+            <Text
+              style={{
+                color: colors.text,
+                fontFamily: fontFamilies.heading,
+                fontSize: 22,
+              }}
+            >
+              {t('plan.step4title')}
             </Text>
             <Card style={{ padding: 14 }}>
-              <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 16 }}>
+              <Text
+                style={{
+                  color: colors.text,
+                  fontFamily: fontFamilies.body700,
+                  fontSize: 16,
+                }}
+              >
                 {planTitle}
               </Text>
-              <Text style={{ marginTop: 4, color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 12 }}>
-                {days.length} тренировок в неделю · 8 недель
+              <Text
+                style={{
+                  marginTop: 4,
+                  color: colors.textMuted,
+                  fontFamily: fontFamilies.body,
+                  fontSize: 12,
+                }}
+              >
+                {t('plan.summary', { n: days.length })}
               </Text>
               {days.map((d, idx) => (
                 <View key={idx} style={{ marginTop: 10, gap: 4 }}>
-                  <Text style={{ color: colors.purpleLight, fontFamily: fontFamilies.body700, fontSize: 13 }}>
-                    {WEEKDAYS[d.weekday]} · {d.title}
+                  <Text
+                    style={{
+                      color: colors.purpleLight,
+                      fontFamily: fontFamilies.body700,
+                      fontSize: 13,
+                    }}
+                  >
+                    {weekdaysShort()[d.weekday]} · {d.title}
                   </Text>
                   {d.exerciseIds.map((id) => {
                     const m = catalog.find((e) => e.id === id);
                     return (
                       <Text
                         key={id}
-                        style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, fontSize: 12, marginLeft: 8 }}
+                        style={{
+                          color: colors.textSecondary,
+                          fontFamily: fontFamilies.body,
+                          fontSize: 12,
+                          marginLeft: 8,
+                        }}
                       >
                         • {m?.name ?? id}
                       </Text>
@@ -359,19 +570,38 @@ export function PlanBuilderScreen() {
                 </View>
               ))}
             </Card>
-            <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11 }}>
-              План создаст серию тренировок в календаре. Старые PLANNED-тренировки твоей текущей программы будут заменены.
+            <Text
+              style={{
+                color: colors.textMuted,
+                fontFamily: fontFamilies.body,
+                fontSize: 11,
+              }}
+            >
+              {t('plan.warnReplace')}
             </Text>
           </View>
         )}
       </ScrollView>
 
-      <View style={{ position: 'absolute', left: 16, right: 16, bottom: Math.max(insets.bottom, 12) + 6, flexDirection: 'row', gap: 10 }}>
+      <View
+        style={{
+          position: 'absolute',
+          left: 16,
+          right: 16,
+          bottom: Math.max(insets.bottom, 12) + 6,
+          flexDirection: 'row',
+          gap: 10,
+        }}
+      >
         {step !== 'name' ? (
           <Pressable
             onPress={() => {
               setStep(
-                step === 'days' ? 'name' : step === 'exercises' ? 'days' : 'exercises',
+                step === 'days'
+                  ? 'name'
+                  : step === 'exercises'
+                    ? 'days'
+                    : 'exercises',
               );
             }}
             style={{
@@ -392,7 +622,7 @@ export function PlanBuilderScreen() {
         <View style={{ flex: 1 }}>
           {step === 'review' ? (
             <GradientButton
-              title={submitting ? t('use.creating') : 'Создать и запустить'}
+              title={submitting ? t('use.creating') : t('plan.create')}
               onPress={onSubmit}
               disabled={submitting}
             />
@@ -402,19 +632,24 @@ export function PlanBuilderScreen() {
               onPress={() => {
                 if (step === 'name') {
                   if (!planTitle.trim()) {
-                    Alert.alert(t('common.error'), 'Укажи название плана');
+                    Alert.alert(t('common.error'), t('plan.errName'));
                     return;
                   }
                   setStep('days');
                 } else if (step === 'days') {
                   if (!canProceedDays) {
-                    Alert.alert(t('common.error'), conflicts.size ? 'Конфликт дней' : 'Заполни названия');
+                    Alert.alert(
+                      t('common.error'),
+                      conflicts.size
+                        ? t('plan.errConflict')
+                        : t('plan.errFillNames'),
+                    );
                     return;
                   }
                   setStep('exercises');
                 } else if (step === 'exercises') {
                   if (!canProceedExercises) {
-                    Alert.alert(t('common.error'), 'Добавь упражнения в каждый день');
+                    Alert.alert(t('common.error'), t('plan.errExercises'));
                     return;
                   }
                   setStep('review');
@@ -449,6 +684,7 @@ function ExercisePickerModal({
   onClose: () => void;
   onChange: (ids: string[]) => void;
 }) {
+  const lang = useLang();
   const [q, setQ] = useState('');
   const [local, setLocal] = useState<string[]>(selected);
 
@@ -460,7 +696,9 @@ function ExercisePickerModal({
     const t_ = q.trim().toLowerCase();
     if (!t_) return catalog;
     return catalog.filter(
-      (e) => e.name.toLowerCase().includes(t_) || e.primary.toLowerCase().includes(t_),
+      (e) =>
+        e.name.toLowerCase().includes(t_) ||
+        e.primary.toLowerCase().includes(t_),
     );
   }, [q]);
 
@@ -470,8 +708,19 @@ function ExercisePickerModal({
   };
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.78)', justifyContent: 'flex-end' }}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+    >
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: 'rgba(0,0,0,0.78)',
+          justifyContent: 'flex-end',
+        }}
+      >
         <View
           style={{
             backgroundColor: colors.bg,
@@ -486,8 +735,15 @@ function ExercisePickerModal({
           }}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ flex: 1, color: colors.text, fontFamily: fontFamilies.heading, fontSize: 20 }}>
-              Упражнения ({local.length})
+            <Text
+              style={{
+                flex: 1,
+                color: colors.text,
+                fontFamily: fontFamilies.heading,
+                fontSize: 20,
+              }}
+            >
+              {t('plan.exercisesCount', { n: local.length })}
             </Text>
             <Pressable onPress={onClose} hitSlop={12}>
               <Ionicons name="close" size={22} color={colors.textSecondary} />
@@ -505,12 +761,20 @@ function ExercisePickerModal({
             <TextInput
               value={q}
               onChangeText={setQ}
-              placeholder="Поиск…"
+              placeholder={t('common.search')}
               placeholderTextColor={colors.textMuted}
-              style={{ color: colors.text, fontFamily: fontFamilies.body600, fontSize: 15, height: 46 }}
+              style={{
+                color: colors.text,
+                fontFamily: fontFamilies.body600,
+                fontSize: 15,
+                height: 46,
+              }}
             />
           </View>
-          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 16 }}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 16 }}
+          >
             {filtered.map((e) => {
               const active = local.includes(e.id);
               return (
@@ -523,7 +787,9 @@ function ExercisePickerModal({
                     paddingVertical: 10,
                     paddingHorizontal: 10,
                     borderRadius: 10,
-                    backgroundColor: active ? 'rgba(63,255,150,0.10)' : 'transparent',
+                    backgroundColor: active
+                      ? 'rgba(63,255,150,0.10)'
+                      : 'transparent',
                     borderWidth: 1,
                     borderColor: active ? colors.green : colors.border,
                     marginBottom: 6,
@@ -536,11 +802,24 @@ function ExercisePickerModal({
                     style={{ marginRight: 10 }}
                   />
                   <View style={{ flex: 1 }}>
-                    <Text style={{ color: colors.text, fontFamily: fontFamilies.body600, fontSize: 14 }}>
-                      {e.name}
+                    <Text
+                      style={{
+                        color: colors.text,
+                        fontFamily: fontFamilies.body600,
+                        fontSize: 14,
+                      }}
+                    >
+                      {localizedExercise(e, lang).name}
                     </Text>
-                    <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11, marginTop: 2 }}>
-                      {e.primary} · {e.difficulty}
+                    <Text
+                      style={{
+                        color: colors.textMuted,
+                        fontFamily: fontFamilies.body,
+                        fontSize: 11,
+                        marginTop: 2,
+                      }}
+                    >
+                      {muscleLabel(e.primary)} · {difficultyLabel(e.difficulty)}
                     </Text>
                   </View>
                 </Pressable>

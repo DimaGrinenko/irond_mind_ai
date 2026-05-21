@@ -2,18 +2,10 @@ import React from 'react';
 import { Text, type TextProps } from 'react-native';
 import { colors, neonTextShadow } from '../../theme/tokens';
 import { fontFamilies } from '../../theme/typography';
+import { useTheme } from '../../theme/useTheme';
 
 type Variant = 'heading' | 'eyebrow' | 'title' | 'value';
-type Glow = 'purple' | 'pink' | 'cyan' | 'green' | 'amber' | 'none';
-
-const GLOW_COLOR: Record<Glow, string | null> = {
-  purple: colors.purple,
-  pink: colors.pink,
-  cyan: colors.cyan,
-  green: colors.green,
-  amber: colors.amber,
-  none: null,
-};
+type Glow = 'accent' | 'purple' | 'pink' | 'cyan' | 'green' | 'amber' | 'none';
 
 type Props = TextProps & {
   variant?: Variant;
@@ -21,24 +13,55 @@ type Props = TextProps & {
   glowRadius?: number;
 };
 
-export function NeonText({ variant = 'title', glow = 'purple', glowRadius = 14, style, children, ...rest }: Props) {
+export function NeonText({
+  variant = 'title',
+  glow = 'accent',
+  glowRadius = 14,
+  style,
+  children,
+  ...rest
+}: Props) {
+  const theme = useTheme();
+  const GLOW_COLOR: Record<Glow, string | null> = {
+    accent: theme.glow,
+    purple: colors.purple,
+    pink: colors.pink,
+    cyan: colors.cyan,
+    green: colors.green,
+    amber: colors.amber,
+    none: null,
+  };
   const variantStyle = (() => {
     switch (variant) {
       case 'heading':
-        return { fontFamily: fontFamilies.heading, fontSize: 26, color: colors.text, letterSpacing: 0.5 };
+        return {
+          fontFamily: fontFamilies.heading,
+          fontSize: 26,
+          color: colors.text,
+          letterSpacing: 0.5,
+        };
       case 'eyebrow':
         return {
           fontFamily: fontFamilies.body700,
           fontSize: 11,
-          color: colors.textNeon,
+          color: theme.accentText,
           letterSpacing: 1.4,
           textTransform: 'uppercase' as const,
         };
       case 'value':
-        return { fontFamily: fontFamilies.heading, fontSize: 32, color: colors.text, letterSpacing: 0.5 };
+        return {
+          fontFamily: fontFamilies.heading,
+          fontSize: 32,
+          color: colors.text,
+          letterSpacing: 0.5,
+        };
       case 'title':
       default:
-        return { fontFamily: fontFamilies.body700, fontSize: 18, color: colors.text };
+        return {
+          fontFamily: fontFamilies.body700,
+          fontSize: 18,
+          color: colors.text,
+        };
     }
   })();
 

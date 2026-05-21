@@ -13,10 +13,9 @@ import { daysBetween } from '../utils/date';
 import type { ProgressPhotoRow } from '../db/progressPhotosRepo';
 import { t, useLang } from '../i18n';
 
-const RU_MONTHS = ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
 function prettyDate(iso: string) {
   const d = new Date(`${iso}T00:00:00`);
-  return `${d.getDate()} ${RU_MONTHS[d.getMonth()]}`;
+  return `${d.getDate()} ${t('common.monthsShort').split(',')[d.getMonth()]}`;
 }
 
 export function ProgressPhotosScreen({ navigation }: any) {
@@ -68,7 +67,11 @@ export function ProgressPhotosScreen({ navigation }: any) {
 
   const onPhotoPress = (p: ProgressPhotoRow) => {
     Alert.alert(prettyDate(p.date), t('photos.confirmDelete'), [
-      { text: t('common.delete'), style: 'destructive', onPress: () => remove(p.id) },
+      {
+        text: t('common.delete'),
+        style: 'destructive',
+        onPress: () => remove(p.id),
+      },
       { text: t('common.close'), style: 'cancel' },
     ]);
   };
@@ -80,23 +83,58 @@ export function ProgressPhotosScreen({ navigation }: any) {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
-      <ScreenHeader title={t('photos.title')} onBack={() => navigation.goBack()} />
+      <ScreenHeader
+        title={t('photos.title')}
+        onBack={() => navigation.goBack()}
+      />
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 120 }} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 120 }}
+        showsVerticalScrollIndicator={false}
+      >
         {/* ===== Сравнение до/после ===== */}
         {oldest && newest ? (
           <View style={{ paddingHorizontal: 16, marginTop: 12 }}>
             <Card style={{ padding: 0, overflow: 'hidden' }}>
-              <LinearGradient colors={['rgba(157,107,255,0.22)', 'rgba(0,0,0,0)']} style={{ padding: 14 }}>
-                <Text style={[{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 14 }, neonTextShadow(colors.purple, 8)]}>
-                  Трансформация
+              <LinearGradient
+                colors={['rgba(157,107,255,0.22)', 'rgba(0,0,0,0)']}
+                style={{ padding: 14 }}
+              >
+                <Text
+                  style={[
+                    {
+                      color: colors.text,
+                      fontFamily: fontFamilies.body700,
+                      fontSize: 14,
+                    },
+                    neonTextShadow(colors.purple, 8),
+                  ]}
+                >
+                  {t('pp.transform')}
                 </Text>
-                <Text style={{ marginTop: 2, color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 12 }}>
-                  {spanDays > 0 ? `${spanDays} дней прогресса` : 'до / после'}
+                <Text
+                  style={{
+                    marginTop: 2,
+                    color: colors.textMuted,
+                    fontFamily: fontFamilies.body,
+                    fontSize: 12,
+                  }}
+                >
+                  {spanDays > 0
+                    ? t('pp.daysProgress', { n: spanDays })
+                    : t('pp.beforeAfter')}
                 </Text>
                 <View style={{ flexDirection: 'row', gap: 12, marginTop: 12 }}>
-                  <ComparePane label="ДО" photo={oldest} tint={colors.textSecondary} />
-                  <ComparePane label="ПОСЛЕ" photo={newest} tint={colors.cyan} />
+                  <ComparePane
+                    label={t('pp.before')}
+                    photo={oldest}
+                    tint={colors.textSecondary}
+                  />
+                  <ComparePane
+                    label={t('pp.after')}
+                    photo={newest}
+                    tint={colors.cyan}
+                  />
                 </View>
               </LinearGradient>
             </Card>
@@ -105,15 +143,39 @@ export function ProgressPhotosScreen({ navigation }: any) {
 
         {/* ===== Сетка фото ===== */}
         <View style={{ paddingHorizontal: 16, marginTop: 14 }}>
-          <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body600, fontSize: 12 }}>
+          <Text
+            style={{
+              color: colors.textSecondary,
+              fontFamily: fontFamilies.body600,
+              fontSize: 12,
+            }}
+          >
             {t('photos.title')} ({photos.length})
           </Text>
         </View>
 
         {photos.length === 0 ? (
-          <View style={{ alignItems: 'center', paddingVertical: 48, gap: 12, paddingHorizontal: 32 }}>
-            <Ionicons name="camera-outline" size={48} color={colors.textMuted} />
-            <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body600, fontSize: 14, textAlign: 'center' }}>
+          <View
+            style={{
+              alignItems: 'center',
+              paddingVertical: 48,
+              gap: 12,
+              paddingHorizontal: 32,
+            }}
+          >
+            <Ionicons
+              name="camera-outline"
+              size={48}
+              color={colors.textMuted}
+            />
+            <Text
+              style={{
+                color: colors.textSecondary,
+                fontFamily: fontFamilies.body600,
+                fontSize: 14,
+                textAlign: 'center',
+              }}
+            >
               {t('photos.empty')}
             </Text>
           </View>
@@ -132,7 +194,9 @@ export function ProgressPhotosScreen({ navigation }: any) {
                 key={p.id}
                 onPress={() => onPhotoPress(p)}
                 accessibilityRole="imagebutton"
-                accessibilityLabel={`Фото от ${prettyDate(p.date)}`}
+                accessibilityLabel={t('pp.photoFrom', {
+                  date: prettyDate(p.date),
+                })}
                 style={{
                   width: '47%',
                   aspectRatio: 3 / 4,
@@ -143,12 +207,30 @@ export function ProgressPhotosScreen({ navigation }: any) {
                   ...neonGlow(colors.purple, 0.3, 14, 5),
                 }}
               >
-                <Image source={{ uri: p.uri }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+                <Image
+                  source={{ uri: p.uri }}
+                  style={{ width: '100%', height: '100%' }}
+                  resizeMode="cover"
+                />
                 <LinearGradient
                   colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.8)']}
-                  style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 56, justifyContent: 'flex-end', padding: 8 }}
+                  style={{
+                    position: 'absolute',
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    height: 56,
+                    justifyContent: 'flex-end',
+                    padding: 8,
+                  }}
                 >
-                  <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 12 }}>
+                  <Text
+                    style={{
+                      color: colors.text,
+                      fontFamily: fontFamilies.body700,
+                      fontSize: 12,
+                    }}
+                  >
                     {prettyDate(p.date)}
                   </Text>
                 </LinearGradient>
@@ -169,7 +251,15 @@ export function ProgressPhotosScreen({ navigation }: any) {
   );
 }
 
-function ComparePane({ label, photo, tint }: { label: string; photo: ProgressPhotoRow; tint: string }) {
+function ComparePane({
+  label,
+  photo,
+  tint,
+}: {
+  label: string;
+  photo: ProgressPhotoRow;
+  tint: string;
+}) {
   return (
     <View style={{ flex: 1 }}>
       <View
@@ -178,10 +268,15 @@ function ComparePane({ label, photo, tint }: { label: string; photo: ProgressPho
           borderRadius: 16,
           overflow: 'hidden',
           borderWidth: 1,
-          borderColor: tint === colors.cyan ? 'rgba(0,229,255,0.5)' : 'rgba(42,42,62,0.9)',
+          borderColor:
+            tint === colors.cyan ? 'rgba(0,229,255,0.5)' : 'rgba(42,42,62,0.9)',
         }}
       >
-        <Image source={{ uri: photo.uri }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+        <Image
+          source={{ uri: photo.uri }}
+          style={{ width: '100%', height: '100%' }}
+          resizeMode="cover"
+        />
         <View
           style={{
             position: 'absolute',
@@ -192,10 +287,22 @@ function ComparePane({ label, photo, tint }: { label: string; photo: ProgressPho
             borderRadius: 8,
             backgroundColor: 'rgba(3,4,10,0.8)',
             borderWidth: 1,
-            borderColor: tint === colors.cyan ? 'rgba(0,229,255,0.6)' : 'rgba(255,255,255,0.2)',
+            borderColor:
+              tint === colors.cyan
+                ? 'rgba(0,229,255,0.6)'
+                : 'rgba(255,255,255,0.2)',
           }}
         >
-          <Text style={{ color: tint, fontFamily: fontFamilies.body700, fontSize: 10, letterSpacing: 1 }}>{label}</Text>
+          <Text
+            style={{
+              color: tint,
+              fontFamily: fontFamilies.body700,
+              fontSize: 10,
+              letterSpacing: 1,
+            }}
+          >
+            {label}
+          </Text>
         </View>
       </View>
     </View>

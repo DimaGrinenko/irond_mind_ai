@@ -1,39 +1,81 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { Platform, StyleSheet, View, type ViewProps } from 'react-native';
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 import { colors, neonGlow, radii } from '../../theme/tokens';
+import { useTheme } from '../../theme/useTheme';
 
-type Tint = 'purple' | 'pink' | 'cyan' | 'green' | 'amber' | 'aurora';
+type Tint =
+  | 'accent'
+  | 'purple'
+  | 'pink'
+  | 'cyan'
+  | 'green'
+  | 'amber'
+  | 'aurora';
 
-const TINT_MAP: Record<Tint, { stroke: readonly string[]; fill: readonly string[]; glowColor: string }> = {
+const TINT_MAP: Record<
+  Exclude<Tint, 'accent'>,
+  { stroke: readonly string[]; fill: readonly string[]; glowColor: string }
+> = {
   purple: {
-    stroke: ['rgba(157,107,255,0.95)', 'rgba(199,123,255,0.55)', 'rgba(157,107,255,0.95)'],
+    stroke: [
+      'rgba(157,107,255,0.95)',
+      'rgba(199,123,255,0.55)',
+      'rgba(157,107,255,0.95)',
+    ],
     fill: ['rgba(157,107,255,0.18)', 'rgba(0,0,0,0)'],
     glowColor: colors.purple,
   },
   pink: {
-    stroke: ['rgba(255,77,210,0.95)', 'rgba(255,31,143,0.55)', 'rgba(255,77,210,0.95)'],
+    stroke: [
+      'rgba(255,77,210,0.95)',
+      'rgba(255,31,143,0.55)',
+      'rgba(255,77,210,0.95)',
+    ],
     fill: ['rgba(255,77,210,0.18)', 'rgba(0,0,0,0)'],
     glowColor: colors.pink,
   },
   cyan: {
-    stroke: ['rgba(60,255,255,0.9)', 'rgba(0,229,255,0.5)', 'rgba(60,255,255,0.9)'],
+    stroke: [
+      'rgba(60,255,255,0.9)',
+      'rgba(0,229,255,0.5)',
+      'rgba(60,255,255,0.9)',
+    ],
     fill: ['rgba(0,229,255,0.16)', 'rgba(0,0,0,0)'],
     glowColor: colors.cyan,
   },
   green: {
-    stroke: ['rgba(63,255,150,0.9)', 'rgba(0,229,255,0.5)', 'rgba(63,255,150,0.9)'],
+    stroke: [
+      'rgba(63,255,150,0.9)',
+      'rgba(0,229,255,0.5)',
+      'rgba(63,255,150,0.9)',
+    ],
     fill: ['rgba(63,255,150,0.16)', 'rgba(0,0,0,0)'],
     glowColor: colors.green,
   },
   amber: {
-    stroke: ['rgba(255,181,71,0.95)', 'rgba(255,64,96,0.55)', 'rgba(255,181,71,0.95)'],
+    stroke: [
+      'rgba(255,181,71,0.95)',
+      'rgba(255,64,96,0.55)',
+      'rgba(255,181,71,0.95)',
+    ],
     fill: ['rgba(255,181,71,0.16)', 'rgba(0,0,0,0)'],
     glowColor: colors.amber,
   },
   aurora: {
-    stroke: ['rgba(63,255,150,0.85)', 'rgba(0,229,255,0.85)', 'rgba(157,107,255,0.85)', 'rgba(255,77,210,0.85)'],
+    stroke: [
+      'rgba(63,255,150,0.85)',
+      'rgba(0,229,255,0.85)',
+      'rgba(157,107,255,0.85)',
+      'rgba(255,77,210,0.85)',
+    ],
     fill: ['rgba(157,107,255,0.16)', 'rgba(255,77,210,0.06)', 'rgba(0,0,0,0)'],
     glowColor: colors.purple,
   },
@@ -48,7 +90,7 @@ type Props = ViewProps & {
 };
 
 export function NeonCard({
-  tint = 'purple',
+  tint = 'accent',
   borderRadius = radii.xl,
   intensity = 1,
   animated = true,
@@ -57,7 +99,15 @@ export function NeonCard({
   children,
   ...rest
 }: Props) {
-  const palette = TINT_MAP[tint];
+  const theme = useTheme();
+  const palette =
+    tint === 'accent'
+      ? {
+          stroke: theme.cardStroke,
+          fill: theme.cardFill,
+          glowColor: theme.glow,
+        }
+      : TINT_MAP[tint];
   const pulse = useSharedValue(0);
 
   React.useEffect(() => {
@@ -81,7 +131,11 @@ export function NeonCard({
       {/* gradient stroke */}
       <Animated.View
         pointerEvents="none"
-        style={[StyleSheet.absoluteFillObject, { borderRadius, overflow: 'hidden' }, animated ? aGlow : null]}
+        style={[
+          StyleSheet.absoluteFillObject,
+          { borderRadius, overflow: 'hidden' },
+          animated ? aGlow : null,
+        ]}
       >
         <LinearGradient
           colors={palette.stroke as any}

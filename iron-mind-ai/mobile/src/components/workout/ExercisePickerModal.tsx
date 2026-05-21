@@ -1,10 +1,22 @@
 import React, { useMemo, useState } from 'react';
-import { Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import {
+  Modal,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radii } from '../../theme/tokens';
 import { fontFamilies } from '../../theme/typography';
-import { exercises as catalog, type Exercise, type MuscleGroup } from '../../data/exercises';
-import { t, useLang } from '../../i18n';
+import {
+  exercises as catalog,
+  type Exercise,
+  type MuscleGroup,
+} from '../../data/exercises';
+import { localizedExercise } from '../../data/exercises_en';
+import { t, useLang, muscleLabel } from '../../i18n';
 
 type Props = {
   visible: boolean;
@@ -17,11 +29,26 @@ type Props = {
 };
 
 const GROUPS: MuscleGroup[] = [
-  'Грудь', 'Спина', 'Плечи', 'Бицепс', 'Трицепс', 'Ноги', 'Ягодицы', 'Пресс', 'Полное тело', 'Кардио',
+  'Грудь',
+  'Спина',
+  'Плечи',
+  'Бицепс',
+  'Трицепс',
+  'Ноги',
+  'Ягодицы',
+  'Пресс',
+  'Полное тело',
+  'Кардио',
 ];
 
-export function ExercisePickerModal({ visible, preferGroup, excludeIds, onClose, onPick }: Props) {
-  useLang();
+export function ExercisePickerModal({
+  visible,
+  preferGroup,
+  excludeIds,
+  onClose,
+  onPick,
+}: Props) {
+  const lang = useLang();
   const [q, setQ] = useState('');
   const [group, setGroup] = useState<MuscleGroup | 'all'>(preferGroup ?? 'all');
 
@@ -43,8 +70,19 @@ export function ExercisePickerModal({ visible, preferGroup, excludeIds, onClose,
   }, [q, group, excludeIds]);
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.85)', justifyContent: 'flex-end' }}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+    >
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: 'rgba(0,0,0,0.85)',
+          justifyContent: 'flex-end',
+        }}
+      >
         <View
           style={{
             backgroundColor: colors.bg,
@@ -57,8 +95,21 @@ export function ExercisePickerModal({ visible, preferGroup, excludeIds, onClose,
             maxHeight: '92%',
           }}
         >
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-            <Text style={{ flex: 1, color: colors.text, fontFamily: fontFamilies.heading, fontSize: 20 }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginBottom: 12,
+            }}
+          >
+            <Text
+              style={{
+                flex: 1,
+                color: colors.text,
+                fontFamily: fontFamilies.heading,
+                fontSize: 20,
+              }}
+            >
               {t('gym.replaceTitle')}
             </Text>
             <Pressable onPress={onClose} hitSlop={12}>
@@ -81,14 +132,23 @@ export function ExercisePickerModal({ visible, preferGroup, excludeIds, onClose,
               onChangeText={setQ}
               placeholder={t('gym.search')}
               placeholderTextColor={colors.textMuted}
-              style={{ color: colors.text, fontFamily: fontFamilies.body600, fontSize: 15, height: 46 }}
+              style={{
+                color: colors.text,
+                fontFamily: fontFamilies.body600,
+                fontSize: 15,
+                height: 46,
+              }}
             />
           </View>
 
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6, marginBottom: 10 }}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ gap: 6, marginBottom: 10 }}
+          >
             {(['all', ...GROUPS] as Array<MuscleGroup | 'all'>).map((g) => {
               const active = g === group;
-              const label = g === 'all' ? t('foods.tabAll') : g;
+              const label = g === 'all' ? t('foods.tabAll') : muscleLabel(g);
               return (
                 <Pressable
                   key={g}
@@ -99,7 +159,9 @@ export function ExercisePickerModal({ visible, preferGroup, excludeIds, onClose,
                     borderRadius: 12,
                     borderWidth: 1,
                     borderColor: active ? colors.borderNeon : colors.border,
-                    backgroundColor: active ? 'rgba(157,107,255,0.18)' : colors.bgSecondary,
+                    backgroundColor: active
+                      ? 'rgba(157,107,255,0.18)'
+                      : colors.bgSecondary,
                   }}
                 >
                   <Text
@@ -116,7 +178,10 @@ export function ExercisePickerModal({ visible, preferGroup, excludeIds, onClose,
             })}
           </ScrollView>
 
-          <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 480 }}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={{ maxHeight: 480 }}
+          >
             {filtered.map((e) => (
               <Pressable
                 key={e.id}
@@ -146,21 +211,49 @@ export function ExercisePickerModal({ visible, preferGroup, excludeIds, onClose,
                     borderColor: colors.borderNeon,
                   }}
                 >
-                  <Ionicons name="barbell" size={16} color={colors.purpleLight} />
+                  <Ionicons
+                    name="barbell"
+                    size={16}
+                    color={colors.purpleLight}
+                  />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 13 }}>
-                    {e.name}
+                  <Text
+                    style={{
+                      color: colors.text,
+                      fontFamily: fontFamilies.body700,
+                      fontSize: 13,
+                    }}
+                  >
+                    {localizedExercise(e, lang).name}
                   </Text>
-                  <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11, marginTop: 2 }}>
-                    {e.primary} · {e.equipment}
+                  <Text
+                    style={{
+                      color: colors.textMuted,
+                      fontFamily: fontFamilies.body,
+                      fontSize: 11,
+                      marginTop: 2,
+                    }}
+                  >
+                    {muscleLabel(e.primary)} ·{' '}
+                    {localizedExercise(e, lang).equipment}
                   </Text>
                 </View>
-                <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+                <Ionicons
+                  name="chevron-forward"
+                  size={16}
+                  color={colors.textMuted}
+                />
               </Pressable>
             ))}
             {filtered.length === 0 ? (
-              <Text style={{ color: colors.textMuted, textAlign: 'center', paddingVertical: 24 }}>
+              <Text
+                style={{
+                  color: colors.textMuted,
+                  textAlign: 'center',
+                  paddingVertical: 24,
+                }}
+              >
                 {t('gym.searchEmpty')}
               </Text>
             ) : null}

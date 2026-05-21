@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { api, type EconomyWallet } from '../api/client';
 
 export type ShopItemId =
   | 'tree_skin_aurora'
@@ -22,14 +23,70 @@ export type ShopItem = {
 };
 
 export const SHOP_ITEMS: ShopItem[] = [
-  { id: 'tree_skin_aurora', title: 'Аурора-дерево', description: 'Переливающаяся радужная крона', emoji: '🌈', category: 'tree', price: 300 },
-  { id: 'tree_skin_gold',   title: 'Золотое дерево', description: 'Крона из чистого золота', emoji: '✨', category: 'tree', price: 500 },
-  { id: 'tree_skin_neon_red', title: 'Кибер-красное', description: 'Дерево из неона багровых тонов', emoji: '🌹', category: 'tree', price: 400 },
-  { id: 'dumbbell_chrome',  title: 'Хром-гантеля', description: 'Зеркальный металл для streak-иконки', emoji: '🪞', category: 'dumbbell', price: 200 },
-  { id: 'dumbbell_gold',    title: 'Золотая гантеля', description: 'Для тех у кого стрик 60+', emoji: '🏆', category: 'dumbbell', price: 450 },
-  { id: 'accent_cyan',      title: 'Циан-акцент', description: 'Кнопки и подсветки в циан', emoji: '🟦', category: 'accent', price: 100 },
-  { id: 'accent_pink',      title: 'Пинк-акцент', description: 'Кнопки и подсветки в пинк', emoji: '🟪', category: 'accent', price: 100 },
-  { id: 'accent_amber',     title: 'Амбер-акцент', description: 'Кнопки и подсветки в янтарь', emoji: '🟧', category: 'accent', price: 100 },
+  {
+    id: 'tree_skin_aurora',
+    title: 'Аурора-дерево',
+    description: 'Переливающаяся радужная крона',
+    emoji: '🌈',
+    category: 'tree',
+    price: 300,
+  },
+  {
+    id: 'tree_skin_gold',
+    title: 'Золотое дерево',
+    description: 'Крона из чистого золота',
+    emoji: '✨',
+    category: 'tree',
+    price: 500,
+  },
+  {
+    id: 'tree_skin_neon_red',
+    title: 'Кибер-красное',
+    description: 'Дерево из неона багровых тонов',
+    emoji: '🌹',
+    category: 'tree',
+    price: 400,
+  },
+  {
+    id: 'dumbbell_chrome',
+    title: 'Хром-гантеля',
+    description: 'Зеркальный металл для streak-иконки',
+    emoji: '🪞',
+    category: 'dumbbell',
+    price: 200,
+  },
+  {
+    id: 'dumbbell_gold',
+    title: 'Золотая гантеля',
+    description: 'Для тех у кого стрик 60+',
+    emoji: '🏆',
+    category: 'dumbbell',
+    price: 450,
+  },
+  {
+    id: 'accent_cyan',
+    title: 'Циан-акцент',
+    description: 'Кнопки и подсветки в циан',
+    emoji: '🟦',
+    category: 'accent',
+    price: 100,
+  },
+  {
+    id: 'accent_pink',
+    title: 'Пинк-акцент',
+    description: 'Кнопки и подсветки в пинк',
+    emoji: '🟪',
+    category: 'accent',
+    price: 100,
+  },
+  {
+    id: 'accent_amber',
+    title: 'Амбер-акцент',
+    description: 'Кнопки и подсветки в янтарь',
+    emoji: '🟧',
+    category: 'accent',
+    price: 100,
+  },
 ];
 
 export type LeafPack = {
@@ -52,23 +109,67 @@ export type LeafPack = {
  * Anchor: priceWasUsd показывает зачёркнутую «обычную» цену.
  */
 export const LEAF_PACKS: LeafPack[] = [
-  { id: 'pack_starter', leaves: 200,   priceUsd: 0.99,                       bonus: 0,    tier: 'starter' },
-  { id: 'pack_small',   leaves: 600,   priceUsd: 2.49,  priceWasUsd: 3.49,   bonus: 50,   tier: 'small' },
-  { id: 'pack_medium',  leaves: 1500,  priceUsd: 5.99,  priceWasUsd: 7.99,   bonus: 200,  tier: 'medium', badge: 'popular' },
-  { id: 'pack_large',   leaves: 3500,  priceUsd: 9.99,  priceWasUsd: 14.99,  bonus: 700,  tier: 'large',  badge: 'best_value' },
-  { id: 'pack_mega',    leaves: 10000, priceUsd: 24.99, priceWasUsd: 39.99,  bonus: 3000, tier: 'mega',   badge: 'limited' },
+  {
+    id: 'pack_starter',
+    leaves: 200,
+    priceUsd: 0.99,
+    bonus: 0,
+    tier: 'starter',
+  },
+  {
+    id: 'pack_small',
+    leaves: 600,
+    priceUsd: 2.49,
+    priceWasUsd: 3.49,
+    bonus: 50,
+    tier: 'small',
+  },
+  {
+    id: 'pack_medium',
+    leaves: 1500,
+    priceUsd: 5.99,
+    priceWasUsd: 7.99,
+    bonus: 200,
+    tier: 'medium',
+    badge: 'popular',
+  },
+  {
+    id: 'pack_large',
+    leaves: 3500,
+    priceUsd: 9.99,
+    priceWasUsd: 14.99,
+    bonus: 700,
+    tier: 'large',
+    badge: 'best_value',
+  },
+  {
+    id: 'pack_mega',
+    leaves: 10000,
+    priceUsd: 24.99,
+    priceWasUsd: 39.99,
+    bonus: 3000,
+    tier: 'mega',
+    badge: 'limited',
+  },
 ];
 
 type State = {
   leaves: number;
   owned: ShopItemId[];
   equipped: { tree?: ShopItemId; dumbbell?: ShopItemId; accent?: ShopItemId };
+  /** Подтянуть кошелёк с сервера (источник истины). */
+  refresh: () => Promise<void>;
+  /** Применить серверный кошелёк к локальному кэшу. */
+  applyWallet: (w: EconomyWallet) => void;
+  /** Локальный оптимистичный буст. Сейчас — mock-награды челленджей/друзей,
+   *  не персистятся на сервере и реконсилятся при следующем refresh(). */
   earn: (amount: number, reason?: string) => void;
   spend: (amount: number) => boolean;
+  /** Покупка: оптимистично локально → сервер (источник истины) → реконсиляция. */
   buy: (id: ShopItemId) => { ok: boolean; reason?: string };
   equip: (id: ShopItemId) => void;
   unequip: (cat: 'tree' | 'dumbbell' | 'accent') => void;
-  /** Купить пакет листиков за рубли (mock — без реальной интеграции платежей). */
+  /** Купить пакет листиков (mock — без реальной интеграции платежей). */
   buyPack: (packId: string) => { ok: boolean; granted: number };
 };
 
@@ -78,6 +179,26 @@ export const useLeafEconomyStore = create<State>()(
       leaves: 0,
       owned: [],
       equipped: {},
+      applyWallet: (w) => {
+        const equipped: State['equipped'] = {};
+        if (w.equipped.tree) equipped.tree = w.equipped.tree as ShopItemId;
+        if (w.equipped.dumbbell)
+          equipped.dumbbell = w.equipped.dumbbell as ShopItemId;
+        if (w.equipped.accent)
+          equipped.accent = w.equipped.accent as ShopItemId;
+        set({
+          leaves: w.leaves,
+          owned: w.owned.map((o) => o.itemId as ShopItemId),
+          equipped,
+        });
+      },
+      refresh: async () => {
+        try {
+          get().applyWallet(await api.economy.wallet());
+        } catch {
+          /* offline — оставляем локальный кэш */
+        }
+      },
       earn: (amount) => set({ leaves: get().leaves + amount }),
       spend: (amount) => {
         if (get().leaves < amount) return false;
@@ -85,26 +206,43 @@ export const useLeafEconomyStore = create<State>()(
         return true;
       },
       buy: (id) => {
-        if (get().owned.includes(id)) return { ok: false, reason: 'Уже куплено' };
+        if (get().owned.includes(id))
+          return { ok: false, reason: 'Уже куплено' };
         const item = SHOP_ITEMS.find((s) => s.id === id);
         if (!item) return { ok: false, reason: 'Нет такого' };
-        if (get().leaves < item.price) return { ok: false, reason: 'Не хватает листиков' };
-        set({ leaves: get().leaves - item.price, owned: [...get().owned, id] });
-        // авто-надеваем при первой покупке
-        const eq = { ...get().equipped };
-        eq[item.category] = id;
-        set({ equipped: eq });
+        if (get().leaves < item.price)
+          return { ok: false, reason: 'Не хватает листиков' };
+        // оптимистично (авто-надеваем при первой покупке)
+        set({
+          leaves: get().leaves - item.price,
+          owned: [...get().owned, id],
+          equipped: { ...get().equipped, [item.category]: id },
+        });
+        api.economy
+          .buy(id)
+          .then((w) => get().applyWallet(w))
+          .catch(() => get().refresh());
         return { ok: true };
       },
       equip: (id) => {
         const item = SHOP_ITEMS.find((s) => s.id === id);
         if (!item || !get().owned.includes(id)) return;
         set({ equipped: { ...get().equipped, [item.category]: id } });
+        api.economy
+          .equip(id)
+          .then((w) => get().applyWallet(w))
+          .catch(() => get().refresh());
       },
       unequip: (cat) => {
+        const id = get().equipped[cat];
         const eq = { ...get().equipped };
         delete eq[cat];
         set({ equipped: eq });
+        if (id)
+          api.economy
+            .unequip(id)
+            .then((w) => get().applyWallet(w))
+            .catch(() => get().refresh());
       },
       buyPack: (packId) => {
         const pack = LEAF_PACKS.find((p) => p.id === packId);

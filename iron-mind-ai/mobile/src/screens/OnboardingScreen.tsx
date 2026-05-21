@@ -14,7 +14,12 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import Animated, { FadeIn, FadeInDown, FadeInUp, FadeOut } from 'react-native-reanimated';
+import Animated, {
+  FadeIn,
+  FadeInDown,
+  FadeInUp,
+  FadeOut,
+} from 'react-native-reanimated';
 import { colors, gradients, radii, spacing } from '../theme/tokens';
 import { fontFamilies } from '../theme/typography';
 import { GradientButton } from '../components/common/GradientButton';
@@ -28,39 +33,114 @@ import {
   useUserStore,
 } from '../store/userStore';
 import { useAuthStore } from '../store/authStore';
-import { ApiError, api, type OnboardingPlan, type OnboardingPayload } from '../api/client';
-import { t, useLang } from '../i18n';
+import {
+  ApiError,
+  api,
+  type OnboardingPlan,
+  type OnboardingPayload,
+} from '../api/client';
+import { t, useLang, goalLabel } from '../i18n';
 
 function goals() {
   return [
-    { key: 'mass' as const, title: t('goal.mass'), subtitle: t('goal.mass.sub'), icon: 'barbell' as const },
-    { key: 'cut' as const, title: t('goal.cut'), subtitle: t('goal.cut.sub'), icon: 'flame' as const },
-    { key: 'strength' as const, title: t('goal.strength'), subtitle: t('goal.strength.sub'), icon: 'flash' as const },
-    { key: 'endurance' as const, title: t('goal.endurance'), subtitle: t('goal.endurance.sub'), icon: 'pulse' as const },
-    { key: 'abs' as const, title: t('goal.abs'), subtitle: t('goal.abs.sub'), icon: 'fitness' as const },
+    {
+      key: 'mass' as const,
+      title: t('goal.mass'),
+      subtitle: t('goal.mass.sub'),
+      icon: 'barbell' as const,
+    },
+    {
+      key: 'cut' as const,
+      title: t('goal.cut'),
+      subtitle: t('goal.cut.sub'),
+      icon: 'flame' as const,
+    },
+    {
+      key: 'strength' as const,
+      title: t('goal.strength'),
+      subtitle: t('goal.strength.sub'),
+      icon: 'flash' as const,
+    },
+    {
+      key: 'endurance' as const,
+      title: t('goal.endurance'),
+      subtitle: t('goal.endurance.sub'),
+      icon: 'pulse' as const,
+    },
+    {
+      key: 'abs' as const,
+      title: t('goal.abs'),
+      subtitle: t('goal.abs.sub'),
+      icon: 'fitness' as const,
+    },
   ];
 }
 function levels() {
   return [
-    { key: 'beginner' as const, title: t('level.beginner'), subtitle: t('level.beginner.sub') },
-    { key: 'intermediate' as const, title: t('level.intermediate'), subtitle: t('level.intermediate.sub') },
-    { key: 'advanced' as const, title: t('level.advanced'), subtitle: t('level.advanced.sub') },
+    {
+      key: 'beginner' as const,
+      title: t('level.beginner'),
+      subtitle: t('level.beginner.sub'),
+    },
+    {
+      key: 'intermediate' as const,
+      title: t('level.intermediate'),
+      subtitle: t('level.intermediate.sub'),
+    },
+    {
+      key: 'advanced' as const,
+      title: t('level.advanced'),
+      subtitle: t('level.advanced.sub'),
+    },
   ];
 }
 function activities() {
   return [
-    { key: 'sedentary' as const, title: t('activity.sedentary'), subtitle: t('activity.sedentary.sub'), icon: 'cafe' as const },
-    { key: 'light' as const, title: t('activity.light'), subtitle: t('activity.light.sub'), icon: 'walk' as const },
-    { key: 'moderate' as const, title: t('activity.moderate'), subtitle: t('activity.moderate.sub'), icon: 'bicycle' as const },
-    { key: 'active' as const, title: t('activity.active'), subtitle: t('activity.active.sub'), icon: 'flame' as const },
-    { key: 'very_active' as const, title: t('activity.very_active'), subtitle: t('activity.very_active.sub'), icon: 'flash' as const },
+    {
+      key: 'sedentary' as const,
+      title: t('activity.sedentary'),
+      subtitle: t('activity.sedentary.sub'),
+      icon: 'cafe' as const,
+    },
+    {
+      key: 'light' as const,
+      title: t('activity.light'),
+      subtitle: t('activity.light.sub'),
+      icon: 'walk' as const,
+    },
+    {
+      key: 'moderate' as const,
+      title: t('activity.moderate'),
+      subtitle: t('activity.moderate.sub'),
+      icon: 'bicycle' as const,
+    },
+    {
+      key: 'active' as const,
+      title: t('activity.active'),
+      subtitle: t('activity.active.sub'),
+      icon: 'flame' as const,
+    },
+    {
+      key: 'very_active' as const,
+      title: t('activity.very_active'),
+      subtitle: t('activity.very_active.sub'),
+      icon: 'flash' as const,
+    },
   ];
 }
 function genders() {
   return [
     { key: 'male' as const, title: t('gender.male'), icon: 'male' as const },
-    { key: 'female' as const, title: t('gender.female'), icon: 'female' as const },
-    { key: 'other' as const, title: t('gender.other'), icon: 'person' as const },
+    {
+      key: 'female' as const,
+      title: t('gender.female'),
+      icon: 'female' as const,
+    },
+    {
+      key: 'other' as const,
+      title: t('gender.other'),
+      icon: 'person' as const,
+    },
   ];
 }
 
@@ -117,7 +197,9 @@ export function OnboardingScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
       >
-        <View style={{ paddingTop: insets.top + 12, paddingHorizontal: spacing.lg }}>
+        <View
+          style={{ paddingTop: insets.top + 12, paddingHorizontal: spacing.lg }}
+        >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <Ionicons name="sparkles" size={16} color={colors.text} />
             <Text
@@ -141,12 +223,18 @@ export function OnboardingScreen() {
 
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingBottom: 40 }}
+          contentContainerStyle={{
+            paddingHorizontal: spacing.lg,
+            paddingBottom: 40,
+          }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
           {step === 'welcome' && (
-            <WelcomeStep onNext={() => goNext('name')} onLogin={() => setLoginVisible(true)} />
+            <WelcomeStep
+              onNext={() => goNext('name')}
+              onLogin={() => setLoginVisible(true)}
+            />
           )}
 
           {step === 'name' && (
@@ -266,7 +354,7 @@ function LoginModal({
 
   const onSubmit = async () => {
     if (!/\S+@\S+\.\S+/.test(email) || password.length < 6) {
-      setError('Введи корректный email и пароль');
+      setError(t('onb.errEmailPw'));
       return;
     }
     setSubmitting(true);
@@ -281,8 +369,13 @@ function LoginModal({
       if (user.heightCm) u.setHeight(user.heightCm);
       if (user.weightKg) u.setWeight(user.weightKg);
       if (user.level) u.setLevel(user.level.toLowerCase() as FitnessLevel);
-      if (user.activityLevel) u.setActivityLevel(user.activityLevel.toLowerCase() as ActivityLevel);
-      if (user.goal) u.setGoal(user.goal, user.goalKey ? (user.goalKey.toLowerCase() as FitnessGoalKey) : null);
+      if (user.activityLevel)
+        u.setActivityLevel(user.activityLevel.toLowerCase() as ActivityLevel);
+      if (user.goal)
+        u.setGoal(
+          user.goal,
+          user.goalKey ? (user.goalKey.toLowerCase() as FitnessGoalKey) : null,
+        );
       u.setProgram(user.currentProgramId ?? null, user.programWeek ?? 1);
       if (user.dailyCaloriesGoal) {
         u.setNutritionGoals({
@@ -298,15 +391,26 @@ function LoginModal({
       }
       onSuccess();
     } catch (e) {
-      setError(e instanceof ApiError ? e.message : 'Не удалось войти. Проверь сеть и попробуй снова.');
+      setError(e instanceof ApiError ? e.message : t('onb.errLoginFailed'));
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.78)', justifyContent: 'flex-end' }}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+    >
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: 'rgba(0,0,0,0.78)',
+          justifyContent: 'flex-end',
+        }}
+      >
         <View
           style={{
             backgroundColor: colors.bg,
@@ -320,14 +424,27 @@ function LoginModal({
           }}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ flex: 1, color: colors.text, fontFamily: fontFamilies.heading, fontSize: 22 }}>
+            <Text
+              style={{
+                flex: 1,
+                color: colors.text,
+                fontFamily: fontFamilies.heading,
+                fontSize: 22,
+              }}
+            >
               {t('onboarding.login')}
             </Text>
             <Pressable onPress={onClose} hitSlop={12}>
               <Ionicons name="close" size={22} color={colors.textSecondary} />
             </Pressable>
           </View>
-          <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 12 }}>
+          <Text
+            style={{
+              color: colors.textMuted,
+              fontFamily: fontFamilies.body,
+              fontSize: 12,
+            }}
+          >
             {t('onboarding.loginHint')}
           </Text>
 
@@ -347,7 +464,12 @@ function LoginModal({
               placeholderTextColor={colors.textMuted}
               autoCapitalize="none"
               keyboardType="email-address"
-              style={{ color: colors.text, fontFamily: fontFamilies.body600, fontSize: 15, height: 50 }}
+              style={{
+                color: colors.text,
+                fontFamily: fontFamilies.body600,
+                fontSize: 15,
+                height: 50,
+              }}
             />
           </View>
           <View
@@ -365,18 +487,33 @@ function LoginModal({
               placeholder={t('onboarding.loginPassword')}
               placeholderTextColor={colors.textMuted}
               secureTextEntry
-              style={{ color: colors.text, fontFamily: fontFamilies.body600, fontSize: 15, height: 50 }}
+              style={{
+                color: colors.text,
+                fontFamily: fontFamilies.body600,
+                fontSize: 15,
+                height: 50,
+              }}
             />
           </View>
 
           {error ? (
-            <Text style={{ color: colors.red, fontFamily: fontFamilies.body600, fontSize: 12 }}>
+            <Text
+              style={{
+                color: colors.red,
+                fontFamily: fontFamilies.body600,
+                fontSize: 12,
+              }}
+            >
               {error}
             </Text>
           ) : null}
 
           <GradientButton
-            title={submitting ? t('onboarding.loginSubmitting') : t('onboarding.loginSubmit')}
+            title={
+              submitting
+                ? t('onboarding.loginSubmitting')
+                : t('onboarding.loginSubmit')
+            }
             disabled={submitting}
             onPress={onSubmit}
             rightIcon={
@@ -396,7 +533,15 @@ function LoginModal({
 function ProgressBar({ value, total }: { value: number; total: number }) {
   const pct = Math.max(0, Math.min(1, value / total));
   return (
-    <View style={{ marginTop: 18, height: 4, borderRadius: 999, backgroundColor: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+    <View
+      style={{
+        marginTop: 18,
+        height: 4,
+        borderRadius: 999,
+        backgroundColor: 'rgba(255,255,255,0.08)',
+        overflow: 'hidden',
+      }}
+    >
       <Animated.View
         entering={FadeIn.duration(180)}
         style={{ width: `${pct * 100}%`, height: '100%' }}
@@ -415,7 +560,10 @@ function ProgressBar({ value, total }: { value: number; total: number }) {
 function StepShell({ children }: { children: React.ReactNode }) {
   if (Platform.OS === 'web') return <View>{children}</View>;
   return (
-    <Animated.View entering={FadeInDown.duration(360)} exiting={FadeOut.duration(160)}>
+    <Animated.View
+      entering={FadeInDown.duration(360)}
+      exiting={FadeOut.duration(160)}
+    >
       {children}
     </Animated.View>
   );
@@ -453,14 +601,26 @@ function HeadingBig({ children }: { children: React.ReactNode }) {
   );
 }
 
-function NavRow({ onBack, onNext, nextLabel = 'Дальше', disabled }: {
+function NavRow({
+  onBack,
+  onNext,
+  nextLabel = t('common.next'),
+  disabled,
+}: {
   onBack?: () => void;
   onNext?: () => void;
   nextLabel?: string;
   disabled?: boolean;
 }) {
   return (
-    <View style={{ marginTop: 28, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+    <View
+      style={{
+        marginTop: 28,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+      }}
+    >
       {onBack ? (
         <Pressable
           onPress={onBack}
@@ -478,12 +638,17 @@ function NavRow({ onBack, onNext, nextLabel = 'Дальше', disabled }: {
           <Ionicons name="arrow-back" size={18} color={colors.text} />
         </Pressable>
       ) : null}
-      <View style={{ flex: 1, opacity: disabled ? 0.5 : 1 }} pointerEvents={disabled ? 'none' : 'auto'}>
+      <View
+        style={{ flex: 1, opacity: disabled ? 0.5 : 1 }}
+        pointerEvents={disabled ? 'none' : 'auto'}
+      >
         {onNext ? (
           <GradientButton
             title={nextLabel}
             onPress={onNext}
-            rightIcon={<Ionicons name="arrow-forward" size={18} color={colors.text} />}
+            rightIcon={
+              <Ionicons name="arrow-forward" size={18} color={colors.text} />
+            }
           />
         ) : null}
       </View>
@@ -491,7 +656,13 @@ function NavRow({ onBack, onNext, nextLabel = 'Дальше', disabled }: {
   );
 }
 
-function WelcomeStep({ onNext, onLogin }: { onNext: () => void; onLogin: () => void }) {
+function WelcomeStep({
+  onNext,
+  onLogin,
+}: {
+  onNext: () => void;
+  onLogin: () => void;
+}) {
   useLang(); // re-render on lang change
   return (
     <StepShell>
@@ -530,15 +701,29 @@ function WelcomeStep({ onNext, onLogin }: { onNext: () => void; onLogin: () => v
         <GradientButton
           title={t('onboarding.welcomeStart')}
           onPress={onNext}
-          rightIcon={<Ionicons name="arrow-forward" size={18} color={colors.text} />}
+          rightIcon={
+            <Ionicons name="arrow-forward" size={18} color={colors.text} />
+          }
         />
       </View>
       <View style={{ marginTop: 14, alignItems: 'center', gap: 6 }}>
-        <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 12 }}>
+        <Text
+          style={{
+            color: colors.textMuted,
+            fontFamily: fontFamilies.body,
+            fontSize: 12,
+          }}
+        >
           {t('onboarding.welcomeTime')}
         </Text>
         <Pressable onPress={onLogin} hitSlop={10} style={{ marginTop: 8 }}>
-          <Text style={{ color: colors.purpleLight, fontFamily: fontFamilies.body700, fontSize: 13 }}>
+          <Text
+            style={{
+              color: colors.purpleLight,
+              fontFamily: fontFamilies.body700,
+              fontSize: 13,
+            }}
+          >
             {t('onboarding.haveAccount')}
           </Text>
         </Pressable>
@@ -547,7 +732,12 @@ function WelcomeStep({ onNext, onLogin }: { onNext: () => void; onLogin: () => v
   );
 }
 
-function NameStep({ value, onChange, onBack, onNext }: {
+function NameStep({
+  value,
+  onChange,
+  onBack,
+  onNext,
+}: {
   value: string;
   onChange: (v: string) => void;
   onBack: () => void;
@@ -558,8 +748,14 @@ function NameStep({ value, onChange, onBack, onNext }: {
     <StepShell>
       <HeadingSmall>{t('onb.step1of7')}</HeadingSmall>
       <HeadingBig>{t('onb.nameQ')}</HeadingBig>
-      <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, marginTop: 8 }}>
-        Будем обращаться по имени.
+      <Text
+        style={{
+          color: colors.textSecondary,
+          fontFamily: fontFamilies.body,
+          marginTop: 8,
+        }}
+      >
+        {t('onb.nameHint')}
       </Text>
 
       <View
@@ -575,7 +771,7 @@ function NameStep({ value, onChange, onBack, onNext }: {
         <TextInput
           value={value}
           onChangeText={onChange}
-          placeholder="Например, Александр"
+          placeholder={t('onb.namePh')}
           placeholderTextColor={colors.textMuted}
           autoFocus
           style={{
@@ -593,7 +789,12 @@ function NameStep({ value, onChange, onBack, onNext }: {
   );
 }
 
-function GenderStep({ value, onChange, onBack, onNext }: {
+function GenderStep({
+  value,
+  onChange,
+  onBack,
+  onNext,
+}: {
   value: Gender | null;
   onChange: (v: Gender) => void;
   onBack: () => void;
@@ -603,8 +804,14 @@ function GenderStep({ value, onChange, onBack, onNext }: {
     <StepShell>
       <HeadingSmall>{t('onb.step2of7')}</HeadingSmall>
       <HeadingBig>{t('onb.genderQ')}</HeadingBig>
-      <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, marginTop: 8 }}>
-        Подберём программы и нормы под тебя.
+      <Text
+        style={{
+          color: colors.textSecondary,
+          fontFamily: fontFamilies.body,
+          marginTop: 8,
+        }}
+      >
+        {t('onb.genderHint')}
       </Text>
 
       <View style={{ marginTop: 24, gap: 12 }}>
@@ -615,8 +822,14 @@ function GenderStep({ value, onChange, onBack, onNext }: {
               <LinearGradient
                 colors={
                   active
-                    ? (['rgba(123,63,228,0.35)', 'rgba(177,78,255,0.18)'] as any)
-                    : (['rgba(255,255,255,0.02)', 'rgba(255,255,255,0.02)'] as any)
+                    ? ([
+                        'rgba(123,63,228,0.35)',
+                        'rgba(177,78,255,0.18)',
+                      ] as any)
+                    : ([
+                        'rgba(255,255,255,0.02)',
+                        'rgba(255,255,255,0.02)',
+                      ] as any)
                 }
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
@@ -643,13 +856,28 @@ function GenderStep({ value, onChange, onBack, onNext }: {
                     justifyContent: 'center',
                   }}
                 >
-                  <Ionicons name={g.icon} size={20} color={active ? colors.purpleLight : colors.text} />
+                  <Ionicons
+                    name={g.icon}
+                    size={20}
+                    color={active ? colors.purpleLight : colors.text}
+                  />
                 </View>
-                <Text style={{ flex: 1, color: colors.text, fontFamily: fontFamilies.body700, fontSize: 16 }}>
+                <Text
+                  style={{
+                    flex: 1,
+                    color: colors.text,
+                    fontFamily: fontFamilies.body700,
+                    fontSize: 16,
+                  }}
+                >
                   {g.title}
                 </Text>
                 {active ? (
-                  <Ionicons name="checkmark-circle" size={22} color={colors.purpleLight} />
+                  <Ionicons
+                    name="checkmark-circle"
+                    size={22}
+                    color={colors.purpleLight}
+                  />
                 ) : null}
               </LinearGradient>
             </Pressable>
@@ -681,35 +909,42 @@ function MetricsStep({
   onBack: () => void;
   onNext: () => void;
 }) {
-  const ok = age && age > 0 && heightCm && heightCm > 0 && weightKg && weightKg > 0;
+  const ok =
+    age && age > 0 && heightCm && heightCm > 0 && weightKg && weightKg > 0;
   return (
     <StepShell>
       <HeadingSmall>{t('onb.step3of7')}</HeadingSmall>
       <HeadingBig>{t('onb.metricsQ')}</HeadingBig>
-      <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, marginTop: 8 }}>
-        Используем только локально, нужны для расчётов.
+      <Text
+        style={{
+          color: colors.textSecondary,
+          fontFamily: fontFamilies.body,
+          marginTop: 8,
+        }}
+      >
+        {t('onb.metricsLocalHint')}
       </Text>
 
       <View style={{ marginTop: 24, gap: 12 }}>
         <NumericRow
-          label="Возраст"
-          unit="лет"
+          label={t('onb.age')}
+          unit={t('common.years')}
           value={age}
           onChange={setAge}
           placeholder="25"
           maxLength={3}
         />
         <NumericRow
-          label="Рост"
-          unit="см"
+          label={t('onb.heightShort')}
+          unit={t('common.cm')}
           value={heightCm}
           onChange={setHeight}
           placeholder="180"
           maxLength={3}
         />
         <NumericRow
-          label="Вес"
-          unit="кг"
+          label={t('onb.weightShort')}
+          unit={t('common.kg')}
           value={weightKg}
           onChange={setWeight}
           placeholder="78"
@@ -749,7 +984,15 @@ function NumericRow({
         paddingHorizontal: 14,
       }}
     >
-      <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body500, width: 80 }}>{label}</Text>
+      <Text
+        style={{
+          color: colors.textSecondary,
+          fontFamily: fontFamilies.body500,
+          width: 80,
+        }}
+      >
+        {label}
+      </Text>
       <TextInput
         value={value ? String(value) : ''}
         onChangeText={(t) => {
@@ -769,12 +1012,25 @@ function NumericRow({
           textAlign: 'right',
         }}
       />
-      <Text style={{ marginLeft: 8, color: colors.textMuted, fontFamily: fontFamilies.body500 }}>{unit}</Text>
+      <Text
+        style={{
+          marginLeft: 8,
+          color: colors.textMuted,
+          fontFamily: fontFamilies.body500,
+        }}
+      >
+        {unit}
+      </Text>
     </View>
   );
 }
 
-function GoalStep({ value, onChange, onBack, onNext }: {
+function GoalStep({
+  value,
+  onChange,
+  onBack,
+  onNext,
+}: {
   value: FitnessGoalKey | null;
   onChange: (g: { key: FitnessGoalKey; title: string }) => void;
   onBack: () => void;
@@ -784,20 +1040,35 @@ function GoalStep({ value, onChange, onBack, onNext }: {
     <StepShell>
       <HeadingSmall>{t('onb.step5of7')}</HeadingSmall>
       <HeadingBig>{t('onb.goalQ')}</HeadingBig>
-      <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, marginTop: 8 }}>
-        Под цель подберём программу и питание.
+      <Text
+        style={{
+          color: colors.textSecondary,
+          fontFamily: fontFamilies.body,
+          marginTop: 8,
+        }}
+      >
+        {t('onb.goalLocalHint')}
       </Text>
 
       <View style={{ marginTop: 24, gap: 10 }}>
         {goals().map((g) => {
           const active = value === g.key;
           return (
-            <Pressable key={g.key} onPress={() => onChange({ key: g.key, title: g.title })}>
+            <Pressable
+              key={g.key}
+              onPress={() => onChange({ key: g.key, title: g.title })}
+            >
               <LinearGradient
                 colors={
                   active
-                    ? (['rgba(123,63,228,0.35)', 'rgba(255,63,203,0.18)'] as any)
-                    : (['rgba(255,255,255,0.02)', 'rgba(255,255,255,0.02)'] as any)
+                    ? ([
+                        'rgba(123,63,228,0.35)',
+                        'rgba(255,63,203,0.18)',
+                      ] as any)
+                    : ([
+                        'rgba(255,255,255,0.02)',
+                        'rgba(255,255,255,0.02)',
+                      ] as any)
                 }
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
@@ -823,10 +1094,20 @@ function GoalStep({ value, onChange, onBack, onNext }: {
                     borderColor: active ? colors.purpleLight : colors.border,
                   }}
                 >
-                  <Ionicons name={g.icon} size={20} color={active ? colors.purpleLight : colors.text} />
+                  <Ionicons
+                    name={g.icon}
+                    size={20}
+                    color={active ? colors.purpleLight : colors.text}
+                  />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 15 }}>
+                  <Text
+                    style={{
+                      color: colors.text,
+                      fontFamily: fontFamilies.body700,
+                      fontSize: 15,
+                    }}
+                  >
                     {g.title}
                   </Text>
                   <Text
@@ -841,7 +1122,11 @@ function GoalStep({ value, onChange, onBack, onNext }: {
                   </Text>
                 </View>
                 {active ? (
-                  <Ionicons name="checkmark-circle" size={22} color={colors.purpleLight} />
+                  <Ionicons
+                    name="checkmark-circle"
+                    size={22}
+                    color={colors.purpleLight}
+                  />
                 ) : null}
               </LinearGradient>
             </Pressable>
@@ -854,7 +1139,12 @@ function GoalStep({ value, onChange, onBack, onNext }: {
   );
 }
 
-function LevelStep({ value, onChange, onBack, onNext }: {
+function LevelStep({
+  value,
+  onChange,
+  onBack,
+  onNext,
+}: {
   value: FitnessLevel | null;
   onChange: (v: FitnessLevel) => void;
   onBack: () => void;
@@ -864,8 +1154,14 @@ function LevelStep({ value, onChange, onBack, onNext }: {
     <StepShell>
       <HeadingSmall>{t('onb.step6of7')}</HeadingSmall>
       <HeadingBig>{t('onb.levelQ')}</HeadingBig>
-      <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, marginTop: 8 }}>
-        Подберём интенсивность.
+      <Text
+        style={{
+          color: colors.textSecondary,
+          fontFamily: fontFamilies.body,
+          marginTop: 8,
+        }}
+      >
+        {t('onb.levelLocalHint')}
       </Text>
 
       <View style={{ marginTop: 24, gap: 12 }}>
@@ -876,8 +1172,14 @@ function LevelStep({ value, onChange, onBack, onNext }: {
               <LinearGradient
                 colors={
                   active
-                    ? (['rgba(123,63,228,0.35)', 'rgba(177,78,255,0.18)'] as any)
-                    : (['rgba(255,255,255,0.02)', 'rgba(255,255,255,0.02)'] as any)
+                    ? ([
+                        'rgba(123,63,228,0.35)',
+                        'rgba(177,78,255,0.18)',
+                      ] as any)
+                    : ([
+                        'rgba(255,255,255,0.02)',
+                        'rgba(255,255,255,0.02)',
+                      ] as any)
                 }
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
@@ -891,7 +1193,13 @@ function LevelStep({ value, onChange, onBack, onNext }: {
                 }}
               >
                 <View style={{ flex: 1 }}>
-                  <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 16 }}>
+                  <Text
+                    style={{
+                      color: colors.text,
+                      fontFamily: fontFamilies.body700,
+                      fontSize: 16,
+                    }}
+                  >
                     {l.title}
                   </Text>
                   <Text
@@ -906,7 +1214,11 @@ function LevelStep({ value, onChange, onBack, onNext }: {
                   </Text>
                 </View>
                 {active ? (
-                  <Ionicons name="checkmark-circle" size={22} color={colors.purpleLight} />
+                  <Ionicons
+                    name="checkmark-circle"
+                    size={22}
+                    color={colors.purpleLight}
+                  />
                 ) : null}
               </LinearGradient>
             </Pressable>
@@ -914,26 +1226,50 @@ function LevelStep({ value, onChange, onBack, onNext }: {
         })}
       </View>
 
-      <NavRow onBack={onBack} onNext={onNext} nextLabel="Завершить" disabled={!value} />
+      <NavRow
+        onBack={onBack}
+        onNext={onNext}
+        nextLabel={t('onb.finish')}
+        disabled={!value}
+      />
     </StepShell>
   );
 }
 
-function buildOnboardingPayload(u: ReturnType<typeof useUserStore.getState>): OnboardingPayload | null {
-  if (!u.gender || !u.age || !u.heightCm || !u.weightKg || !u.activityLevel || !u.goalKey) return null;
+function buildOnboardingPayload(
+  u: ReturnType<typeof useUserStore.getState>,
+): OnboardingPayload | null {
+  if (
+    !u.gender ||
+    !u.age ||
+    !u.heightCm ||
+    !u.weightKg ||
+    !u.activityLevel ||
+    !u.goalKey
+  )
+    return null;
   return {
     gender: u.gender.toUpperCase() as OnboardingPayload['gender'],
     age: u.age,
     heightCm: u.heightCm,
     weightKg: u.weightKg,
-    activityLevel: u.activityLevel.toUpperCase() as OnboardingPayload['activityLevel'],
+    activityLevel:
+      u.activityLevel.toUpperCase() as OnboardingPayload['activityLevel'],
     goalKey: u.goalKey.toUpperCase() as OnboardingPayload['goalKey'],
-    level: u.level ? (u.level.toUpperCase() as OnboardingPayload['level']) : undefined,
+    level: u.level
+      ? (u.level.toUpperCase() as OnboardingPayload['level'])
+      : undefined,
     name: u.name || undefined,
   };
 }
 
-function AccountStep({ onBack, onNext }: { onBack: () => void; onNext: () => void }) {
+function AccountStep({
+  onBack,
+  onNext,
+}: {
+  onBack: () => void;
+  onNext: () => void;
+}) {
   const u = useUserStore();
   const auth = useAuthStore();
   const [email, setEmail] = useState('');
@@ -966,10 +1302,7 @@ function AccountStep({ onBack, onNext }: { onBack: () => void; onNext: () => voi
       onNext();
     } catch (e) {
       // ApiError = сервер ответил ошибкой; иначе fetch бросил TypeError — сеть/сервер недоступны.
-      const msg =
-        e instanceof ApiError
-          ? e.message
-          : t('onb.errServerDown');
+      const msg = e instanceof ApiError ? e.message : t('onb.errServerDown');
       Alert.alert(t('onb.errTitle'), msg, [
         { text: t('onb.retry'), style: 'cancel' },
         { text: t('onb.continueLocally'), onPress: onNext },
@@ -983,7 +1316,13 @@ function AccountStep({ onBack, onNext }: { onBack: () => void; onNext: () => voi
     <StepShell>
       <HeadingSmall>{t('onb.step7of7')}</HeadingSmall>
       <HeadingBig>{t('onb.accountQ')}</HeadingBig>
-      <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, marginTop: 8 }}>
+      <Text
+        style={{
+          color: colors.textSecondary,
+          fontFamily: fontFamilies.body,
+          marginTop: 8,
+        }}
+      >
         {t('onb.accountHint')}
       </Text>
 
@@ -1042,7 +1381,10 @@ function AccountStep({ onBack, onNext }: { onBack: () => void; onNext: () => voi
       </View>
 
       <View style={{ marginTop: 28, gap: 10 }}>
-        <View style={{ opacity: !valid || submitting ? 0.5 : 1 }} pointerEvents={!valid || submitting ? 'none' : 'auto'}>
+        <View
+          style={{ opacity: !valid || submitting ? 0.5 : 1 }}
+          pointerEvents={!valid || submitting ? 'none' : 'auto'}
+        >
           <GradientButton
             title={submitting ? t('onb.creating') : t('onb.createAccount')}
             onPress={submit}
@@ -1068,20 +1410,37 @@ function AccountStep({ onBack, onNext }: { onBack: () => void; onNext: () => voi
             justifyContent: 'center',
           }}
         >
-          <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body600 }}>
+          <Text
+            style={{
+              color: colors.textSecondary,
+              fontFamily: fontFamilies.body600,
+            }}
+          >
             {t('onb.continueNoAcc')}
           </Text>
         </Pressable>
 
-        <Pressable onPress={onBack} style={{ alignItems: 'center', paddingVertical: 8 }}>
-          <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body }}>{t('onb.back')}</Text>
+        <Pressable
+          onPress={onBack}
+          style={{ alignItems: 'center', paddingVertical: 8 }}
+        >
+          <Text
+            style={{ color: colors.textMuted, fontFamily: fontFamilies.body }}
+          >
+            {t('onb.back')}
+          </Text>
         </Pressable>
       </View>
     </StepShell>
   );
 }
 
-function ActivityStep({ value, onChange, onBack, onNext }: {
+function ActivityStep({
+  value,
+  onChange,
+  onBack,
+  onNext,
+}: {
   value: ActivityLevel | null;
   onChange: (v: ActivityLevel) => void;
   onBack: () => void;
@@ -1091,7 +1450,13 @@ function ActivityStep({ value, onChange, onBack, onNext }: {
     <StepShell>
       <HeadingSmall>{t('onb.step4of7')}</HeadingSmall>
       <HeadingBig>{t('onb.activityQ')}</HeadingBig>
-      <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, marginTop: 8 }}>
+      <Text
+        style={{
+          color: colors.textSecondary,
+          fontFamily: fontFamilies.body,
+          marginTop: 8,
+        }}
+      >
         {t('onb.activityHint')}
       </Text>
 
@@ -1103,8 +1468,14 @@ function ActivityStep({ value, onChange, onBack, onNext }: {
               <LinearGradient
                 colors={
                   active
-                    ? (['rgba(123,63,228,0.35)', 'rgba(255,63,203,0.18)'] as any)
-                    : (['rgba(255,255,255,0.02)', 'rgba(255,255,255,0.02)'] as any)
+                    ? ([
+                        'rgba(123,63,228,0.35)',
+                        'rgba(255,63,203,0.18)',
+                      ] as any)
+                    : ([
+                        'rgba(255,255,255,0.02)',
+                        'rgba(255,255,255,0.02)',
+                      ] as any)
                 }
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
@@ -1130,10 +1501,20 @@ function ActivityStep({ value, onChange, onBack, onNext }: {
                     borderColor: active ? colors.purpleLight : colors.border,
                   }}
                 >
-                  <Ionicons name={a.icon} size={20} color={active ? colors.purpleLight : colors.text} />
+                  <Ionicons
+                    name={a.icon}
+                    size={20}
+                    color={active ? colors.purpleLight : colors.text}
+                  />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 15 }}>
+                  <Text
+                    style={{
+                      color: colors.text,
+                      fontFamily: fontFamilies.body700,
+                      fontSize: 15,
+                    }}
+                  >
                     {a.title}
                   </Text>
                   <Text
@@ -1148,7 +1529,11 @@ function ActivityStep({ value, onChange, onBack, onNext }: {
                   </Text>
                 </View>
                 {active ? (
-                  <Ionicons name="checkmark-circle" size={22} color={colors.purpleLight} />
+                  <Ionicons
+                    name="checkmark-circle"
+                    size={22}
+                    color={colors.purpleLight}
+                  />
                 ) : null}
               </LinearGradient>
             </Pressable>
@@ -1161,7 +1546,13 @@ function ActivityStep({ value, onChange, onBack, onNext }: {
   );
 }
 
-function SummaryStep({ onBack, onNext }: { onBack: () => void; onNext: () => void }) {
+function SummaryStep({
+  onBack,
+  onNext,
+}: {
+  onBack: () => void;
+  onNext: () => void;
+}) {
   const u = useUserStore();
   const [plan, setPlan] = useState<OnboardingPlan | null>(null);
   const [loading, setLoading] = useState(true);
@@ -1170,7 +1561,7 @@ function SummaryStep({ onBack, onNext }: { onBack: () => void; onNext: () => voi
   React.useEffect(() => {
     const payload = buildOnboardingPayload(u);
     if (!payload) {
-      setError('Не хватает данных для расчёта');
+      setError(t('onb.errNoData'));
       setLoading(false);
       return;
     }
@@ -1192,8 +1583,14 @@ function SummaryStep({ onBack, onNext }: { onBack: () => void; onNext: () => voi
     <StepShell>
       <HeadingSmall>{t('onb.summaryQ').toUpperCase()}</HeadingSmall>
       <HeadingBig>{t('onb.summaryHint')}</HeadingBig>
-      <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, marginTop: 8 }}>
-        Подобрали калории, макросы и программу под твою цель.
+      <Text
+        style={{
+          color: colors.textSecondary,
+          fontFamily: fontFamilies.body,
+          marginTop: 8,
+        }}
+      >
+        {t('onb.summaryLocalHint')}
       </Text>
 
       {loading ? (
@@ -1207,8 +1604,8 @@ function SummaryStep({ onBack, onNext }: { onBack: () => void; onNext: () => voi
       ) : plan ? (
         <View style={{ marginTop: 24, gap: 12 }}>
           <SummaryCard
-            title="Дневные калории"
-            value={`${plan.dailyCalories} ккал`}
+            title={t('onb.dailyCalories')}
+            value={`${plan.dailyCalories} ${t('common.kcal')}`}
             subtitle={`BMR ${plan.bmr} → TDEE ${plan.tdee}${
               plan.surplusOrDeficit !== 0
                 ? ` ${plan.surplusOrDeficit > 0 ? '+' : ''}${plan.surplusOrDeficit}`
@@ -1217,12 +1614,27 @@ function SummaryStep({ onBack, onNext }: { onBack: () => void; onNext: () => voi
             icon="flame"
           />
           <View style={{ flexDirection: 'row', gap: 10 }}>
-            <SummaryCard small title="Белки" value={`${plan.proteinG} г`} icon="barbell" />
-            <SummaryCard small title="Жиры" value={`${plan.fatsG} г`} icon="water" />
-            <SummaryCard small title="Углеводы" value={`${plan.carbsG} г`} icon="leaf" />
+            <SummaryCard
+              small
+              title={t('onb.protein')}
+              value={`${plan.proteinG} ${t('common.gram')}`}
+              icon="barbell"
+            />
+            <SummaryCard
+              small
+              title={t('onb.fats')}
+              value={`${plan.fatsG} ${t('common.gram')}`}
+              icon="water"
+            />
+            <SummaryCard
+              small
+              title={t('onb.carbs')}
+              value={`${plan.carbsG} ${t('common.gram')}`}
+              icon="leaf"
+            />
           </View>
           <SummaryCard
-            title="Программа"
+            title={t('onb.program')}
             value={plan.goalLabel}
             subtitle={`ID: ${plan.programId}`}
             icon="fitness"
@@ -1230,7 +1642,11 @@ function SummaryStep({ onBack, onNext }: { onBack: () => void; onNext: () => voi
         </View>
       ) : null}
 
-      <NavRow onBack={onBack} onNext={onNext} nextLabel="Продолжить" />
+      <NavRow
+        onBack={onBack}
+        onNext={onNext}
+        nextLabel={t('common.continue')}
+      />
     </StepShell>
   );
 }
@@ -1262,7 +1678,11 @@ function SummaryCard({
       }}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-        <Ionicons name={icon} size={small ? 16 : 20} color={colors.purpleLight} />
+        <Ionicons
+          name={icon}
+          size={small ? 16 : 20}
+          color={colors.purpleLight}
+        />
         <Text
           style={{
             color: colors.textSecondary,
@@ -1303,25 +1723,43 @@ function SummaryCard({
 
 function calculatePlanLocally(p: OnboardingPayload): OnboardingPlan {
   const base = 10 * p.weightKg + 6.25 * p.heightCm - 5 * p.age;
-  const bmr = Math.round(p.gender === 'MALE' ? base + 5 : p.gender === 'FEMALE' ? base - 161 : base - 78);
+  const bmr = Math.round(
+    p.gender === 'MALE'
+      ? base + 5
+      : p.gender === 'FEMALE'
+        ? base - 161
+        : base - 78,
+  );
   const mult: Record<OnboardingPayload['activityLevel'], number> = {
-    SEDENTARY: 1.2, LIGHT: 1.375, MODERATE: 1.55, ACTIVE: 1.725, VERY_ACTIVE: 1.9,
+    SEDENTARY: 1.2,
+    LIGHT: 1.375,
+    MODERATE: 1.55,
+    ACTIVE: 1.725,
+    VERY_ACTIVE: 1.9,
   };
   const tdee = Math.round(bmr * mult[p.activityLevel]);
   const goalAdj: Record<OnboardingPayload['goalKey'], number> = {
-    MASS: 0.1, CUT: -0.2, STRENGTH: 0.05, ENDURANCE: 0, ABS: -0.1,
+    MASS: 0.1,
+    CUT: -0.2,
+    STRENGTH: 0.05,
+    ENDURANCE: 0,
+    ABS: -0.1,
   };
   const surplusOrDeficit = Math.round(tdee * goalAdj[p.goalKey]);
   const dailyCalories = tdee + surplusOrDeficit;
   const proteinPerKg = p.goalKey === 'CUT' || p.goalKey === 'ABS' ? 2.2 : 1.8;
   const proteinG = Math.round(p.weightKg * proteinPerKg);
   const fatsG = Math.round(p.weightKg * 0.9);
-  const carbsG = Math.max(0, Math.round((dailyCalories - proteinG * 4 - fatsG * 9) / 4));
+  const carbsG = Math.max(
+    0,
+    Math.round((dailyCalories - proteinG * 4 - fatsG * 9) / 4),
+  );
   const programMap: Record<OnboardingPayload['goalKey'], string> = {
-    MASS: 'mass', CUT: 'relief', STRENGTH: 'strength', ENDURANCE: 'endurance', ABS: 'abs',
-  };
-  const labelMap: Record<OnboardingPayload['goalKey'], string> = {
-    MASS: 'Набор массы', CUT: 'Сушка', STRENGTH: 'Сила', ENDURANCE: 'Выносливость', ABS: 'Пресс',
+    MASS: 'mass',
+    CUT: 'relief',
+    STRENGTH: 'strength',
+    ENDURANCE: 'endurance',
+    ABS: 'abs',
   };
   return {
     bmr,
@@ -1332,7 +1770,7 @@ function calculatePlanLocally(p: OnboardingPayload): OnboardingPlan {
     carbsG,
     surplusOrDeficit,
     programId: programMap[p.goalKey],
-    goalLabel: labelMap[p.goalKey],
+    goalLabel: goalLabel(p.goalKey),
   };
 }
 
@@ -1342,24 +1780,42 @@ function FinishStep({ onStart }: { onStart: () => void }) {
       <View style={{ alignItems: 'center', marginTop: 12 }}>
         <Animated.View entering={FadeIn.duration(600)}>
           <LinearGradient
-            colors={['rgba(177,78,255,0.35)', 'rgba(255,63,203,0.15)', 'rgba(0,0,0,0)']}
+            colors={[
+              'rgba(177,78,255,0.35)',
+              'rgba(255,63,203,0.15)',
+              'rgba(0,0,0,0)',
+            ]}
             start={{ x: 0.5, y: 0 }}
             end={{ x: 0.5, y: 1 }}
-            style={{ width: 220, height: 220, borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
+            style={{
+              width: 220,
+              height: 220,
+              borderRadius: 999,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
             <Ionicons name="sparkles" size={64} color={colors.purpleLight} />
           </LinearGradient>
         </Animated.View>
       </View>
       <HeadingBig>{t('onb.finishQ')}</HeadingBig>
-      <Text style={{ marginTop: 8, color: colors.textSecondary, fontFamily: fontFamilies.body }}>
+      <Text
+        style={{
+          marginTop: 8,
+          color: colors.textSecondary,
+          fontFamily: fontFamilies.body,
+        }}
+      >
         {t('onb.finishHint')}
       </Text>
       <View style={{ marginTop: 28 }}>
         <GradientButton
           title={t('onb.toApp')}
           onPress={onStart}
-          rightIcon={<Ionicons name="arrow-forward" size={18} color={colors.text} />}
+          rightIcon={
+            <Ionicons name="arrow-forward" size={18} color={colors.text} />
+          }
         />
       </View>
     </StepShell>

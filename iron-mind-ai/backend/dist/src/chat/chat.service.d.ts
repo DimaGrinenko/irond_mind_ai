@@ -1,9 +1,11 @@
 import { PrismaService } from '../prisma/prisma.service';
 import { AiProvider } from '../ai/ai-provider';
+import { CycleService } from '../cycle/cycle.service';
 export declare class ChatService {
     private readonly prisma;
     private readonly ai;
-    constructor(prisma: PrismaService, ai: AiProvider);
+    private readonly cycle;
+    constructor(prisma: PrismaService, ai: AiProvider, cycle: CycleService);
     list(userId: string, limit?: number): import(".prisma/client").Prisma.PrismaPromise<{
         id: string;
         createdAt: Date;

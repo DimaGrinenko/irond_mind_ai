@@ -18,12 +18,25 @@ import { Card } from '../components/common/Card';
 import { GradientButton } from '../components/common/GradientButton';
 import { NeonScene3D } from '../components/3d/NeonScene3D';
 import { ScreenHeader } from '../components/layout/ScreenHeader';
-import { api, type ScheduledStatus, type ScheduledWorkout } from '../api/client';
+import {
+  api,
+  type ScheduledStatus,
+  type ScheduledWorkout,
+} from '../api/client';
 import { useUserStore } from '../store/userStore';
 import { colors, radii } from '../theme/tokens';
 import { fontFamilies } from '../theme/typography';
+import { t, dayTitle, useLang } from '../i18n';
 
-const WEEK_LABELS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+const weekLabels = () => [
+  t('wd.mon'),
+  t('wd.tue'),
+  t('wd.wed'),
+  t('wd.thu'),
+  t('wd.fri'),
+  t('wd.sat'),
+  t('wd.sun'),
+];
 
 function startOfWeek(d: Date) {
   const x = new Date(d);
@@ -42,6 +55,7 @@ function sameDay(iso: string, date: string) {
 }
 
 export function CalendarScreen({ navigation }: any) {
+  useLang();
   const currentProgramId = useUserStore((s) => s.currentProgramId);
   const [items, setItems] = useState<ScheduledWorkout[]>([]);
   const [loading, setLoading] = useState(false);
@@ -75,7 +89,7 @@ export function CalendarScreen({ navigation }: any) {
     return Array.from({ length: 14 }).map((_, i) => {
       const d = new Date(start);
       d.setDate(start.getDate() + i);
-      return { label: WEEK_LABELS[i % 7], date: d.getDate(), iso: isoDay(d) };
+      return { label: weekLabels()[i % 7], date: d.getDate(), iso: isoDay(d) };
     });
   }, [anchor]);
 
@@ -94,58 +108,68 @@ export function CalendarScreen({ navigation }: any) {
   const onItemPress = (item: ScheduledWorkout) => {
     const isDone = item.status === 'DONE';
     const isSkipped = item.status === 'SKIPPED';
-    const options = [
+    const actions: Array<{
+      key: 'complete' | 'skip' | 'delete';
+      label: string;
+      destructive?: boolean;
+    }> = [
       ...(item.status === 'PLANNED'
-        ? ['Отметить выполненной', 'Пропустить']
+        ? [
+            { key: 'complete' as const, label: t('cal.actMarkDone') },
+            { key: 'skip' as const, label: t('cal.actSkip') },
+          ]
         : isDone
           ? []
-          : ['Отметить выполненной']),
-      'Удалить',
-      'Отмена',
+          : [{ key: 'complete' as const, label: t('cal.actMarkDone') }]),
+      { key: 'delete' as const, label: t('common.delete'), destructive: true },
     ];
 
-    const run = async (label: string) => {
+    const run = async (key: 'complete' | 'skip' | 'delete') => {
       try {
-        if (label === 'Отметить выполненной') {
+        if (key === 'complete') {
           const updated = await api.schedule.complete(item.id);
           setItems((s) => s.map((x) => (x.id === item.id ? updated : x)));
-        } else if (label === 'Пропустить') {
+        } else if (key === 'skip') {
           const updated = await api.schedule.skip(item.id);
           setItems((s) => s.map((x) => (x.id === item.id ? updated : x)));
-        } else if (label === 'Удалить') {
+        } else if (key === 'delete') {
           await api.schedule.remove(item.id);
           setItems((s) => s.filter((x) => x.id !== item.id));
         }
       } catch (e) {
-        Alert.alert('Ошибка', (e as Error).message);
+        Alert.alert(t('common.error'), (e as Error).message);
       }
     };
 
     if (Platform.OS === 'ios') {
+      const labels = [...actions.map((a) => a.label), t('common.cancel')];
       ActionSheetIOS.showActionSheetWithOptions(
         {
-          options,
-          cancelButtonIndex: options.length - 1,
-          destructiveButtonIndex: options.indexOf('Удалить'),
-          title: item.title,
+          options: labels,
+          cancelButtonIndex: labels.length - 1,
+          destructiveButtonIndex: actions.findIndex((a) => a.destructive),
+          title: dayTitle(item.title),
         },
         (idx) => {
-          if (idx >= 0 && idx < options.length - 1) run(options[idx]);
+          if (idx >= 0 && idx < actions.length) run(actions[idx].key);
         },
       );
     } else {
-      const buttons: Array<{ text: string; style?: 'default' | 'cancel' | 'destructive'; onPress?: () => void }> =
-        options.slice(0, -1).map((label) => ({
-          text: label,
-          style: label === 'Удалить' ? 'destructive' : 'default',
-          onPress: () => {
-            void run(label);
-          },
-        }));
-      buttons.push({ text: 'Отмена', style: 'cancel' });
+      const buttons: Array<{
+        text: string;
+        style?: 'default' | 'cancel' | 'destructive';
+        onPress?: () => void;
+      }> = actions.map((a) => ({
+        text: a.label,
+        style: a.destructive ? 'destructive' : 'default',
+        onPress: () => {
+          void run(a.key);
+        },
+      }));
+      buttons.push({ text: t('common.cancel'), style: 'cancel' });
       Alert.alert(
-        item.title,
-        isDone ? 'Тренировка отмечена выполненной' : isSkipped ? 'Тренировка пропущена' : undefined,
+        dayTitle(item.title),
+        isDone ? t('cal.doneMsg') : isSkipped ? t('cal.skippedMsg') : undefined,
         buttons,
       );
     }
@@ -154,7 +178,7 @@ export function CalendarScreen({ navigation }: any) {
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
       <ScreenHeader
-        title="Календарь"
+        title={t('cal.title')}
         onBack={() => navigation.goBack()}
         right={
           <Pressable
@@ -168,14 +192,29 @@ export function CalendarScreen({ navigation }: any) {
               backgroundColor: colors.bgSecondary,
             }}
           >
-            <Text style={{ color: colors.cyan, fontFamily: fontFamilies.body600, fontSize: 12 }}>Сегодня</Text>
+            <Text
+              style={{
+                color: colors.cyan,
+                fontFamily: fontFamilies.body600,
+                fontSize: 12,
+              }}
+            >
+              {t('common.today')}
+            </Text>
           </Pressable>
         }
       />
       <NeonScene3D height={72} />
 
       {currentProgramId ? (
-        <View style={{ paddingHorizontal: 16, marginTop: 6, flexDirection: 'row', gap: 8 }}>
+        <View
+          style={{
+            paddingHorizontal: 16,
+            marginTop: 6,
+            flexDirection: 'row',
+            gap: 8,
+          }}
+        >
           <Pressable
             onPress={() => setOnlyProgram(false)}
             style={{
@@ -185,11 +224,19 @@ export function CalendarScreen({ navigation }: any) {
               borderRadius: 12,
               borderWidth: 1,
               borderColor: !onlyProgram ? colors.borderNeon : colors.border,
-              backgroundColor: !onlyProgram ? 'rgba(157,107,255,0.18)' : colors.bgSecondary,
+              backgroundColor: !onlyProgram
+                ? 'rgba(157,107,255,0.18)'
+                : colors.bgSecondary,
             }}
           >
-            <Text style={{ color: !onlyProgram ? colors.purpleLight : colors.textSecondary, fontFamily: fontFamilies.body700, fontSize: 12 }}>
-              Все
+            <Text
+              style={{
+                color: !onlyProgram ? colors.purpleLight : colors.textSecondary,
+                fontFamily: fontFamilies.body700,
+                fontSize: 12,
+              }}
+            >
+              {t('cal.filterAll')}
             </Text>
           </Pressable>
           <Pressable
@@ -201,11 +248,19 @@ export function CalendarScreen({ navigation }: any) {
               borderRadius: 12,
               borderWidth: 1,
               borderColor: onlyProgram ? colors.borderNeon : colors.border,
-              backgroundColor: onlyProgram ? 'rgba(157,107,255,0.18)' : colors.bgSecondary,
+              backgroundColor: onlyProgram
+                ? 'rgba(157,107,255,0.18)'
+                : colors.bgSecondary,
             }}
           >
-            <Text style={{ color: onlyProgram ? colors.purpleLight : colors.textSecondary, fontFamily: fontFamilies.body700, fontSize: 12 }}>
-              Только из программы
+            <Text
+              style={{
+                color: onlyProgram ? colors.purpleLight : colors.textSecondary,
+                fontFamily: fontFamilies.body700,
+                fontSize: 12,
+              }}
+            >
+              {t('cal.filterProgram')}
             </Text>
           </Pressable>
         </View>
@@ -226,7 +281,13 @@ export function CalendarScreen({ navigation }: any) {
                 onPress={() => setSelectedIso(d.iso)}
                 style={{ alignItems: 'center', width: 46 }}
               >
-                <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body600, fontSize: 11 }}>
+                <Text
+                  style={{
+                    color: colors.textMuted,
+                    fontFamily: fontFamilies.body600,
+                    fontSize: 11,
+                  }}
+                >
                   {d.label}
                 </Text>
                 <View
@@ -237,7 +298,9 @@ export function CalendarScreen({ navigation }: any) {
                     borderRadius: 18,
                     borderWidth: 1,
                     borderColor: active ? colors.borderNeon : colors.border,
-                    backgroundColor: active ? 'rgba(157,107,255,0.25)' : colors.bgSecondary,
+                    backgroundColor: active
+                      ? 'rgba(157,107,255,0.25)'
+                      : colors.bgSecondary,
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}
@@ -267,7 +330,10 @@ export function CalendarScreen({ navigation }: any) {
         </View>
       </ScrollView>
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 140 }} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 140 }}
+        showsVerticalScrollIndicator={false}
+      >
         {loading ? (
           <View style={{ paddingVertical: 24, alignItems: 'center' }}>
             <ActivityIndicator color={colors.purpleLight} />
@@ -277,8 +343,14 @@ export function CalendarScreen({ navigation }: any) {
         <View style={{ paddingHorizontal: 16, marginTop: 8, gap: 12 }}>
           {dayItems.length === 0 ? (
             <Card>
-              <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, textAlign: 'center' }}>
-                На этот день ничего не запланировано.
+              <Text
+                style={{
+                  color: colors.textSecondary,
+                  fontFamily: fontFamilies.body,
+                  textAlign: 'center',
+                }}
+              >
+                {t('cal.emptyDay')}
               </Text>
             </Card>
           ) : (
@@ -295,11 +367,23 @@ export function CalendarScreen({ navigation }: any) {
                     }
                     style={{ padding: 14 }}
                   >
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 12,
+                      }}
+                    >
                       <StatusBadge status={w.status} />
                       <View style={{ flex: 1 }}>
-                        <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 14 }}>
-                          {w.title}
+                        <Text
+                          style={{
+                            color: colors.text,
+                            fontFamily: fontFamilies.body700,
+                            fontSize: 14,
+                          }}
+                        >
+                          {dayTitle(w.title)}
                         </Text>
                         <Text
                           style={{
@@ -314,7 +398,11 @@ export function CalendarScreen({ navigation }: any) {
                           {w.notes ? ` · ${w.notes}` : ''}
                         </Text>
                       </View>
-                      <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+                      <Ionicons
+                        name="chevron-forward"
+                        size={18}
+                        color={colors.textMuted}
+                      />
                     </View>
                   </LinearGradient>
                 </Card>
@@ -333,7 +421,7 @@ export function CalendarScreen({ navigation }: any) {
         }}
       >
         <GradientButton
-          title="Добавить план"
+          title={t('cal.addPlan')}
           onPress={() => setShowAdd(true)}
           rightIcon={<Ionicons name="add" size={18} color={colors.text} />}
         />
@@ -353,8 +441,18 @@ export function CalendarScreen({ navigation }: any) {
 }
 
 function StatusBadge({ status }: { status: ScheduledStatus }) {
-  const icon = status === 'DONE' ? 'checkmark-circle' : status === 'SKIPPED' ? 'remove-circle' : 'barbell';
-  const tint = status === 'DONE' ? '#3FFF8F' : status === 'SKIPPED' ? '#FF4DD2' : colors.purpleLight;
+  const icon =
+    status === 'DONE'
+      ? 'checkmark-circle'
+      : status === 'SKIPPED'
+        ? 'remove-circle'
+        : 'barbell';
+  const tint =
+    status === 'DONE'
+      ? '#3FFF8F'
+      : status === 'SKIPPED'
+        ? '#FF4DD2'
+        : colors.purpleLight;
   return (
     <View
       style={{
@@ -374,9 +472,9 @@ function StatusBadge({ status }: { status: ScheduledStatus }) {
 }
 
 function labelForStatus(s: ScheduledStatus) {
-  if (s === 'DONE') return 'Выполнена';
-  if (s === 'SKIPPED') return 'Пропущена';
-  return 'Запланирована';
+  if (s === 'DONE') return t('cal.statusDone');
+  if (s === 'SKIPPED') return t('cal.statusSkipped');
+  return t('cal.statusPlanned');
 }
 
 function AddPlanModal({
@@ -390,7 +488,7 @@ function AddPlanModal({
   onClose: () => void;
   onCreated: () => void;
 }) {
-  const [title, setTitle] = useState('Тренировка');
+  const [title, setTitle] = useState(t('cal.defaultTitle'));
   const [time, setTime] = useState('');
   const [repeat, setRepeat] = useState(false);
   const [weekdays, setWeekdays] = useState<number[]>([]);
@@ -399,7 +497,7 @@ function AddPlanModal({
 
   const submit = async () => {
     if (!title.trim()) {
-      Alert.alert('Укажи название');
+      Alert.alert(t('common.nameRequired'));
       return;
     }
     setSubmitting(true);
@@ -411,21 +509,32 @@ function AddPlanModal({
         repeatWeekdays: repeat && weekdays.length ? weekdays : undefined,
         repeatWeeks: repeat ? weeks : undefined,
       });
-      setTitle('Тренировка');
+      setTitle(t('cal.defaultTitle'));
       setTime('');
       setRepeat(false);
       setWeekdays([]);
       onCreated();
     } catch (e) {
-      Alert.alert('Не получилось создать', (e as Error).message);
+      Alert.alert(t('cal.createFailed'), (e as Error).message);
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'flex-end' }}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+    >
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: 'rgba(0,0,0,0.7)',
+          justifyContent: 'flex-end',
+        }}
+      >
         <View
           style={{
             backgroundColor: colors.bg,
@@ -439,33 +548,46 @@ function AddPlanModal({
           }}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ flex: 1, color: colors.text, fontFamily: fontFamilies.heading, fontSize: 20 }}>
-              Новый план
+            <Text
+              style={{
+                flex: 1,
+                color: colors.text,
+                fontFamily: fontFamilies.heading,
+                fontSize: 20,
+              }}
+            >
+              {t('cal.newPlan')}
             </Text>
             <Pressable onPress={onClose} hitSlop={12}>
               <Ionicons name="close" size={22} color={colors.textSecondary} />
             </Pressable>
           </View>
-          <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 12 }}>
-            На {date}
+          <Text
+            style={{
+              color: colors.textMuted,
+              fontFamily: fontFamilies.body,
+              fontSize: 12,
+            }}
+          >
+            {t('cal.onDate', { date })}
           </Text>
 
-          <Field label="Название">
+          <Field label={t('common.name')}>
             <TextInput
               value={title}
               onChangeText={setTitle}
-              placeholder="Например: Грудь+трицепс"
+              placeholder={t('pe.dayNamePh')}
               placeholderTextColor={colors.textMuted}
               style={inputStyle}
               maxLength={80}
             />
           </Field>
 
-          <Field label="Время (опционально)">
+          <Field label={t('cal.timeOptional')}>
             <TextInput
               value={time}
               onChangeText={setTime}
-              placeholder="HH:mm — например 18:30"
+              placeholder={t('cal.timePh')}
               placeholderTextColor={colors.textMuted}
               style={inputStyle}
               maxLength={5}
@@ -486,11 +608,24 @@ function AddPlanModal({
             }}
           >
             <View style={{ flex: 1 }}>
-              <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 13 }}>
-                Повторять по дням
+              <Text
+                style={{
+                  color: colors.text,
+                  fontFamily: fontFamilies.body700,
+                  fontSize: 13,
+                }}
+              >
+                {t('cal.repeatByDays')}
               </Text>
-              <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11, marginTop: 2 }}>
-                Создаст серию планов на N недель
+              <Text
+                style={{
+                  color: colors.textMuted,
+                  fontFamily: fontFamilies.body,
+                  fontSize: 11,
+                  marginTop: 2,
+                }}
+              >
+                {t('cal.repeatHint')}
               </Text>
             </View>
             <Switch value={repeat} onValueChange={setRepeat} />
@@ -499,21 +634,27 @@ function AddPlanModal({
           {repeat ? (
             <>
               <View style={{ flexDirection: 'row', gap: 6, flexWrap: 'wrap' }}>
-                {WEEK_LABELS.map((label, i) => {
+                {weekLabels().map((label, i) => {
                   const active = weekdays.includes(i);
                   return (
                     <Pressable
                       key={label}
                       onPress={() =>
-                        setWeekdays((s) => (active ? s.filter((x) => x !== i) : [...s, i].sort()))
+                        setWeekdays((s) =>
+                          active ? s.filter((x) => x !== i) : [...s, i].sort(),
+                        )
                       }
                       style={{
                         paddingHorizontal: 14,
                         paddingVertical: 10,
                         borderRadius: 14,
                         borderWidth: 1,
-                        borderColor: active ? 'rgba(123,63,228,0.55)' : colors.border,
-                        backgroundColor: active ? 'rgba(123,63,228,0.18)' : colors.bgSecondary,
+                        borderColor: active
+                          ? 'rgba(123,63,228,0.55)'
+                          : colors.border,
+                        backgroundColor: active
+                          ? 'rgba(123,63,228,0.18)'
+                          : colors.bgSecondary,
                       }}
                     >
                       <Text
@@ -542,8 +683,12 @@ function AddPlanModal({
                         alignItems: 'center',
                         borderRadius: 14,
                         borderWidth: 1,
-                        borderColor: active ? 'rgba(123,63,228,0.55)' : colors.border,
-                        backgroundColor: active ? 'rgba(123,63,228,0.18)' : colors.bgSecondary,
+                        borderColor: active
+                          ? 'rgba(123,63,228,0.55)'
+                          : colors.border,
+                        backgroundColor: active
+                          ? 'rgba(123,63,228,0.18)'
+                          : colors.bgSecondary,
                       }}
                     >
                       <Text
@@ -553,7 +698,7 @@ function AddPlanModal({
                           fontSize: 12,
                         }}
                       >
-                        {w} нед.
+                        {t('pd.weeksN', { w })}
                       </Text>
                     </Pressable>
                   );
@@ -563,7 +708,7 @@ function AddPlanModal({
           ) : null}
 
           <GradientButton
-            title={submitting ? 'Создаём…' : 'Создать'}
+            title={submitting ? t('use.creating') : t('cal.create')}
             onPress={submit}
             rightIcon={
               submitting ? (
@@ -579,7 +724,13 @@ function AddPlanModal({
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <View>
       <Text

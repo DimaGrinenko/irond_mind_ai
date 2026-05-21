@@ -27,6 +27,38 @@ const ru: Dict = {
   'common.start': 'Начать',
   'common.loading': 'Загрузка…',
   'common.error': 'Ошибка',
+  'common.ok': 'Ок',
+  'common.nameRequired': 'Укажи название',
+
+  // Alert / action-sheet strings (localized 2026-05-21)
+  'admin.loadError': 'Не удалось загрузить данные админ-панели',
+  'admin.roleError': 'Не удалось сменить роль',
+  'coach.loadError': 'Не удалось загрузить клиентов',
+  'coach.noAccess': 'Нет доступа к клиенту',
+  'community.feedTitle': 'Сообщество',
+  'community.feedSoon': 'Полная лента появится позже.',
+  'cal.actMarkDone': 'Отметить выполненной',
+  'cal.actSkip': 'Пропустить',
+  'cal.doneMsg': 'Тренировка отмечена выполненной',
+  'cal.skippedMsg': 'Тренировка пропущена',
+  'cal.createFailed': 'Не получилось создать',
+  'prog.loadFailed': 'Не удалось загрузить программу',
+  'prog.cloneFailed': 'Ошибка клонирования',
+  'prog.started': 'Программа запущена',
+  'prog.startedMsg': 'В календарь добавлено {n} тренировок.',
+  'prog.openCalendar': 'Открыть календарь',
+  'prog.startFailed': 'Не удалось запустить',
+  'prog.deleteConfirm': 'Удалить программу?',
+  'prog.deleteIrreversible': 'Действие нельзя отменить.',
+  'progEdit.loadFailed': 'Не удалось загрузить',
+  'progEdit.saveFailed': 'Не получилось сохранить',
+  'progEdit.notSaved': 'Не сохранилось',
+  'progEdit.deleteDayConfirm': 'Удалить день?',
+  'progEdit.deleteDayMsg': 'Вместе со всеми упражнениями.',
+  'progEdit.deleteExerciseConfirm': 'Удалить упражнение?',
+  'progEdit.repsRangeTitle': 'Диапазон повторений',
+  'progEdit.repsRangeMsg': 'repsMin должен быть ≤ repsMax',
+
   'common.today': 'Сегодня',
   'common.tomorrow': 'Завтра',
   'common.yesterday': 'Вчера',
@@ -58,14 +90,16 @@ const ru: Dict = {
   'home.startWorkout': 'Начать тренировку',
   'home.chooseProgram': 'Выбери программу',
   'home.noProgramTitle': 'У тебя пока нет плана',
-  'home.noProgramBody': 'Открой раздел «Программы», выбери шаблон под свою цель — или клонируй и собери свой план.',
+  'home.noProgramBody':
+    'Открой раздел «Программы», выбери шаблон под свою цель — или клонируй и собери свой план.',
   'home.openPrograms': 'Открыть программы',
   'home.planNoDays': 'В программе нет дней',
   'home.editPlan': 'Клонируй программу и добавь дни в редакторе.',
   'home.openProgram': 'Открыть программу',
   'home.composePlan': 'Составь план тренировок',
   'home.startWithProgram': 'Начни с выбора программы',
-  'home.composeHint': 'Каждый день будет под рукой — Iron Mind подскажет что делать.',
+  'home.composeHint':
+    'Каждый день будет под рукой — Iron Mind подскажет что делать.',
   'home.chooseProgramBtn': 'Выбрать программу',
   'home.quickActions': 'Быстрые действия',
   'home.todayDone': 'Сегодня выполнено',
@@ -86,22 +120,27 @@ const ru: Dict = {
   'programs.openProgram': 'Открыть программу',
   'programs.others': 'Другие программы',
   'programs.allMy': 'Все мои программы',
-  'programs.emptyMy': 'У тебя пока нет собственных программ. Клонируй шаблон → редактируй.',
+  'programs.emptyMy':
+    'У тебя пока нет собственных программ. Клонируй шаблон → редактируй.',
   'programs.empty': 'Программ нет.',
 
   'detail.use': 'Использовать программу',
   'detail.daysHeader': 'ДНИ ПРОГРАММЫ',
-  'detail.systemTemplate': 'Системный шаблон. Чтобы редактировать — сначала «Клонировать».',
+  'detail.systemTemplate':
+    'Системный шаблон. Чтобы редактировать — сначала «Клонировать».',
   'detail.noPlanTitle': 'Программа без расписания',
-  'detail.noPlanBody': 'Это базовая карточка без готового плана тренировок. Клонируй и собери свой полный план в редакторе.',
+  'detail.noPlanBody':
+    'Это базовая карточка без готового плана тренировок. Клонируй и собери свой полный план в редакторе.',
   'detail.cloneEdit': 'Клонировать и редактировать',
 
   'use.title': 'Запустить программу',
-  'use.hint': 'Выбери дату старта, длительность и день недели для каждой тренировки. Старые запланированные тренировки этой программы будут заменены.',
+  'use.hint':
+    'Выбери дату старта, длительность и день недели для каждой тренировки. Старые запланированные тренировки этой программы будут заменены.',
   'use.start': 'СТАРТ',
   'use.length': 'ДЛИТЕЛЬНОСТЬ',
   'use.weekdays': 'ДНИ НЕДЕЛИ',
-  'use.conflict': 'Два дня программы попадают на один день недели. Выбери разные дни.',
+  'use.conflict':
+    'Два дня программы попадают на один день недели. Выбери разные дни.',
   'use.create': 'Создать план',
   'use.creating': 'Создаём…',
   'use.nextMonday': 'Со след. понедельника',
@@ -130,7 +169,8 @@ const ru: Dict = {
   'tree.stem': 'Стержень — твоя программа.',
   'tree.stage': 'СТАДИЯ',
   'tree.stages': 'СТАДИИ РОСТА',
-  'tree.empty': 'Дерево начнёт расти, как только ты выберешь и запустишь программу.',
+  'tree.empty':
+    'Дерево начнёт расти, как только ты выберешь и запустишь программу.',
   'tree.chooseProgram': 'Выбрать программу →',
   'tree.now': 'СЕЙЧАС',
   'tree.share': 'Поделиться',
@@ -138,12 +178,14 @@ const ru: Dict = {
   'tree.shareDialog': 'Поделиться прогрессом',
   'tree.leavesHeader': 'ЛИСТИКИ',
   'tree.leavesCount': 'ЛИСТИКИ ({unlocked}/{total})',
-  'tree.leavesHint': 'Каждая разблокированная ачивка — новый листик на твоём дереве',
+  'tree.leavesHint':
+    'Каждая разблокированная ачивка — новый листик на твоём дереве',
   'tree.appStreak': 'Дни захода',
   'tree.workoutStreak': 'Тренировки',
   'tree.bestStreak': 'лучшая {n}',
   'tree.consecutive': 'подряд',
-  'tree.progressHint': 'Каждая выполненная тренировка по программе укрепляет стержень дерева. Осталось: {n}.',
+  'tree.progressHint':
+    'Каждая выполненная тренировка по программе укрепляет стержень дерева. Осталось: {n}.',
   'tree.workoutsOf': '{done} / {total} тренировок · {program}',
   'tree.s1.name': 'Семечко',
   'tree.s1.desc': 'Начни — посади программу',
@@ -161,7 +203,8 @@ const ru: Dict = {
   'supp.tabTop': 'Топ-10',
   'supp.tabCatalog': 'Каталог',
   'supp.tabChemistry': 'Химия ⚠️',
-  'supp.myEmpty': 'Ты ещё не добавил ни одной добавки. Открой «Топ-10» или «Каталог» и тапни на интересующий продукт.',
+  'supp.myEmpty':
+    'Ты ещё не добавил ни одной добавки. Открой «Топ-10» или «Каталог» и тапни на интересующий продукт.',
   'supp.tookAt': 'Принято в {time}',
   'supp.markTake': 'Отметить приём',
   'supp.removeQ': 'Удалить из списка?',
@@ -188,11 +231,15 @@ const ru: Dict = {
   'supp.catAll': 'Все',
   'supp.rank': '🏆 ТОП-{n}',
   'supp.top10Title': '🏆 Топ-10 добавок по доказательной базе',
-  'supp.top10Sub': 'Ранжированы по уровню исследований (Examine.com, ISSN). Это база любого спортсмена.',
+  'supp.top10Sub':
+    'Ранжированы по уровню исследований (Examine.com, ISSN). Это база любого спортсмена.',
   'supp.chemDisclaimerTitle': '⚠️ ВАЖНО ПРОЧИТАТЬ',
-  'supp.chemDisclaimerBody': 'Этот раздел — образовательный. Анаболические стероиды (AAS) и другие гормональные препараты — это серьёзная эндокринная вмешательство с долгосрочными побочками. Большинство из них в РФ и РБ — рецептурные или запрещены. Информация для тех, кто УЖЕ принимает или собирается, чтобы понимать риски и снижать вред. Если можешь не принимать — не принимай. Если принимаешь — сдавай анализы (кровь, гормоны, печень, липиды), делай PCT и наблюдайся у эндокринолога. До 25 лет — категорически нельзя, своя гормоналка ещё не созрела.',
-  'supp.chemRequiredLabs': 'До курса и после: общий анализ крови, биохимия (АЛТ/АСТ/билирубин), липидный профиль (общий ХС, ЛПНП, ЛПВП), тестостерон общий/свободный, эстрадиол, ЛГ/ФСГ, пролактин, гематокрит, креатинин, ПСА (от 30 лет). На курсе — раз в 4-6 недель.',
-  'supp.chemPCTGeneric': 'После любого курса AAS — обязательно. Стандартно: тамоксифен 20-40 мг/день 4 недели + кломифен 50 мг/день 4 недели. При длинных эфирах ждать выведения 2-3 недели после последней инъекции, потом начинать PCT. Без PCT — гормональная яма, потеря набора, депрессия, либидо «в ноль».',
+  'supp.chemDisclaimerBody':
+    'Этот раздел — образовательный. Анаболические стероиды (AAS) и другие гормональные препараты — это серьёзная эндокринная вмешательство с долгосрочными побочками. Большинство из них в РФ и РБ — рецептурные или запрещены. Информация для тех, кто УЖЕ принимает или собирается, чтобы понимать риски и снижать вред. Если можешь не принимать — не принимай. Если принимаешь — сдавай анализы (кровь, гормоны, печень, липиды), делай PCT и наблюдайся у эндокринолога. До 25 лет — категорически нельзя, своя гормоналка ещё не созрела.',
+  'supp.chemRequiredLabs':
+    'До курса и после: общий анализ крови, биохимия (АЛТ/АСТ/билирубин), липидный профиль (общий ХС, ЛПНП, ЛПВП), тестостерон общий/свободный, эстрадиол, ЛГ/ФСГ, пролактин, гематокрит, креатинин, ПСА (от 30 лет). На курсе — раз в 4-6 недель.',
+  'supp.chemPCTGeneric':
+    'После любого курса AAS — обязательно. Стандартно: тамоксифен 20-40 мг/день 4 недели + кломифен 50 мг/день 4 недели. При длинных эфирах ждать выведения 2-3 недели после последней инъекции, потом начинать PCT. Без PCT — гормональная яма, потеря набора, депрессия, либидо «в ноль».',
   'supp.timing.morning': 'Утром',
   'supp.timing.preworkout': 'Перед тренировкой',
   'supp.timing.duringworkout': 'Во время тренировки',
@@ -233,19 +280,23 @@ const ru: Dict = {
   'foods.tabAll': 'Все',
   'foods.brand': 'бренд',
   'foods.tplHeader': 'ШАБЛОНЫ БЛЮД',
-  'foods.tplEmpty': 'Шаблонов пока нет. Добавь продукты в обычный приём и сохрани как шаблон.',
+  'foods.tplEmpty':
+    'Шаблонов пока нет. Добавь продукты в обычный приём и сохрани как шаблон.',
   'foods.tplApply': 'Применить',
   'foods.tplSaveTitle': 'Сохранить как шаблон',
-  'foods.tplSaveHint': 'Выбери приём пищи — все его продукты сохранятся как один шаблон.',
+  'foods.tplSaveHint':
+    'Выбери приём пищи — все его продукты сохранятся как один шаблон.',
   'foods.tplSavePh': 'Название (например, «Овсянка + банан»)',
   'foods.tplSave': 'Сохранить шаблон',
   'foods.barcode': 'Сканер штрих-кода',
   'foods.barcodeManual': 'ВВЕСТИ КОД ВРУЧНУЮ',
   'foods.barcodeFind': 'Найти',
-  'foods.barcodeUnsupported': 'BarcodeDetector не поддерживается в этом браузере (нужен Chrome/Edge).',
+  'foods.barcodeUnsupported':
+    'BarcodeDetector не поддерживается в этом браузере (нужен Chrome/Edge).',
   'foods.barcodeNoCamera': 'Камера недоступна: {error}',
   'foods.barcodeNotFound': 'Не нашёл {code} в OpenFoodFacts. Добавь вручную.',
-  'foods.barcodeSource': 'Данные из OpenFoodFacts — открытой базы продуктов (≈3 млн товаров).',
+  'foods.barcodeSource':
+    'Данные из OpenFoodFacts — открытой базы продуктов (≈3 млн товаров).',
   'foods.water': 'Вода',
 
   'gym.replace': 'Заменить',
@@ -259,7 +310,8 @@ const ru: Dict = {
   'gym.notesSave': 'Сохранить',
   'gym.handsFree': 'Hands-free',
   'gym.voice': 'Голос',
-  'gym.voiceOnlyWeb': 'Голосовой ввод доступен только в браузере (Chrome/Edge).',
+  'gym.voiceOnlyWeb':
+    'Голосовой ввод доступен только в браузере (Chrome/Edge).',
   'gym.wasLast': 'было: {weight} × {reps}',
   'gym.next': 'Дальше ({n}/{total})',
   'gym.nextExercise': 'Следующее упражнение ({n}/{total})',
@@ -268,7 +320,8 @@ const ru: Dict = {
   'gym.restSkip': 'Пропустить отдых',
 
   'summary.nextTime': '📈 В СЛЕДУЮЩИЙ РАЗ',
-  'summary.suggestionReason': 'Все подходы выполнены при {weight} кг — пора прибавлять',
+  'summary.suggestionReason':
+    'Все подходы выполнены при {weight} кг — пора прибавлять',
 
   'oneRm.title': 'График 1RM',
   'oneRm.chartHeader': 'ОЦЕНКА 1RM (BRZYCKI) ПО ДАТАМ',
@@ -282,7 +335,8 @@ const ru: Dict = {
   'oneRm.history': 'ИСТОРИЯ',
 
   'photoCompare.title': 'До / После',
-  'photoCompare.notEnough': 'Нужно минимум 2 фотки прогресса чтобы сравнивать. Делай снимок раз в 2-4 недели.',
+  'photoCompare.notEnough':
+    'Нужно минимум 2 фотки прогресса чтобы сравнивать. Делай снимок раз в 2-4 недели.',
   'photoCompare.openPhotos': 'Открыть фотки прогресса',
   'photoCompare.before': 'ДО',
   'photoCompare.after': 'ПОСЛЕ',
@@ -290,7 +344,8 @@ const ru: Dict = {
   'photoCompare.weightDelta': 'Δ вес',
 
   'dataExport.title': 'Экспорт данных',
-  'dataExport.intro': 'Скачай свои данные как CSV — открывается в Excel/Google Sheets. Тренировки, питание и замеры отдельно.',
+  'dataExport.intro':
+    'Скачай свои данные как CSV — открывается в Excel/Google Sheets. Тренировки, питание и замеры отдельно.',
   'dataExport.workouts': 'Тренировки',
   'dataExport.workoutsSub': 'Все workouts с объёмом, длительностью и подходами',
   'dataExport.nutrition': 'Питание',
@@ -321,18 +376,21 @@ const ru: Dict = {
   'shop.failTitle': 'Не вышло',
   'shop.buyMore': 'Купить ещё',
   'shop.auras': 'АУРЫ ПО ДНЯМ СТРИКА',
-  'shop.aurasHint': 'У тебя сейчас {days} дн. Аура меняется каждые 30 дней до 360.',
+  'shop.aurasHint':
+    'У тебя сейчас {days} дн. Аура меняется каждые 30 дней до 360.',
   'shop.preview': 'Предпросмотр',
   'shop.buyFor': 'Купить за',
   'shop.unequip': 'Снять',
   'shop.need': 'не хватает {n}',
   'shop.packsTitle': 'Пакеты листиков',
-  'shop.packsHint': 'Поддержи разработку и получи листики для скинов и аур. Цены условные.',
+  'shop.packsHint':
+    'Поддержи разработку и получи листики для скинов и аур. Цены условные.',
   'shop.bonus': 'бонус',
   'shop.kopPerLeaf': 'коп / лист',
   'shop.bought': 'Куплено',
   'shop.boughtBody': 'Начислено {n} листиков',
-  'shop.devNote': 'Платежи не подключены — это демо. После интеграции пойдут через App Store / Google Play.',
+  'shop.devNote':
+    'Платежи не подключены — это демо. После интеграции пойдут через App Store / Google Play.',
   'shop.currentAura': 'ТЕКУЩАЯ АУРА',
   'shop.toNext': 'До «{name}» ещё {days} дн',
   'shop.maxAura': '🏆 Максимальная аура достигнута!',
@@ -348,7 +406,8 @@ const ru: Dict = {
   'wheel.gotN': 'Выпало {n} 🌿',
   'wheel.streak': '{n} дней подряд — х{mult}',
   'ref.title': 'Пригласи друга',
-  'ref.body': 'Дай свой код. Когда друг зарегистрируется — оба получите 200 🌿.',
+  'ref.body':
+    'Дай свой код. Когда друг зарегистрируется — оба получите 200 🌿.',
   'ref.myCode': 'Твой код',
   'ref.share': 'Поделиться кодом',
   'ref.enter': 'Ввести чужой код',
@@ -382,11 +441,11 @@ const ru: Dict = {
   'friends.addHint': 'Введи email — он получит запрос.',
   'friends.add': 'Добавить',
   'friends.invalidEmail': 'Неверный email',
-  'friends.pending': 'в ожидании',
   'friends.weekShort': 'Неделя',
   'friends.duel': 'Дуэль',
   'friends.listHeader': 'ДРУЗЬЯ ({n})',
-  'friends.note': '💡 Backend для друзей и ленты ещё не реализован — приглашения хранятся локально. Когда подключим — реальные запросы пойдут в API.',
+  'friends.note':
+    '💡 Backend для друзей и ленты ещё не реализован — приглашения хранятся локально. Когда подключим — реальные запросы пойдут в API.',
   'friends.you': 'Ты',
   'friends.setHandle': 'Задать @ник',
   'friends.changeHandle': 'Сменить @ник',
@@ -405,11 +464,13 @@ const ru: Dict = {
   'duels.you': 'Ты',
   'duels.aheadBy': 'Ты впереди на {kg} кг',
   'duels.behindBy': 'Отстаёшь на {kg} кг — догоняй',
-  'duels.note': 'Дуэли по объёму за последние 7 дней. Победитель получает 100 листиков (логика в работе).',
+  'duels.note':
+    'Дуэли по объёму за последние 7 дней. Победитель получает 100 листиков (логика в работе).',
 
   'wellbeing.title': 'Самочувствие',
   'wellbeing.howToday': 'Как ты сегодня?',
-  'wellbeing.hint': 'Тапни по шкале 0-100. Записывается раз в день, обновляется до конца дня.',
+  'wellbeing.hint':
+    'Тапни по шкале 0-100. Записывается раз в день, обновляется до конца дня.',
   'wellbeing.sleep': 'Сон',
   'wellbeing.energy': 'Энергия',
   'wellbeing.stress': 'Стресс',
@@ -424,46 +485,60 @@ const ru: Dict = {
   'cycle.allPhases': 'ВСЕ ФАЗЫ',
   'cycle.dayOf': 'День {n}',
   'cycle.phase.menstrual.title': 'Менструальная (1-5 день)',
-  'cycle.phase.menstrual.advice': 'Лёгкие тренировки, йога, прогулки. Слушай тело.',
+  'cycle.phase.menstrual.advice':
+    'Лёгкие тренировки, йога, прогулки. Слушай тело.',
   'cycle.phase.follicular.title': 'Фолликулярная (6-13 день)',
-  'cycle.phase.follicular.advice': 'Пик энергии — лучшее окно для PR-силовых и интенсивности.',
+  'cycle.phase.follicular.advice':
+    'Пик энергии — лучшее окно для PR-силовых и интенсивности.',
   'cycle.phase.ovulation.title': 'Овуляция (14-16 день)',
-  'cycle.phase.ovulation.advice': 'Сильно вырастает риск травм связок. Избегай максимальных весов.',
+  'cycle.phase.ovulation.advice':
+    'Сильно вырастает риск травм связок. Избегай максимальных весов.',
   'cycle.phase.luteal.title': 'Лютеиновая (17-28 день)',
-  'cycle.phase.luteal.advice': 'Снижение работоспособности. Умеренная нагрузка, больше кардио.',
+  'cycle.phase.luteal.advice':
+    'Снижение работоспособности. Умеренная нагрузка, больше кардио.',
 
   'health.title': 'Синхр. здоровья',
   'health.platformIos': 'Apple Health',
   'health.platformAndroid': 'Google Fit',
   'health.platformGeneric': 'Health-сервис',
-  'health.intro': 'Подключи систему здоровья — импортируем шаги, сон, ЧСС и вес.',
+  'health.intro':
+    'Подключи систему здоровья — импортируем шаги, сон, ЧСС и вес.',
   'health.connect': 'Подключить {platform}',
-  'health.inProgress': 'HealthKit / Google Fit интеграция в процессе реализации.',
+  'health.inProgress':
+    'HealthKit / Google Fit интеграция в процессе реализации.',
   'health.what': 'ЧТО ИМПОРТИРОВАТЬ',
   'health.steps': 'Шаги (для калорий)',
   'health.sleep': 'Сон (для восстановления)',
   'health.hr': 'ЧСС покоя (для нагрузки)',
   'health.weight': 'Вес (для адаптивного КБЖУ)',
-  'health.note': '💡 Для реальной интеграции нужен EAS dev-build с пакетом react-native-health или @kingstinct/react-native-healthkit. В Expo Go недоступно.',
+  'health.note':
+    '💡 Для реальной интеграции нужен EAS dev-build с пакетом react-native-health или @kingstinct/react-native-healthkit. В Expo Go недоступно.',
   'health.guideTitle': 'Как подключить (для разработчика)',
-  'health.guideIos': 'iOS · HealthKit:\n1. `npx expo install @kingstinct/react-native-healthkit`\n2. Добавить в app.json plugin + NSHealthShareUsageDescription\n3. `eas build --profile development --platform ios`\n4. Установить dev-build на устройство\n5. На экране запросить разрешения и читать шаги/сон/ЧСС',
-  'health.guideAndroid': 'Android · Health Connect:\n1. `npx expo install expo-health-connect`\n2. Health Connect доступен на Android 14+ (или установить из Play Store на 9-13)\n3. EAS dev-build обязателен\n4. Запросить permissions для steps, sleep, heart_rate, weight',
-  'health.guideWeb': 'Web: HealthKit/Google Fit недоступны. Можно подключить Garmin Connect / Fitbit Web API (OAuth) или Apple Health → Health Mate sync — это требует серверной интеграции.',
+  'health.guideIos':
+    'iOS · HealthKit:\n1. `npx expo install @kingstinct/react-native-healthkit`\n2. Добавить в app.json plugin + NSHealthShareUsageDescription\n3. `eas build --profile development --platform ios`\n4. Установить dev-build на устройство\n5. На экране запросить разрешения и читать шаги/сон/ЧСС',
+  'health.guideAndroid':
+    'Android · Health Connect:\n1. `npx expo install expo-health-connect`\n2. Health Connect доступен на Android 14+ (или установить из Play Store на 9-13)\n3. EAS dev-build обязателен\n4. Запросить permissions для steps, sleep, heart_rate, weight',
+  'health.guideWeb':
+    'Web: HealthKit/Google Fit недоступны. Можно подключить Garmin Connect / Fitbit Web API (OAuth) или Apple Health → Health Mate sync — это требует серверной интеграции.',
   'health.devTitle': 'Что сейчас доступно',
-  'health.devBody': 'Шаги и сон считаются вручную (через дневник самочувствия). Вес и метрики тела — через раздел «Замеры». Полная HealthKit интеграция готова к подключению, нужен только EAS dev-build.',
+  'health.devBody':
+    'Шаги и сон считаются вручную (через дневник самочувствия). Вес и метрики тела — через раздел «Замеры». Полная HealthKit интеграция готова к подключению, нужен только EAS dev-build.',
 
   'bodyFat.title': 'Замер % жира',
   'bodyFat.uploadTwo': 'Загрузи две фотки',
-  'bodyFat.hint': 'Фронтальная и боковая. Освещение равномерное, тело видно полностью. AI оценит композицию тела. Полная интеграция Vision-AI в работе.',
+  'bodyFat.hint':
+    'Фронтальная и боковая. Освещение равномерное, тело видно полностью. AI оценит композицию тела. Полная интеграция Vision-AI в работе.',
   'bodyFat.front': 'ФРОНТ',
   'bodyFat.side': 'БОК',
   'bodyFat.evaluate': 'Получить оценку',
   'bodyFat.aiTitle': 'AI оценка',
-  'bodyFat.aiNote': 'Vision-API интеграция в работе. Запрос будет отправлен на /ai/bodyfat когда подключим. Фотки уже валидны.',
+  'bodyFat.aiNote':
+    'Vision-API интеграция в работе. Запрос будет отправлен на /ai/bodyfat когда подключим. Фотки уже валидны.',
 
   'aiGen.title': 'AI план на месяц',
   'aiGen.pro': 'PRO-фича',
-  'aiGen.intro': 'Сгенерируем 4-недельный план под твою цель ({goal}) и уровень ({level}). План создастся в твоих программах — потом можешь редактировать.',
+  'aiGen.intro':
+    'Сгенерируем 4-недельный план под твою цель ({goal}) и уровень ({level}). План создастся в твоих программах — потом можешь редактировать.',
   'aiGen.goalNone': 'не указана',
   'aiGen.levelNone': 'не указан',
   'aiGen.weeks': '{n} нед',
@@ -476,29 +551,39 @@ const ru: Dict = {
 
   'live.title': 'Тренер',
   'live.elite': 'ELITE-фича',
-  'live.intro': 'Реальный тренер ответит за 24 часа. Можно прислать видео техники, описать боль/застой, попросить разобрать план.',
+  'live.intro':
+    'Реальный тренер ответит за 24 часа. Можно прислать видео техники, описать боль/застой, попросить разобрать план.',
   'live.sent': 'Запрос отправлен',
-  'live.sentBody': 'Тренер ответит в течение 24 часов. Уведомление придёт в приложение.',
+  'live.sentBody':
+    'Тренер ответит в течение 24 часов. Уведомление придёт в приложение.',
   'live.questionLabel': 'ТВОЙ ВОПРОС',
-  'live.questionPh': 'Например: «3 недели стою на 80 кг в жиме — что попробовать?»',
+  'live.questionPh':
+    'Например: «3 недели стою на 80 кг в жиме — что попробовать?»',
   'live.send': 'Отправить тренеру',
   'live.elaborate': 'Хотя бы пара предложений.',
-  'live.note': '💡 Backend для тренерских запросов в разработке. Сейчас сохранится локально.',
+  'live.note':
+    '💡 Backend для тренерских запросов в разработке. Сейчас сохранится локально.',
 
   'share.title': 'Поделиться программой',
-  'share.codeHint': 'Дай этот код другу. Он введёт его — и получит копию твоей программы.',
+  'share.codeHint':
+    'Дай этот код другу. Он введёт его — и получит копию твоей программы.',
   'share.newCode': 'Новый код',
   'share.shareBtn': 'Поделиться',
   'share.applyTitle': 'Применить чужой код',
-  'share.applyHint': 'Введи 8-значный код от друга — программа склонируется в твои.',
+  'share.applyHint':
+    'Введи 8-значный код от друга — программа склонируется в твои.',
   'share.applyBtn': 'Применить',
-  'share.inProgress': 'Backend для clone-by-code пока не готов. Введённый код: {code}',
-  'share.note': '💡 Backend endpoints /programs/share и /programs/clone-by-code в разработке.',
+  'share.inProgress':
+    'Backend для clone-by-code пока не готов. Введённый код: {code}',
+  'share.note':
+    '💡 Backend endpoints /programs/share и /programs/clone-by-code в разработке.',
 
   'form.title': 'Разбор техники',
-  'form.intro': '💡 Снять видео и разобрать форму через Vision-AI — в работе. Пока сделай текстовый разбор.',
+  'form.intro':
+    '💡 Снять видео и разобрать форму через Vision-AI — в работе. Пока сделай текстовый разбор.',
   'form.descLabel': 'ОПИШИ КАК ТЫ ДЕЛАЕШЬ',
-  'form.descPh': 'Например: «при глубоком приседе ноют колени, спина круглится в нижней точке»',
+  'form.descPh':
+    'Например: «при глубоком приседе ноют колени, спина круглится в нижней точке»',
   'form.short': 'Хотя бы 1-2 предложения о том как ты выполняешь упражнение.',
   'form.shortTitle': 'Опиши подробнее',
   'form.analyzing': 'Анализирую…',
@@ -528,20 +613,25 @@ const ru: Dict = {
   'analytics.tools.friends': 'Друзья',
   'analytics.tools.form': 'Разбор техники',
   'analytics.lagging': 'Что отстаёт',
-  'analytics.laggingHint': 'Меньше всего нагрузки получили: {groups}. Добавь упражнение на эту группу в ближайшую тренировку.',
+  'analytics.laggingHint':
+    'Меньше всего нагрузки получили: {groups}. Добавь упражнение на эту группу в ближайшую тренировку.',
   'analytics.recovery': 'Прогноз восстановления',
-  'analytics.recoveryHint': 'Полностью восстановишься к {when}. Следующая тяжёлая тренировка — после.',
+  'analytics.recoveryHint':
+    'Полностью восстановишься к {when}. Следующая тяжёлая тренировка — после.',
   'analytics.recoveryHrs': '~{h}ч',
 
   'meas.bjuTitle': 'Обнови КБЖУ под новый вес',
-  'meas.bjuLine': 'Сейчас: {current} ккал. Рекомендуем: {kcal} ккал · Б {p} · Ж {f} · У {c}',
+  'meas.bjuLine':
+    'Сейчас: {current} ккал. Рекомендуем: {kcal} ккал · Б {p} · Ж {f} · У {c}',
   'meas.bjuApply': 'Применить',
   'meas.bjuLater': 'Не сейчас',
   'proTrial.label': '⭐ PRO ПРОБНЫЙ',
   'proTrial.urgent': '⚠️ PRO СКОРО ЗАКОНЧИТСЯ',
   'proTrial.daysLeft': '{n} дн до конца триала',
-  'proTrial.usingFeatures': 'Сейчас доступны: AI план, разбор техники, экспорт CSV',
-  'proTrial.loseFeatures': 'Потеряешь AI план и Vision-разбор. Подписка от $4.99',
+  'proTrial.usingFeatures':
+    'Сейчас доступны: AI план, разбор техники, экспорт CSV',
+  'proTrial.loseFeatures':
+    'Потеряешь AI план и Vision-разбор. Подписка от $4.99',
   'chest.title': 'Сундук',
   'chest.solid': 'Чисто сделано',
   'chest.tapToOpen': 'Тапни «Открыть» и посмотри что выпало',
@@ -549,9 +639,12 @@ const ru: Dict = {
   'chest.claim': 'Забрать награду',
   'chest.opening': 'Открываем…',
   'home.volumeKg': 'объём · {v} кг',
-  'home.todayMissing': 'Сегодня поработал — добавь 30 г протеина в течение часа.',
-  'home.todayActive': 'Сегодня "{title}". Разминка 5-10 мин, потом основная работа в RPE 7-8.',
-  'home.pickProgFirst': 'Выбери программу и приходи завтра. Я подскажу с чего начать.',
+  'home.todayMissing':
+    'Сегодня поработал — добавь 30 г протеина в течение часа.',
+  'home.todayActive':
+    'Сегодня "{title}". Разминка 5-10 мин, потом основная работа в RPE 7-8.',
+  'home.pickProgFirst':
+    'Выбери программу и приходи завтра. Я подскажу с чего начать.',
 
   'profile.title': 'Профиль',
   'profile.athlete': 'Атлет',
@@ -595,16 +688,20 @@ const ru: Dict = {
 
   'programs.full_body_3.title': 'ФУЛБАДИ 3×',
   'programs.full_body_3.subtitle': 'Всё тело 3 раза в неделю',
-  'programs.full_body_3.description': 'Классическая программа для новичков: одно занятие — всё тело. Пн / Ср / Пт.',
+  'programs.full_body_3.description':
+    'Классическая программа для новичков: одно занятие — всё тело. Пн / Ср / Пт.',
   'programs.upper_lower_4.title': 'ВЕРХ / НИЗ',
   'programs.upper_lower_4.subtitle': 'Сплит на 4 дня',
-  'programs.upper_lower_4.description': 'Классика для среднего уровня. Верх / Низ × 2. Хороший баланс объёма и восстановления.',
+  'programs.upper_lower_4.description':
+    'Классика для среднего уровня. Верх / Низ × 2. Хороший баланс объёма и восстановления.',
   'programs.ppl_6.title': 'PUSH-PULL-LEGS',
   'programs.ppl_6.subtitle': 'Жим / Тяга / Ноги × 2',
-  'programs.ppl_6.description': 'Высокообъёмный сплит для продвинутых: 6 тренировок в неделю.',
+  'programs.ppl_6.description':
+    'Высокообъёмный сплит для продвинутых: 6 тренировок в неделю.',
   'programs.split_5.title': 'СПЛИТ 5 ДНЕЙ',
   'programs.split_5.subtitle': 'По группам мышц',
-  'programs.split_5.description': 'Каждый день — отдельная группа мышц. Подходит при достаточном восстановлении.',
+  'programs.split_5.description':
+    'Каждый день — отдельная группа мышц. Подходит при достаточном восстановлении.',
   'programs.mass.title': 'МАССА',
   'programs.mass.subtitle': 'Набор мышечной массы',
   'programs.relief.title': 'РЕЛЬЕФ',
@@ -664,7 +761,6 @@ const ru: Dict = {
   'onb.metricsQ': 'Твои параметры',
   'onb.metricsHint': 'Возраст, рост, вес — для калорий и нагрузки.',
   'onb.activityQ': 'Уровень активности',
-  'onb.activityHint': 'Сколько ты двигаешься вне зала?',
   'onb.goalQ': 'Твоя цель',
   'onb.goalHint': 'Что хочешь получить от тренировок?',
   'onb.levelQ': 'Уровень тренированности',
@@ -672,9 +768,7 @@ const ru: Dict = {
   'onb.summaryQ': 'Твой план',
   'onb.summaryHint': 'Калории и БЖУ, рассчитанные под тебя.',
   'onb.accountQ': 'Создай аккаунт',
-  'onb.accountHint': 'Email и пароль — для синка между устройствами.',
   'onb.finishQ': 'Готово!',
-  'onb.finishHint': 'Можно начинать.',
   'onb.start': 'Начать тренироваться',
   'onb.bmr': 'BMR',
   'onb.tdee': 'TDEE',
@@ -693,7 +787,8 @@ const ru: Dict = {
   'notif.morningPing': 'Утренний пинг (8:00)',
   'notif.dailyReminder': 'Напоминание о тренировке',
   'notif.streakAlert': 'Алёрт при опасности серии',
-  'notif.unsupported': 'Уведомления недоступны в этой среде. Используй dev build или нативную сборку.',
+  'notif.unsupported':
+    'Уведомления недоступны в этой среде. Используй dev build или нативную сборку.',
   'notif.permissionDenied': 'Разрешение на уведомления не выдано',
 
   'meas.title': 'Замеры тела',
@@ -716,7 +811,8 @@ const ru: Dict = {
 
   'photos.title': 'Фото прогресса',
   'photos.add': 'Добавить фото',
-  'photos.empty': 'Пока нет фото. Делай снимок раз в 2-4 недели чтобы видеть прогресс.',
+  'photos.empty':
+    'Пока нет фото. Делай снимок раз в 2-4 недели чтобы видеть прогресс.',
   'photos.confirmDelete': 'Удалить фото?',
 
   'analytics.title': 'Аналитика',
@@ -727,7 +823,8 @@ const ru: Dict = {
   'analytics.sets': 'Подходов',
   'analytics.burned': 'Сожжено',
   'analytics.weight': 'Вес',
-  'analytics.empty': 'За {days} дн ещё нет данных. Заверши тренировку с подходами — статистика появится сразу.',
+  'analytics.empty':
+    'За {days} дн ещё нет данных. Заверши тренировку с подходами — статистика появится сразу.',
   'analytics.chartHeader': 'ОБЪЁМ И ТРЕНИРОВКИ ПО ДНЯМ',
   'analytics.muscleHeader': 'Нагрузка по группам',
   'analytics.muscleChest': 'Грудь',
@@ -754,7 +851,8 @@ const ru: Dict = {
   'nutrition.mealsHeader': 'Приёмы пищи',
   'nutrition.addMeal': 'Добавить приём пищи',
   'nutrition.entries': 'Записей',
-  'nutrition.empty': 'Пока ничего не добавлено. Начни добавлять приёмы пищи — мы посчитаем калории и БЖУ.',
+  'nutrition.empty':
+    'Пока ничего не добавлено. Начни добавлять приёмы пищи — мы посчитаем калории и БЖУ.',
   'nutrition.pickFood': 'Выбрать продукт',
   'nutrition.search': 'Поиск продукта…',
   'nutrition.grams': 'грамм',
@@ -763,7 +861,8 @@ const ru: Dict = {
   'nutrition.totalKcal': '{value} ккал · {grams} г',
 
   'ai.title': 'AI Тренер',
-  'ai.intro': 'Спроси меня про тренировки, питание, восстановление или технику упражнений. Я подскажу что и сколько.',
+  'ai.intro':
+    'Спроси меня про тренировки, питание, восстановление или технику упражнений. Я подскажу что и сколько.',
   'ai.tryAsking': 'ПОПРОБУЙ СПРОСИТЬ',
   'ai.placeholder': 'Спроси AI-тренера…',
   'ai.thinking': 'AI думает…',
@@ -776,13 +875,16 @@ const ru: Dict = {
   'ai.q6': 'Стоит ли пить креатин?',
 
   'profile.logoutTitle': 'Выйти из профиля?',
-  'profile.logoutBody': 'Сессия и анкета будут сброшены. Локальные тренировки останутся на устройстве.',
+  'profile.logoutBody':
+    'Сессия и анкета будут сброшены. Локальные тренировки останутся на устройстве.',
   'profile.logoutConfirm': 'Выйти',
 
-  'tree.emptyButHasProgram': 'Программа выбрана, но запуск ещё не сделан. Открой программу и нажми «Использовать», чтобы дерево начало расти.',
+  'tree.emptyButHasProgram':
+    'Программа выбрана, но запуск ещё не сделан. Открой программу и нажми «Использовать», чтобы дерево начало расти.',
   'tree.openProgram': 'Открыть программу',
 
-  'onb.accountHint': 'Чтобы синхронизировать прогресс между устройствами. Не обязательно — можно продолжить без аккаунта.',
+  'onb.accountHint':
+    'Чтобы синхронизировать прогресс между устройствами. Не обязательно — можно продолжить без аккаунта.',
   'onb.email': 'Email',
   'onb.password': 'Пароль (мин. 8 символов)',
   'onb.creating': 'Создаём…',
@@ -790,7 +892,8 @@ const ru: Dict = {
   'onb.continueNoAcc': 'Продолжить без аккаунта',
   'onb.back': 'Назад',
   'onb.activityHint': 'Подберём калории под твой образ жизни.',
-  'onb.finishHint': 'Подобрали программу и план питания под твою цель и уровень.',
+  'onb.finishHint':
+    'Подобрали программу и план питания под твою цель и уровень.',
   'onb.toApp': 'К приложению',
   'onb.errTitle': 'Ошибка',
   'onb.errServerDown': 'Сервер недоступен. Можно продолжить локально.',
@@ -815,6 +918,358 @@ const ru: Dict = {
   'day.split.legs': 'Ноги',
   'day.split.shoulders': 'Плечи',
   'day.split.arms': 'Руки + Кор',
+
+  // ===== i18n-audit sweep 2026-05-21 (RU) =====
+  // SubscriptionScreen
+  'sub.heroTitle': 'Выжми максимум из тренировок',
+  'sub.heroSub':
+    'Подписка открывает AI без лимита, расширенную аналитику и эксклюзивные программы.',
+  'sub.month': 'Месяц',
+  'sub.year': 'Год',
+  'sub.perMonth': '/мес',
+  'sub.perYear': '/год',
+  'sub.popular': 'ПОПУЛЯРНЫЙ',
+  'sub.soonTitle': 'Скоро',
+  'sub.soonMsg':
+    'Подписки в разработке. Сейчас все Pro/Elite фичи доступны в beta-тесте бесплатно.',
+  'sub.note1': 'Подписка возобновляется автоматически',
+  'sub.note2': 'Можно отменить в любое время',
+  'sub.note3': 'Pro и Elite дают 7-дневный free trial',
+  'sub.note4': 'Доступ восстанавливается на всех устройствах с одним аккаунтом',
+  'sub.tagFree': 'Базовый функционал — навсегда',
+  'sub.tagPro': 'Для серьёзных тренировок',
+  'sub.tagElite': 'Полный арсенал атлета',
+  'sub.ctaFree': 'Текущий план',
+  'sub.ctaPro': 'Получить Pro',
+  'sub.ctaElite': 'Стать Elite',
+  'sub.f.allTemplates': 'Все шаблоны программ',
+  'sub.f.onePersonal': '1 личная программа',
+  'sub.f.analytics7': 'Аналитика — 7 дней',
+  'sub.f.ai10': 'AI-тренер — 10 запросов в день',
+  'sub.f.measNutri': 'Замеры + питание',
+  'sub.f.allExercises': 'Все 67 упражнений с видео',
+  'sub.f.analyticsExt': 'Расширенная аналитика 30+ дней',
+  'sub.f.aiUnlimited': 'AI без лимита',
+  'sub.f.themes': 'Кастомные темы',
+  'sub.f.export': 'Экспорт данных',
+  'sub.f.allFree': 'Всё из Free',
+  'sub.f.unlimitedPrograms': 'Неограниченные программы',
+  'sub.f.analytics3m': 'Аналитика 30/90/365 дней',
+  'sub.f.aiCoachUnlimited': 'AI-тренер без лимита',
+  'sub.f.extHistory': 'Расширенный workout history',
+  'sub.f.suppLog': 'Журнал добавок',
+  'sub.f.photoCompare': 'Сравнение «До/После» фото',
+  'sub.f.workoutNotifs': 'Уведомления о тренировках',
+  'sub.f.coachPrograms': 'Эксклюзивные программы от тренеров',
+  'sub.f.formAnalysis': 'Видеоразбор техники по фото',
+  'sub.f.allPro': 'Всё из Pro',
+  'sub.f.coachProgramsElite': 'Эксклюзивные программы тренеров',
+  'sub.f.aiFormAnalysis': 'AI-видеоразбор техники по фото',
+  'sub.f.personalNutrition': 'Персональный план питания',
+  'sub.f.priorityUpdates': 'Приоритет в обновлениях',
+  'sub.f.coachConsult': 'Прямые консультации с тренером (1 раз/мес)',
+  'sub.f.merchCommunity': 'Эксклюзивный мерч и комьюнити',
+  'sub.f.allFuture': 'Все будущие фичи без доплат',
+  // Weekdays (short, shared)
+  'wd.mon': 'Пн',
+  'wd.tue': 'Вт',
+  'wd.wed': 'Ср',
+  'wd.thu': 'Чт',
+  'wd.fri': 'Пт',
+  'wd.sat': 'Сб',
+  'wd.sun': 'Вс',
+  'common.search': 'Поиск…',
+  // PlanBuilderScreen
+  'plan.defaultTitle': 'Мой план',
+  'plan.dayN': 'День {x}',
+  'plan.day': 'День',
+  'plan.subtitle': 'Личный план',
+  'plan.description': 'Составлен в конструкторе плана',
+  'plan.createdMsg': 'План создан и запущен в календаре!',
+  'plan.q1': 'Как назовём план?',
+  'plan.q1hint':
+    'Например «Утро на массу» или «Среда — спина». Это название будет видно на главной и в календаре.',
+  'plan.tipLabel': '💡 СОВЕТ',
+  'plan.q1tip':
+    'Не пытайся сделать идеально с первого раза — план можно полностью переделать в редакторе. Главное — начать.',
+  'plan.step2title': 'Тренировочные дни',
+  'plan.step2hint':
+    'Сколько тренировок в неделю и в какие дни? Оптимум для новичков — 3 раза, для прогресса — 4-5.',
+  'plan.addDay': '+ Добавить день',
+  'plan.conflictMsg': 'Два дня на один день недели. Выбери разные.',
+  'plan.step3title': 'Упражнения для каждого дня',
+  'plan.step3hint':
+    'Тапни день — выбери упражнения. По умолчанию 3×8-12 с 90 сек отдыха (можно править позже в редакторе).',
+  'plan.tapToAdd': 'Тапни чтобы добавить упражнения',
+  'plan.step4title': 'Готово к запуску',
+  'plan.summary': '{n} тренировок в неделю · 8 недель',
+  'plan.warnReplace':
+    'План создаст серию тренировок в календаре. Старые PLANNED-тренировки твоей текущей программы будут заменены.',
+  'plan.create': 'Создать и запустить',
+  'plan.errName': 'Укажи название плана',
+  'plan.errConflict': 'Конфликт дней',
+  'plan.errFillNames': 'Заполни названия',
+  'plan.errExercises': 'Добавь упражнения в каждый день',
+  'plan.exercisesCount': 'Упражнения ({n})',
+  // StreakDumbbell auras
+  'aura.shadow': 'Тень',
+  'aura.lead': 'Свинец',
+  'aura.bronze': 'Бронза',
+  'aura.silver': 'Серебро',
+  'aura.amethyst': 'Аметист',
+  'aura.sapphire': 'Сапфир',
+  'aura.cyan': 'Циан',
+  'aura.emerald': 'Изумруд',
+  'aura.gold': 'Золото',
+  'aura.ruby': 'Рубин',
+  'aura.fuchsia': 'Фуксия',
+  'aura.fire': 'Огонь',
+  'aura.ice': 'Лёд',
+  'aura.aurora': 'Аурора',
+  'aura.blacksun': 'Чёрное солнце',
+  'aura.infinity': 'Бесконечность',
+  // OnboardingScreen (step hints / labels / errors)
+  'common.gram': 'г',
+  'onb.metricsLocalHint': 'Используем только локально, нужны для расчётов.',
+  'onb.goalLocalHint': 'Под цель подберём программу и питание.',
+  'onb.levelLocalHint': 'Подберём интенсивность.',
+  'onb.summaryLocalHint':
+    'Подобрали калории, макросы и программу под твою цель.',
+  'onb.heightShort': 'Рост',
+  'onb.weightShort': 'Вес',
+  'onb.finish': 'Завершить',
+  'onb.errEmailPw': 'Введи корректный email и пароль',
+  'onb.errLoginFailed': 'Не удалось войти. Проверь сеть и попробуй снова.',
+  'onb.errNoData': 'Не хватает данных для расчёта',
+  'onb.dailyCalories': 'Дневные калории',
+  'onb.protein': 'Белки',
+  'onb.program': 'Программа',
+  // NutritionScreen
+  'common.ml': 'мл',
+  'common.apply': 'Применить',
+  'nut.pShort': 'Б',
+  'nut.fShort': 'Ж',
+  'nut.cShort': 'У',
+  'nut.saveAsTemplate': 'Сохранить как шаблон',
+  'nut.saveTemplateBtn': 'Сохранить шаблон',
+  'nut.saveTemplateHint':
+    'Выбери приём пищи — все его продукты сохранятся как один шаблон, который потом можно применить одной кнопкой.',
+  'nut.templateNamePh': 'Название (например, «Овсянка + банан»)',
+  'nut.drank': 'Выпил',
+  'nut.waterFromWeight': 'из {kg} кг × 35',
+  'nut.mealTemplates': 'ШАБЛОНЫ БЛЮД',
+  'nut.noTemplates':
+    'Шаблонов пока нет. Добавь в обычный приём пищи несколько продуктов и сохрани комбинацию как шаблон в трёх точках.',
+  'nut.productsCount': '{n} продукта',
+  'nut.per100g': '(100 г)',
+  // ProgramEditScreen
+  'common.name': 'Название',
+  'pe.editorShort': 'Редактор',
+  'pe.title': 'Редактор программы',
+  'pe.subtitle': 'Подзаголовок',
+  'pe.description': 'Описание',
+  'pe.daysCount': 'ДНИ ({n})',
+  'pe.noDays': 'Пока ни одного дня. Добавь первый ↑',
+  'pe.restLine': 'отдых {s}с',
+  'pe.addExercise': '+ Добавить упражнение',
+  'pe.newDay': 'Новый день',
+  'pe.dayNamePh': 'Например: Грудь+трицепс',
+  'pe.weekdayOptional': 'День недели (опционально)',
+  'pe.pickExercise': 'Выбрать упражнение',
+  'pe.nothingFound': 'Ничего не найдено',
+  'pe.replaceExercise': 'Заменить упражнение',
+  'pe.sets': 'Подходы',
+  'pe.repsFrom': 'Повт. от',
+  'pe.repsTo': 'Повт. до',
+  'pe.restLabel': 'Отдых, сек',
+  'pe.noteOptional': 'Заметка (опционально)',
+  'pe.notePh': 'Напр.: пирамида, последняя — до отказа',
+  // ProgramDetailScreen
+  'pd.title': 'Программа',
+  'pd.useProgram': 'Использовать программу',
+  'pd.systemTemplate':
+    'Системный шаблон. Чтобы редактировать — сначала «Клонировать».',
+  'pd.noSchedule': 'Программа без расписания',
+  'pd.noScheduleHint':
+    'Это базовая карточка без готового плана тренировок. Клонируй и собери свой полный план в редакторе — или выбери один из шаблонов с днями.',
+  'pd.cloneAndEdit': 'Клонировать и редактировать',
+  'pd.programDays': 'ДНИ ПРОГРАММЫ',
+  'pd.nextMonday': 'Со след. понедельника',
+  'pd.launchProgram': 'Запустить программу',
+  'pd.useHint':
+    'Выбери дату старта, длительность и день недели для каждой тренировки. Старые запланированные тренировки этой программы будут заменены.',
+  'pd.start': 'СТАРТ',
+  'pd.duration': 'ДЛИТЕЛЬНОСТЬ',
+  'pd.weeksN': '{w} нед.',
+  'pd.weekdaysTitle': 'ДНИ НЕДЕЛИ ({n} {word})',
+  'pd.workout1': 'тренировка',
+  'pd.workoutMany': 'тренировок',
+  'pd.weekdayConflict':
+    'Два дня программы попадают на один день недели. Выбери разные дни.',
+  'pd.createPlan': 'Создать план',
+  // CalendarScreen
+  'cal.title': 'Календарь',
+  'cal.filterAll': 'Все',
+  'cal.filterProgram': 'Только из программы',
+  'cal.emptyDay': 'На этот день ничего не запланировано.',
+  'cal.addPlan': 'Добавить план',
+  'cal.statusDone': 'Выполнена',
+  'cal.statusSkipped': 'Пропущена',
+  'cal.statusPlanned': 'Запланирована',
+  'cal.defaultTitle': 'Тренировка',
+  'cal.newPlan': 'Новый план',
+  'cal.onDate': 'На {date}',
+  'cal.timeOptional': 'Время (опционально)',
+  'cal.timePh': 'HH:mm — например 18:30',
+  'cal.repeatByDays': 'Повторять по дням',
+  'cal.repeatHint': 'Создаст серию планов на N недель',
+  'cal.create': 'Создать',
+  // ExerciseDetailScreen
+  'ed.tapToWatch': 'Тап чтобы посмотреть',
+  'ed.videoSoon': 'Видео скоро',
+  'ed.workingMuscles': 'РАБОЧИЕ МЫШЦЫ',
+  'ed.primaryMuscle': ' (основная)',
+  'ed.technique': 'Техника',
+  'ed.tips': '💡 Советы',
+  'ed.backToWorkout': 'Вернуться к тренировке',
+  'ed.startWorkout': 'Начать тренировку',
+  // WorkoutSummaryModal
+  'ws.title': 'Тренировка завершена',
+  'ws.time': 'Время',
+  'ws.volume': 'Объём',
+  'ws.sets': 'Подходы',
+  'ws.exercises': 'Упражнения',
+  'ws.prs': '🏆 ЛИЧНЫЕ РЕКОРДЫ ({n})',
+  'ws.wasKg': '(было {x} кг)',
+  'ws.firstRecord': '(первая запись)',
+  'ws.nextTime': '📈 В СЛЕДУЮЩИЙ РАЗ',
+  // ChestRewardModal
+  'chest.tierBronze': 'Бронзовый',
+  'chest.tierSilver': 'Серебряный',
+  'chest.tierGold': 'Золотой',
+  'chest.tierLegendary': 'Легендарный',
+  'chest.leavesN': '🌿 {n} листиков',
+  'chest.jackpot': 'ДЖЕКПОТ!',
+  'chest.streakFreeze': 'Заморозка стрика',
+  'chest.streakFreezeSub': 'спасёт серию на 1 день',
+  'chest.coupon': 'Купон −30%',
+  'chest.couponSub': 'на скин в магазине · 24ч',
+  'chest.prBoostSub': '+50% листиков следующая тренировка',
+  'chest.auraPeek': 'Превью следующей ауры',
+  'chest.auraPeekSub': 'на 24 часа',
+  'chest.rarityCommon': 'ОБЫЧНОЕ',
+  'chest.rarityRare': 'РЕДКОЕ',
+  'chest.rarityEpic': 'ЭПИК',
+  'chest.rarityJackpot': '★ ДЖЕКПОТ ★',
+  'common.monthsShort': 'янв,фев,мар,апр,мая,июн,июл,авг,сен,окт,ноя,дек',
+  // ProgressPhotosScreen
+  'pp.transform': 'Трансформация',
+  'pp.daysProgress': '{n} дней прогресса',
+  'pp.beforeAfter': 'до / после',
+  'pp.before': 'ДО',
+  'pp.after': 'ПОСЛЕ',
+  'pp.photoFrom': 'Фото от {date}',
+  // FriendsScreen
+  'fr.noHandle': 'нет ника',
+  'fr.shareMsg': 'Найди меня в Iron Mind AI: @{handle}',
+  'fr.shareCodeMsg':
+    'Iron Mind AI — мой код: {code}. Зарегистрируйся и получи 200 🌿 на старт.',
+  // BarcodeScannerModal
+  'bc.notFound': 'Не нашёл {code} в OpenFoodFacts. Добавь вручную.',
+  'bc.notSupported':
+    'BarcodeDetector не поддерживается в этом браузере (нужен Chrome/Edge).',
+  'bc.cameraError': 'Камера недоступна: {msg}',
+  'bc.title': 'Сканер штрих-кода',
+  'bc.enterManually': 'ВВЕСТИ КОД ВРУЧНУЮ',
+  'bc.find': 'Найти',
+  'bc.footer':
+    'Данные из OpenFoodFacts — открытой базы продуктов (≈3 млн товаров).',
+  // ShareCard
+  'sc.tagline': 'Дисциплина. Рост. Сила.',
+  'sc.level': 'Уровень',
+  'sc.streakLabel': 'Серия посещений',
+  'sc.streakValue': '{n} дней подряд',
+  'sc.achievements': 'Достижения',
+  'sc.achievementsValue': '{u} / {t} разблокированы',
+  'sc.leaves': 'Листья',
+  'sc.totalXp': 'Всего опыта',
+  'sc.footer':
+    'Каждая тренировка — это ещё один кубик\nна твоём пути к лучшей версии себя.',
+  // RestOverlay
+  'ro.rest': 'ОТДЫХ',
+  'ro.outOf': 'из {x}',
+  'ro.sec': '{p}с',
+  'ro.min': '{p}мин',
+  'ro.skip': 'Пропустить отдых',
+  // LevelUpOverlay
+  'lu.levelUp': 'УРОВЕНЬ {n}!',
+  'lu.workoutCounted': 'ТРЕНИРОВКА ЗАСЧИТАНА',
+  'lu.streakN': '🔥 Серия {n} дней',
+  'lu.keepGoing': 'Так держать!',
+  // MotivationScreen
+  'mot.title': 'Мотивация',
+  'mot.anotherQuote': 'Ещё цитата',
+  // AdminPanelScreen
+  'admin.title': 'Админ-панель',
+  'admin.offlineHint':
+    'Войдите как admin@ironmind.ai (пароль IronMind2026!) при онбординге, чтобы синхронизировать панель.',
+  'admin.statUsers': 'Пользователи',
+  'admin.statCoaches': 'Тренеры',
+  'admin.statWorkouts': 'Тренировки',
+  'admin.manageAccounts': 'Управление аккаунтами',
+  'admin.userMeta': '{role} · {w} трен. · {n} пит.',
+  // CommunityScreen
+  'comm.viewAll': 'Смотреть все',
+  'comm.tabFeed': 'Лента',
+  'comm.tabFriends': 'Друзья',
+  'comm.tabGroups': 'Группы',
+  // CoachPanelScreen
+  'coach.title': 'Панель тренера',
+  'coach.offlineHint':
+    'Войдите как coach@ironmind.ai / IronMind2026! для доступа к клиентам на сервере.',
+  'coach.stats14d': '14 дней: {w} трен. · объём {v} кг',
+  'coach.nutritionKcal': 'Питание (ккал)',
+  'coach.recentWorkouts': 'Последние тренировки: {n}',
+  // ShopVisual
+  'shop.daysPlus': '{days}+ дн',
+  'common.guest': 'Гость',
+  // RestTimer (inline)
+  'rt.nextSetIn': 'Следующий подход через {x}',
+  'rt.add30': 'Добавить 30 секунд',
+  'rt.title': 'Таймер отдыха',
+  'rt.startsHint': 'Стартует при отметке подхода',
+  'rt.restPSec': 'Отдых {p} секунд',
+  // AiProgramGenScreen
+  'ag.genDesc': 'Сгенерирована Iron Mind AI под твою цель и уровень.',
+  // Muscle groups + difficulty (data labels)
+  'muscle.chest': 'Грудь',
+  'muscle.back': 'Спина',
+  'muscle.shoulders': 'Плечи',
+  'muscle.biceps': 'Бицепс',
+  'muscle.triceps': 'Трицепс',
+  'muscle.legs': 'Ноги',
+  'muscle.glutes': 'Ягодицы',
+  'muscle.abs': 'Пресс',
+  'muscle.fullbody': 'Полное тело',
+  'muscle.cardio': 'Кардио',
+  'diff.basic': 'Базовое',
+  'diff.medium': 'Среднее',
+  'diff.hard': 'Сложное',
+  'theme.title': 'Тема оформления',
+  'theme.auto': 'Авто',
+  'theme.autoHint': 'По полу и скинам из магазина',
+  'theme.lockedByShop': 'Задано accent-скином из магазина',
+  'theme.cyber': 'Кибер-фиолет',
+  'theme.rose': 'Роза',
+  'theme.cyan': 'Циан',
+  'theme.pink': 'Пинк',
+  'theme.amber': 'Янтарь',
+  'cycle.bannerEyebrow': 'Фаза цикла',
+  'cycle.nutrition.menstrual': 'Больше железа и тёплой еды. Не урезай калории сильно.',
+  'cycle.nutrition.follicular': 'Тело хорошо усваивает углеводы — заправляйся под интенсив.',
+  'cycle.nutrition.ovulation': 'Пик аппетита под контролем: больше белка и клетчатки.',
+  'cycle.nutrition.luteal': 'Тяга к сладкому — сложные углеводы, магний, не голодай.',
+  // SWEEP_RU_ANCHOR
 };
 
 const en: Dict = {
@@ -831,6 +1286,37 @@ const en: Dict = {
   'common.start': 'Start',
   'common.loading': 'Loading…',
   'common.error': 'Error',
+  'common.ok': 'OK',
+  'common.nameRequired': 'Enter a name',
+
+  // Alert / action-sheet strings
+  'admin.loadError': 'Failed to load admin panel data',
+  'admin.roleError': 'Failed to change role',
+  'coach.loadError': 'Failed to load clients',
+  'coach.noAccess': 'No access to this client',
+  'community.feedTitle': 'Community',
+  'community.feedSoon': 'The full feed is coming later.',
+  'cal.actMarkDone': 'Mark as done',
+  'cal.actSkip': 'Skip',
+  'cal.doneMsg': 'Workout marked as done',
+  'cal.skippedMsg': 'Workout skipped',
+  'cal.createFailed': 'Could not create',
+  'prog.loadFailed': 'Failed to load program',
+  'prog.cloneFailed': 'Clone failed',
+  'prog.started': 'Program started',
+  'prog.startedMsg': 'Added {n} workouts to the calendar.',
+  'prog.openCalendar': 'Open calendar',
+  'prog.startFailed': 'Failed to start',
+  'prog.deleteConfirm': 'Delete program?',
+  'prog.deleteIrreversible': 'This cannot be undone.',
+  'progEdit.loadFailed': 'Failed to load',
+  'progEdit.saveFailed': 'Failed to save',
+  'progEdit.notSaved': 'Not saved',
+  'progEdit.deleteDayConfirm': 'Delete day?',
+  'progEdit.deleteDayMsg': 'Along with all its exercises.',
+  'progEdit.deleteExerciseConfirm': 'Delete exercise?',
+  'progEdit.repsRangeTitle': 'Rep range',
+  'progEdit.repsRangeMsg': 'repsMin must be ≤ repsMax',
   'common.today': 'Today',
   'common.tomorrow': 'Tomorrow',
   'common.yesterday': 'Yesterday',
@@ -862,18 +1348,21 @@ const en: Dict = {
   'home.startWorkout': 'Start workout',
   'home.chooseProgram': 'Choose a program',
   'home.noProgramTitle': 'No plan yet',
-  'home.noProgramBody': 'Open «Programs», pick a template for your goal — or clone and build your own plan.',
+  'home.noProgramBody':
+    'Open «Programs», pick a template for your goal — or clone and build your own plan.',
   'home.openPrograms': 'Open programs',
   'home.planNoDays': 'No days in the program',
   'home.editPlan': 'Clone the program and add days in the editor.',
   'home.openProgram': 'Open program',
   'home.composePlan': 'Build your workout plan',
   'home.startWithProgram': 'Start by choosing a program',
-  'home.composeHint': 'Every day will be ready — Iron Mind will tell you what to do.',
+  'home.composeHint':
+    'Every day will be ready — Iron Mind will tell you what to do.',
   'home.chooseProgramBtn': 'Choose program',
   'home.quickActions': 'Quick actions',
   'home.todayDone': 'Done for today',
-  'home.todayDoneHint': 'Awesome! Recover and refuel. Tomorrow — back to the gym.',
+  'home.todayDoneHint':
+    'Awesome! Recover and refuel. Tomorrow — back to the gym.',
   'home.openHistory': 'Open history',
   'home.aiTip': 'AI tip',
   'home.aiTipMore': 'Ask more',
@@ -897,11 +1386,13 @@ const en: Dict = {
   'detail.daysHeader': 'PROGRAM DAYS',
   'detail.systemTemplate': 'System template. To edit, clone it first.',
   'detail.noPlanTitle': 'Program without schedule',
-  'detail.noPlanBody': 'This is a basic card without a ready training plan. Clone it and build your full plan in the editor.',
+  'detail.noPlanBody':
+    'This is a basic card without a ready training plan. Clone it and build your full plan in the editor.',
   'detail.cloneEdit': 'Clone and edit',
 
   'use.title': 'Start program',
-  'use.hint': 'Pick start date, length and day of the week for each session. Old planned workouts of this program will be replaced.',
+  'use.hint':
+    'Pick start date, length and day of the week for each session. Old planned workouts of this program will be replaced.',
   'use.start': 'START',
   'use.length': 'LENGTH',
   'use.weekdays': 'WEEKDAYS',
@@ -947,7 +1438,8 @@ const en: Dict = {
   'tree.workoutStreak': 'Workouts',
   'tree.bestStreak': 'best {n}',
   'tree.consecutive': 'in a row',
-  'tree.progressHint': 'Each program workout strengthens your tree. Remaining: {n}.',
+  'tree.progressHint':
+    'Each program workout strengthens your tree. Remaining: {n}.',
   'tree.workoutsOf': '{done} / {total} workouts · {program}',
   'tree.s1.name': 'Seed',
   'tree.s1.desc': 'Begin — plant a program',
@@ -965,7 +1457,8 @@ const en: Dict = {
   'supp.tabTop': 'Top-10',
   'supp.tabCatalog': 'Catalog',
   'supp.tabChemistry': 'Chemistry ⚠️',
-  'supp.myEmpty': 'No supplements yet. Open «Top-10» or «Catalog» and tap any product you like.',
+  'supp.myEmpty':
+    'No supplements yet. Open «Top-10» or «Catalog» and tap any product you like.',
   'supp.tookAt': 'Taken at {time}',
   'supp.markTake': 'Mark intake',
   'supp.removeQ': 'Remove from list?',
@@ -992,11 +1485,15 @@ const en: Dict = {
   'supp.catAll': 'All',
   'supp.rank': '🏆 TOP-{n}',
   'supp.top10Title': '🏆 Top-10 supplements by evidence',
-  'supp.top10Sub': 'Ranked by research level (Examine.com, ISSN). The base for any athlete.',
+  'supp.top10Sub':
+    'Ranked by research level (Examine.com, ISSN). The base for any athlete.',
   'supp.chemDisclaimerTitle': '⚠️ READ THIS FIRST',
-  'supp.chemDisclaimerBody': 'This section is educational. Anabolic steroids (AAS) and other hormonal drugs are a serious endocrine intervention with long-term side effects. Most are prescription-only or banned in RU/BY. Information is for those who ALREADY use or are about to — to understand risks and reduce harm. If you can avoid it, avoid it. If you use — get blood tests (CBC, hormones, liver, lipids), do a PCT, and see an endocrinologist. Under 25 — absolutely not, your own endocrine system is still maturing.',
-  'supp.chemRequiredLabs': 'Before and after a cycle: CBC, liver panel (ALT/AST/bilirubin), lipid profile (TC, LDL, HDL), total/free testosterone, estradiol, LH/FSH, prolactin, hematocrit, creatinine, PSA (after 30). On-cycle — every 4-6 weeks.',
-  'supp.chemPCTGeneric': 'After every AAS cycle — mandatory. Standard: tamoxifen 20-40 mg/day for 4 weeks + clomiphene 50 mg/day for 4 weeks. With long esters wait 2-3 weeks after last injection, then start PCT. Without PCT — hormonal crash, loss of gains, depression, libido to zero.',
+  'supp.chemDisclaimerBody':
+    'This section is educational. Anabolic steroids (AAS) and other hormonal drugs are a serious endocrine intervention with long-term side effects. Most are prescription-only or banned in RU/BY. Information is for those who ALREADY use or are about to — to understand risks and reduce harm. If you can avoid it, avoid it. If you use — get blood tests (CBC, hormones, liver, lipids), do a PCT, and see an endocrinologist. Under 25 — absolutely not, your own endocrine system is still maturing.',
+  'supp.chemRequiredLabs':
+    'Before and after a cycle: CBC, liver panel (ALT/AST/bilirubin), lipid profile (TC, LDL, HDL), total/free testosterone, estradiol, LH/FSH, prolactin, hematocrit, creatinine, PSA (after 30). On-cycle — every 4-6 weeks.',
+  'supp.chemPCTGeneric':
+    'After every AAS cycle — mandatory. Standard: tamoxifen 20-40 mg/day for 4 weeks + clomiphene 50 mg/day for 4 weeks. With long esters wait 2-3 weeks after last injection, then start PCT. Without PCT — hormonal crash, loss of gains, depression, libido to zero.',
   'supp.timing.morning': 'Morning',
   'supp.timing.preworkout': 'Pre-workout',
   'supp.timing.duringworkout': 'During workout',
@@ -1037,19 +1534,24 @@ const en: Dict = {
   'foods.tabAll': 'All',
   'foods.brand': 'brand',
   'foods.tplHeader': 'MEAL TEMPLATES',
-  'foods.tplEmpty': 'No templates yet. Add foods to a regular meal and save as template.',
+  'foods.tplEmpty':
+    'No templates yet. Add foods to a regular meal and save as template.',
   'foods.tplApply': 'Apply',
   'foods.tplSaveTitle': 'Save as template',
-  'foods.tplSaveHint': 'Pick a meal — all its foods will be saved as one template.',
+  'foods.tplSaveHint':
+    'Pick a meal — all its foods will be saved as one template.',
   'foods.tplSavePh': 'Name (e.g. «Oats + banana»)',
   'foods.tplSave': 'Save template',
   'foods.barcode': 'Barcode scanner',
   'foods.barcodeManual': 'ENTER CODE MANUALLY',
   'foods.barcodeFind': 'Find',
-  'foods.barcodeUnsupported': 'BarcodeDetector unsupported in this browser (use Chrome/Edge).',
+  'foods.barcodeUnsupported':
+    'BarcodeDetector unsupported in this browser (use Chrome/Edge).',
   'foods.barcodeNoCamera': 'Camera unavailable: {error}',
-  'foods.barcodeNotFound': 'Did not find {code} in OpenFoodFacts. Add manually.',
-  'foods.barcodeSource': 'Data from OpenFoodFacts — open product database (~3M items).',
+  'foods.barcodeNotFound':
+    'Did not find {code} in OpenFoodFacts. Add manually.',
+  'foods.barcodeSource':
+    'Data from OpenFoodFacts — open product database (~3M items).',
   'foods.water': 'Water',
 
   'gym.replace': 'Replace',
@@ -1072,7 +1574,8 @@ const en: Dict = {
   'gym.restSkip': 'Skip rest',
 
   'summary.nextTime': '📈 NEXT TIME',
-  'summary.suggestionReason': 'All sets completed at {weight} kg — time to add weight',
+  'summary.suggestionReason':
+    'All sets completed at {weight} kg — time to add weight',
 
   'oneRm.title': '1RM chart',
   'oneRm.chartHeader': '1RM ESTIMATE (BRZYCKI) BY DATE',
@@ -1086,7 +1589,8 @@ const en: Dict = {
   'oneRm.history': 'HISTORY',
 
   'photoCompare.title': 'Before / After',
-  'photoCompare.notEnough': 'Need at least 2 progress photos to compare. Take a photo every 2-4 weeks.',
+  'photoCompare.notEnough':
+    'Need at least 2 progress photos to compare. Take a photo every 2-4 weeks.',
   'photoCompare.openPhotos': 'Open progress photos',
   'photoCompare.before': 'BEFORE',
   'photoCompare.after': 'AFTER',
@@ -1094,7 +1598,8 @@ const en: Dict = {
   'photoCompare.weightDelta': 'Δ weight',
 
   'dataExport.title': 'Data export',
-  'dataExport.intro': 'Download your data as CSV — opens in Excel/Google Sheets. Workouts, nutrition and measurements separately.',
+  'dataExport.intro':
+    'Download your data as CSV — opens in Excel/Google Sheets. Workouts, nutrition and measurements separately.',
   'dataExport.workouts': 'Workouts',
   'dataExport.workoutsSub': 'All workouts with volume, duration and sets',
   'dataExport.nutrition': 'Nutrition',
@@ -1125,18 +1630,21 @@ const en: Dict = {
   'shop.failTitle': 'Failed',
   'shop.buyMore': 'Buy more',
   'shop.auras': 'AURAS BY STREAK DAYS',
-  'shop.aurasHint': 'You\'re at {days} d now. Aura upgrades every 30 days up to 360.',
+  'shop.aurasHint':
+    "You're at {days} d now. Aura upgrades every 30 days up to 360.",
   'shop.preview': 'Preview',
   'shop.buyFor': 'Buy for',
   'shop.unequip': 'Unequip',
   'shop.need': 'need {n} more',
   'shop.packsTitle': 'Leaf packs',
-  'shop.packsHint': 'Support the dev and get leaves for skins and auras. Prices are placeholders.',
+  'shop.packsHint':
+    'Support the dev and get leaves for skins and auras. Prices are placeholders.',
   'shop.bonus': 'bonus',
   'shop.kopPerLeaf': '¢ / leaf',
   'shop.bought': 'Purchased',
   'shop.boughtBody': '+{n} leaves credited',
-  'shop.devNote': 'Payments not wired up — this is a demo. After integration: App Store / Google Play.',
+  'shop.devNote':
+    'Payments not wired up — this is a demo. After integration: App Store / Google Play.',
   'shop.currentAura': 'CURRENT AURA',
   'shop.toNext': '{days} d to «{name}»',
   'shop.maxAura': '🏆 Maximum aura reached!',
@@ -1183,21 +1691,21 @@ const en: Dict = {
 
   'friends.title': 'Friends',
   'friends.addTitle': 'Add a friend',
-  'friends.addHint': 'Enter email — they\'ll get a request.',
+  'friends.addHint': "Enter email — they'll get a request.",
   'friends.add': 'Add',
   'friends.invalidEmail': 'Invalid email',
-  'friends.pending': 'pending',
   'friends.weekShort': 'Week',
   'friends.duel': 'Duel',
   'friends.listHeader': 'FRIENDS ({n})',
-  'friends.note': '💡 Friends/feed backend not implemented yet — invites are local. After integration they\'ll hit the API.',
+  'friends.note':
+    "💡 Friends/feed backend not implemented yet — invites are local. After integration they'll hit the API.",
   'friends.you': 'You',
   'friends.setHandle': 'Set @handle',
   'friends.changeHandle': 'Change @handle',
   'friends.handleShortTitle': 'Too short',
   'friends.handleShort': 'Minimum 3 characters.',
   'friends.inviteTitle': 'Add a friend',
-  'friends.inviteHint': 'Enter @handle or ID — they\'ll get an invite.',
+  'friends.inviteHint': "Enter @handle or ID — they'll get an invite.",
   'friends.invite': 'Invite',
   'friends.inviteEmpty': 'Enter @handle or ID',
   'friends.searchPh': 'Search by handle…',
@@ -1209,11 +1717,13 @@ const en: Dict = {
   'duels.you': 'You',
   'duels.aheadBy': 'You are ahead by {kg} kg',
   'duels.behindBy': 'Behind by {kg} kg — catch up',
-  'duels.note': 'Duels by volume in the last 7 days. Winner gets 100 leaves (logic pending).',
+  'duels.note':
+    'Duels by volume in the last 7 days. Winner gets 100 leaves (logic pending).',
 
   'wellbeing.title': 'Wellbeing',
   'wellbeing.howToday': 'How are you today?',
-  'wellbeing.hint': 'Tap the 0-100 scale. One entry per day, updates until end of day.',
+  'wellbeing.hint':
+    'Tap the 0-100 scale. One entry per day, updates until end of day.',
   'wellbeing.sleep': 'Sleep',
   'wellbeing.energy': 'Energy',
   'wellbeing.stress': 'Stress',
@@ -1228,11 +1738,14 @@ const en: Dict = {
   'cycle.allPhases': 'ALL PHASES',
   'cycle.dayOf': 'Day {n}',
   'cycle.phase.menstrual.title': 'Menstrual (day 1-5)',
-  'cycle.phase.menstrual.advice': 'Light training, yoga, walks. Listen to your body.',
+  'cycle.phase.menstrual.advice':
+    'Light training, yoga, walks. Listen to your body.',
   'cycle.phase.follicular.title': 'Follicular (day 6-13)',
-  'cycle.phase.follicular.advice': 'Energy peak — best window for PR-strength and intensity.',
+  'cycle.phase.follicular.advice':
+    'Energy peak — best window for PR-strength and intensity.',
   'cycle.phase.ovulation.title': 'Ovulation (day 14-16)',
-  'cycle.phase.ovulation.advice': 'Ligament injury risk is high. Avoid maximal weights.',
+  'cycle.phase.ovulation.advice':
+    'Ligament injury risk is high. Avoid maximal weights.',
   'cycle.phase.luteal.title': 'Luteal (day 17-28)',
   'cycle.phase.luteal.advice': 'Performance drops. Moderate load, more cardio.',
 
@@ -1240,7 +1753,8 @@ const en: Dict = {
   'health.platformIos': 'Apple Health',
   'health.platformAndroid': 'Google Fit',
   'health.platformGeneric': 'Health service',
-  'health.intro': 'Connect the health system — we\'ll import steps, sleep, HR and weight.',
+  'health.intro':
+    "Connect the health system — we'll import steps, sleep, HR and weight.",
   'health.connect': 'Connect {platform}',
   'health.inProgress': 'HealthKit / Google Fit integration in progress.',
   'health.what': 'WHAT TO IMPORT',
@@ -1248,26 +1762,34 @@ const en: Dict = {
   'health.sleep': 'Sleep (for recovery)',
   'health.hr': 'Resting HR (for load)',
   'health.weight': 'Weight (for adaptive macros)',
-  'health.note': '💡 For real integration you need an EAS dev-build with react-native-health or @kingstinct/react-native-healthkit. Not available in Expo Go.',
+  'health.note':
+    '💡 For real integration you need an EAS dev-build with react-native-health or @kingstinct/react-native-healthkit. Not available in Expo Go.',
   'health.guideTitle': 'How to wire up (for developer)',
-  'health.guideIos': 'iOS · HealthKit:\n1. `npx expo install @kingstinct/react-native-healthkit`\n2. Add to app.json plugin + NSHealthShareUsageDescription\n3. `eas build --profile development --platform ios`\n4. Install dev-build on device\n5. Request permissions on screen, read steps/sleep/HR',
-  'health.guideAndroid': 'Android · Health Connect:\n1. `npx expo install expo-health-connect`\n2. Health Connect ships on Android 14+ (or install from Play Store on 9-13)\n3. EAS dev-build required\n4. Request permissions for steps, sleep, heart_rate, weight',
-  'health.guideWeb': 'Web: HealthKit/Google Fit not available. You can integrate Garmin Connect / Fitbit Web API (OAuth) or Apple Health → Health Mate sync — needs server-side integration.',
+  'health.guideIos':
+    'iOS · HealthKit:\n1. `npx expo install @kingstinct/react-native-healthkit`\n2. Add to app.json plugin + NSHealthShareUsageDescription\n3. `eas build --profile development --platform ios`\n4. Install dev-build on device\n5. Request permissions on screen, read steps/sleep/HR',
+  'health.guideAndroid':
+    'Android · Health Connect:\n1. `npx expo install expo-health-connect`\n2. Health Connect ships on Android 14+ (or install from Play Store on 9-13)\n3. EAS dev-build required\n4. Request permissions for steps, sleep, heart_rate, weight',
+  'health.guideWeb':
+    'Web: HealthKit/Google Fit not available. You can integrate Garmin Connect / Fitbit Web API (OAuth) or Apple Health → Health Mate sync — needs server-side integration.',
   'health.devTitle': 'What works right now',
-  'health.devBody': 'Steps and sleep are tracked manually (via Wellbeing diary). Weight and body metrics — via Measurements section. Full HealthKit integration is ready to plug in, just needs an EAS dev-build.',
+  'health.devBody':
+    'Steps and sleep are tracked manually (via Wellbeing diary). Weight and body metrics — via Measurements section. Full HealthKit integration is ready to plug in, just needs an EAS dev-build.',
 
   'bodyFat.title': 'Body fat %',
   'bodyFat.uploadTwo': 'Upload two photos',
-  'bodyFat.hint': 'Front and side. Even lighting, full body visible. AI will estimate composition. Full Vision-AI integration in progress.',
+  'bodyFat.hint':
+    'Front and side. Even lighting, full body visible. AI will estimate composition. Full Vision-AI integration in progress.',
   'bodyFat.front': 'FRONT',
   'bodyFat.side': 'SIDE',
   'bodyFat.evaluate': 'Get estimate',
   'bodyFat.aiTitle': 'AI estimate',
-  'bodyFat.aiNote': 'Vision-API integration in progress. Will send to /ai/bodyfat once wired up.',
+  'bodyFat.aiNote':
+    'Vision-API integration in progress. Will send to /ai/bodyfat once wired up.',
 
   'aiGen.title': 'AI monthly plan',
   'aiGen.pro': 'PRO feature',
-  'aiGen.intro': 'We\'ll generate a 4-week plan for your goal ({goal}) and level ({level}). Will be created in your programs — edit later.',
+  'aiGen.intro':
+    "We'll generate a 4-week plan for your goal ({goal}) and level ({level}). Will be created in your programs — edit later.",
   'aiGen.goalNone': 'not set',
   'aiGen.levelNone': 'not set',
   'aiGen.weeks': '{n} wk',
@@ -1280,30 +1802,39 @@ const en: Dict = {
 
   'live.title': 'Coach',
   'live.elite': 'ELITE feature',
-  'live.intro': 'A real coach replies within 24 hours. Send technique video, describe pain/plateau, ask plan review.',
+  'live.intro':
+    'A real coach replies within 24 hours. Send technique video, describe pain/plateau, ask plan review.',
   'live.sent': 'Request sent',
-  'live.sentBody': 'Coach will reply within 24 hours. Push notification will arrive.',
+  'live.sentBody':
+    'Coach will reply within 24 hours. Push notification will arrive.',
   'live.questionLabel': 'YOUR QUESTION',
   'live.questionPh': 'E.g. «Stuck at 80 kg bench for 3 weeks — what to try?»',
   'live.send': 'Send to coach',
   'live.elaborate': 'At least a couple of sentences.',
-  'live.note': '💡 Backend for coach requests is in progress. Saved locally for now.',
+  'live.note':
+    '💡 Backend for coach requests is in progress. Saved locally for now.',
 
   'share.title': 'Share program',
-  'share.codeHint': 'Give this code to a friend. They enter it and get a copy of your program.',
+  'share.codeHint':
+    'Give this code to a friend. They enter it and get a copy of your program.',
   'share.newCode': 'New code',
   'share.shareBtn': 'Share',
   'share.applyTitle': 'Apply a code',
-  'share.applyHint': 'Enter the 8-char code from a friend — program will be cloned.',
+  'share.applyHint':
+    'Enter the 8-char code from a friend — program will be cloned.',
   'share.applyBtn': 'Apply',
-  'share.inProgress': 'Backend for clone-by-code not ready yet. Entered code: {code}',
-  'share.note': '💡 Backend endpoints /programs/share and /programs/clone-by-code are in progress.',
+  'share.inProgress':
+    'Backend for clone-by-code not ready yet. Entered code: {code}',
+  'share.note':
+    '💡 Backend endpoints /programs/share and /programs/clone-by-code are in progress.',
 
   'form.title': 'Form analysis',
-  'form.intro': '💡 Recording video and analysing form with Vision-AI is in progress. For now use text analysis.',
+  'form.intro':
+    '💡 Recording video and analysing form with Vision-AI is in progress. For now use text analysis.',
   'form.descLabel': 'DESCRIBE HOW YOU DO IT',
   'form.descPh': 'E.g. «knees ache in deep squat, back rounds at the bottom»',
-  'form.short': 'At least 1-2 sentences describing how you perform the exercise.',
+  'form.short':
+    'At least 1-2 sentences describing how you perform the exercise.',
   'form.shortTitle': 'More detail please',
   'form.analyzing': 'Analyzing…',
   'form.btn': 'Get analysis',
@@ -1331,21 +1862,25 @@ const en: Dict = {
   'analytics.tools.shop': 'Shop',
   'analytics.tools.friends': 'Friends',
   'analytics.tools.form': 'Form analysis',
-  'analytics.lagging': 'What\'s lagging',
-  'analytics.laggingHint': 'Least loaded groups: {groups}. Add an exercise targeting them next workout.',
+  'analytics.lagging': "What's lagging",
+  'analytics.laggingHint':
+    'Least loaded groups: {groups}. Add an exercise targeting them next workout.',
   'analytics.recovery': 'Recovery forecast',
-  'analytics.recoveryHint': 'Fully recovered by {when}. Next heavy workout — after that.',
+  'analytics.recoveryHint':
+    'Fully recovered by {when}. Next heavy workout — after that.',
   'analytics.recoveryHrs': '~{h}h',
 
   'meas.bjuTitle': 'Update macros for new weight',
-  'meas.bjuLine': 'Now: {current} kcal. Suggested: {kcal} kcal · P {p} · F {f} · C {c}',
+  'meas.bjuLine':
+    'Now: {current} kcal. Suggested: {kcal} kcal · P {p} · F {f} · C {c}',
   'meas.bjuApply': 'Apply',
   'meas.bjuLater': 'Not now',
   'proTrial.label': '⭐ PRO TRIAL',
   'proTrial.urgent': '⚠️ PRO ENDS SOON',
   'proTrial.daysLeft': '{n} days left in trial',
   'proTrial.usingFeatures': 'Unlocked now: AI plans, form analysis, CSV export',
-  'proTrial.loseFeatures': 'You\'ll lose AI plans and Vision review. Plans from $4.99',
+  'proTrial.loseFeatures':
+    "You'll lose AI plans and Vision review. Plans from $4.99",
   'chest.title': 'Chest',
   'chest.solid': 'Solid work',
   'chest.tapToOpen': 'Tap «Open» to see your reward',
@@ -1354,8 +1889,10 @@ const en: Dict = {
   'chest.opening': 'Opening…',
   'home.volumeKg': 'volume · {v} kg',
   'home.todayMissing': 'You trained today — get 30 g protein within an hour.',
-  'home.todayActive': 'Today is "{title}". Warmup 5-10 min, then main work at RPE 7-8.',
-  'home.pickProgFirst': 'Pick a program and come back tomorrow — I\'ll guide you from there.',
+  'home.todayActive':
+    'Today is "{title}". Warmup 5-10 min, then main work at RPE 7-8.',
+  'home.pickProgFirst':
+    "Pick a program and come back tomorrow — I'll guide you from there.",
 
   'profile.title': 'Profile',
   'profile.athlete': 'Athlete',
@@ -1390,25 +1927,31 @@ const en: Dict = {
   'onboarding.welcomeTime': 'Takes less than a minute',
   'onboarding.haveAccount': 'Already have an account? Log in',
   'onboarding.login': 'Log in',
-  'onboarding.loginHint': 'Enter the email and password of your Iron Mind account.',
+  'onboarding.loginHint':
+    'Enter the email and password of your Iron Mind account.',
   'onboarding.loginEmail': 'email@example.com',
   'onboarding.loginPassword': 'Password',
   'onboarding.loginSubmit': 'Log in',
   'onboarding.loginSubmitting': 'Logging in…',
-  'onboarding.loginError': 'Could not log in. Check your connection and try again.',
+  'onboarding.loginError':
+    'Could not log in. Check your connection and try again.',
 
   'programs.full_body_3.title': 'FULL BODY 3×',
   'programs.full_body_3.subtitle': 'Whole body, 3 times a week',
-  'programs.full_body_3.description': 'Classic beginner program: one session — whole body. Mon / Wed / Fri.',
+  'programs.full_body_3.description':
+    'Classic beginner program: one session — whole body. Mon / Wed / Fri.',
   'programs.upper_lower_4.title': 'UPPER / LOWER',
   'programs.upper_lower_4.subtitle': '4-day split',
-  'programs.upper_lower_4.description': 'Intermediate classic. Upper / Lower × 2. Great volume-recovery balance.',
+  'programs.upper_lower_4.description':
+    'Intermediate classic. Upper / Lower × 2. Great volume-recovery balance.',
   'programs.ppl_6.title': 'PUSH-PULL-LEGS',
   'programs.ppl_6.subtitle': 'Push / Pull / Legs × 2',
-  'programs.ppl_6.description': 'High-volume split for advanced lifters: 6 workouts per week.',
+  'programs.ppl_6.description':
+    'High-volume split for advanced lifters: 6 workouts per week.',
   'programs.split_5.title': '5-DAY SPLIT',
   'programs.split_5.subtitle': 'One muscle group per day',
-  'programs.split_5.description': 'Each day — one muscle group. Good when recovery is sufficient.',
+  'programs.split_5.description':
+    'Each day — one muscle group. Good when recovery is sufficient.',
   'programs.mass.title': 'MASS',
   'programs.mass.subtitle': 'Build muscle mass',
   'programs.relief.title': 'CUTTING',
@@ -1468,7 +2011,6 @@ const en: Dict = {
   'onb.metricsQ': 'Your metrics',
   'onb.metricsHint': 'Age, height, weight — for calories and load.',
   'onb.activityQ': 'Activity level',
-  'onb.activityHint': 'How much do you move outside the gym?',
   'onb.goalQ': 'Your goal',
   'onb.goalHint': 'What do you want from training?',
   'onb.levelQ': 'Training level',
@@ -1476,9 +2018,7 @@ const en: Dict = {
   'onb.summaryQ': 'Your plan',
   'onb.summaryHint': 'Calories and macros tailored to you.',
   'onb.accountQ': 'Create an account',
-  'onb.accountHint': 'Email and password — to sync between devices.',
   'onb.finishQ': 'All set!',
-  'onb.finishHint': 'You can start now.',
   'onb.start': 'Start training',
   'onb.bmr': 'BMR',
   'onb.tdee': 'TDEE',
@@ -1497,7 +2037,8 @@ const en: Dict = {
   'notif.morningPing': 'Morning ping (8:00)',
   'notif.dailyReminder': 'Workout reminder',
   'notif.streakAlert': 'Streak-at-risk alert',
-  'notif.unsupported': 'Notifications are not available in this environment. Use a dev build or native app.',
+  'notif.unsupported':
+    'Notifications are not available in this environment. Use a dev build or native app.',
   'notif.permissionDenied': 'Notification permission denied',
 
   'meas.title': 'Body metrics',
@@ -1513,14 +2054,16 @@ const en: Dict = {
   'meas.weight': 'Weight',
   'meas.add': 'Add measurement',
   'meas.history': 'History',
-  'meas.empty': 'No measurements yet. Add your first one — it will appear here.',
+  'meas.empty':
+    'No measurements yet. Add your first one — it will appear here.',
   'meas.emptyRow': 'Empty entry',
   'meas.confirmDelete': 'Delete measurement?',
   'meas.confirmDeleteBody': 'This entry cannot be restored.',
 
   'photos.title': 'Progress photos',
   'photos.add': 'Add photo',
-  'photos.empty': 'No photos yet. Take one every 2-4 weeks to see your progress.',
+  'photos.empty':
+    'No photos yet. Take one every 2-4 weeks to see your progress.',
   'photos.confirmDelete': 'Delete photo?',
 
   'analytics.title': 'Analytics',
@@ -1531,7 +2074,8 @@ const en: Dict = {
   'analytics.sets': 'Sets',
   'analytics.burned': 'Burned',
   'analytics.weight': 'Weight',
-  'analytics.empty': 'No data for the last {days} days. Finish a workout with sets — stats appear immediately.',
+  'analytics.empty':
+    'No data for the last {days} days. Finish a workout with sets — stats appear immediately.',
   'analytics.chartHeader': 'VOLUME AND WORKOUTS BY DAY',
   'analytics.muscleHeader': 'Muscle group load',
   'analytics.muscleChest': 'Chest',
@@ -1558,7 +2102,8 @@ const en: Dict = {
   'nutrition.mealsHeader': 'Meals',
   'nutrition.addMeal': 'Add meal',
   'nutrition.entries': 'Entries',
-  'nutrition.empty': 'Nothing logged yet. Start adding meals — we will track calories and macros.',
+  'nutrition.empty':
+    'Nothing logged yet. Start adding meals — we will track calories and macros.',
   'nutrition.pickFood': 'Pick food',
   'nutrition.search': 'Search food…',
   'nutrition.grams': 'grams',
@@ -1567,7 +2112,8 @@ const en: Dict = {
   'nutrition.totalKcal': '{value} kcal · {grams} g',
 
   'ai.title': 'AI Coach',
-  'ai.intro': 'Ask me about training, nutrition, recovery or exercise technique. I will tell you what and how much.',
+  'ai.intro':
+    'Ask me about training, nutrition, recovery or exercise technique. I will tell you what and how much.',
   'ai.tryAsking': 'TRY ASKING',
   'ai.placeholder': 'Ask the AI coach…',
   'ai.thinking': 'AI is thinking…',
@@ -1580,13 +2126,16 @@ const en: Dict = {
   'ai.q6': 'Should I take creatine?',
 
   'profile.logoutTitle': 'Sign out?',
-  'profile.logoutBody': 'Session and profile will be reset. Local workouts will stay on this device.',
+  'profile.logoutBody':
+    'Session and profile will be reset. Local workouts will stay on this device.',
   'profile.logoutConfirm': 'Sign out',
 
-  'tree.emptyButHasProgram': 'Program is selected but not started yet. Open it and tap "Use program" — your tree will start to grow.',
+  'tree.emptyButHasProgram':
+    'Program is selected but not started yet. Open it and tap "Use program" — your tree will start to grow.',
   'tree.openProgram': 'Open program',
 
-  'onb.accountHint': 'To sync your progress between devices. Optional — you can continue without an account.',
+  'onb.accountHint':
+    'To sync your progress between devices. Optional — you can continue without an account.',
   'onb.email': 'Email',
   'onb.password': 'Password (min 8 chars)',
   'onb.creating': 'Creating…',
@@ -1594,7 +2143,8 @@ const en: Dict = {
   'onb.continueNoAcc': 'Continue without account',
   'onb.back': 'Back',
   'onb.activityHint': 'We will tune your calories to your lifestyle.',
-  'onb.finishHint': 'We picked a program and a nutrition plan for your goal and level.',
+  'onb.finishHint':
+    'We picked a program and a nutrition plan for your goal and level.',
   'onb.toApp': 'To the app',
   'onb.errTitle': 'Error',
   'onb.errServerDown': 'Server unreachable. You can continue locally.',
@@ -1619,6 +2169,357 @@ const en: Dict = {
   'day.split.legs': 'Legs',
   'day.split.shoulders': 'Shoulders',
   'day.split.arms': 'Arms + Core',
+
+  // ===== i18n-audit sweep 2026-05-21 (EN) =====
+  // SubscriptionScreen
+  'sub.heroTitle': 'Get the most out of training',
+  'sub.heroSub':
+    'A subscription unlocks unlimited AI, extended analytics and exclusive programs.',
+  'sub.month': 'Month',
+  'sub.year': 'Year',
+  'sub.perMonth': '/mo',
+  'sub.perYear': '/yr',
+  'sub.popular': 'POPULAR',
+  'sub.soonTitle': 'Coming soon',
+  'sub.soonMsg':
+    'Subscriptions are in development. For now all Pro/Elite features are free in beta.',
+  'sub.note1': 'Subscription renews automatically',
+  'sub.note2': 'Cancel anytime',
+  'sub.note3': 'Pro and Elite include a 7-day free trial',
+  'sub.note4': 'Access is restored on all devices with one account',
+  'sub.tagFree': 'Core features — forever',
+  'sub.tagPro': 'For serious training',
+  'sub.tagElite': "An athlete's full arsenal",
+  'sub.ctaFree': 'Current plan',
+  'sub.ctaPro': 'Get Pro',
+  'sub.ctaElite': 'Become Elite',
+  'sub.f.allTemplates': 'All program templates',
+  'sub.f.onePersonal': '1 personal program',
+  'sub.f.analytics7': 'Analytics — 7 days',
+  'sub.f.ai10': 'AI coach — 10 requests/day',
+  'sub.f.measNutri': 'Measurements + nutrition',
+  'sub.f.allExercises': 'All 67 exercises with video',
+  'sub.f.analyticsExt': 'Extended analytics 30+ days',
+  'sub.f.aiUnlimited': 'Unlimited AI',
+  'sub.f.themes': 'Custom themes',
+  'sub.f.export': 'Data export',
+  'sub.f.allFree': 'Everything in Free',
+  'sub.f.unlimitedPrograms': 'Unlimited programs',
+  'sub.f.analytics3m': 'Analytics 30/90/365 days',
+  'sub.f.aiCoachUnlimited': 'Unlimited AI coach',
+  'sub.f.extHistory': 'Extended workout history',
+  'sub.f.suppLog': 'Supplement log',
+  'sub.f.photoCompare': 'Before/After photo compare',
+  'sub.f.workoutNotifs': 'Workout reminders',
+  'sub.f.coachPrograms': 'Exclusive coach programs',
+  'sub.f.formAnalysis': 'Photo-based form analysis',
+  'sub.f.allPro': 'Everything in Pro',
+  'sub.f.coachProgramsElite': 'Exclusive coach programs',
+  'sub.f.aiFormAnalysis': 'AI photo form analysis',
+  'sub.f.personalNutrition': 'Personal nutrition plan',
+  'sub.f.priorityUpdates': 'Priority on updates',
+  'sub.f.coachConsult': 'Direct coach consults (1×/month)',
+  'sub.f.merchCommunity': 'Exclusive merch & community',
+  'sub.f.allFuture': 'All future features included',
+  // Weekdays (short, shared)
+  'wd.mon': 'Mon',
+  'wd.tue': 'Tue',
+  'wd.wed': 'Wed',
+  'wd.thu': 'Thu',
+  'wd.fri': 'Fri',
+  'wd.sat': 'Sat',
+  'wd.sun': 'Sun',
+  'common.search': 'Search…',
+  // PlanBuilderScreen
+  'plan.defaultTitle': 'My plan',
+  'plan.dayN': 'Day {x}',
+  'plan.day': 'Day',
+  'plan.subtitle': 'Personal plan',
+  'plan.description': 'Built in the plan builder',
+  'plan.createdMsg': 'Plan created and scheduled in the calendar!',
+  'plan.q1': 'What should we call the plan?',
+  'plan.q1hint':
+    'For example "Morning mass" or "Wednesday — back". This name shows on Home and in the calendar.',
+  'plan.tipLabel': '💡 TIP',
+  'plan.q1tip':
+    "Don't try to make it perfect on the first try — you can fully redo the plan in the editor. The main thing is to start.",
+  'plan.step2title': 'Training days',
+  'plan.step2hint':
+    'How many workouts per week and on which days? Optimal for beginners — 3×, for progress — 4-5.',
+  'plan.addDay': '+ Add day',
+  'plan.conflictMsg': 'Two days on the same weekday. Pick different ones.',
+  'plan.step3title': 'Exercises for each day',
+  'plan.step3hint':
+    'Tap a day — pick exercises. Default 3×8-12 with 90 sec rest (editable later).',
+  'plan.tapToAdd': 'Tap to add exercises',
+  'plan.step4title': 'Ready to launch',
+  'plan.summary': '{n} workouts per week · 8 weeks',
+  'plan.warnReplace':
+    'The plan will create a series of workouts in the calendar. Old PLANNED workouts of your current program will be replaced.',
+  'plan.create': 'Create and launch',
+  'plan.errName': 'Enter a plan name',
+  'plan.errConflict': 'Day conflict',
+  'plan.errFillNames': 'Fill in the names',
+  'plan.errExercises': 'Add exercises to each day',
+  'plan.exercisesCount': 'Exercises ({n})',
+  // StreakDumbbell auras
+  'aura.shadow': 'Shadow',
+  'aura.lead': 'Lead',
+  'aura.bronze': 'Bronze',
+  'aura.silver': 'Silver',
+  'aura.amethyst': 'Amethyst',
+  'aura.sapphire': 'Sapphire',
+  'aura.cyan': 'Cyan',
+  'aura.emerald': 'Emerald',
+  'aura.gold': 'Gold',
+  'aura.ruby': 'Ruby',
+  'aura.fuchsia': 'Fuchsia',
+  'aura.fire': 'Fire',
+  'aura.ice': 'Ice',
+  'aura.aurora': 'Aurora',
+  'aura.blacksun': 'Black Sun',
+  'aura.infinity': 'Infinity',
+  // OnboardingScreen (step hints / labels / errors)
+  'common.gram': 'g',
+  'onb.metricsLocalHint': 'Used only locally, needed for the calculations.',
+  'onb.goalLocalHint': 'We will tailor a program and nutrition to your goal.',
+  'onb.levelLocalHint': 'We will tune the intensity.',
+  'onb.summaryLocalHint':
+    'We picked calories, macros and a program for your goal.',
+  'onb.heightShort': 'Height',
+  'onb.weightShort': 'Weight',
+  'onb.finish': 'Finish',
+  'onb.errEmailPw': 'Enter a valid email and password',
+  'onb.errLoginFailed':
+    'Could not sign in. Check your connection and try again.',
+  'onb.errNoData': 'Not enough data for the calculation',
+  'onb.dailyCalories': 'Daily calories',
+  'onb.protein': 'Protein',
+  'onb.program': 'Program',
+  // NutritionScreen
+  'common.ml': 'ml',
+  'common.apply': 'Apply',
+  'nut.pShort': 'P',
+  'nut.fShort': 'F',
+  'nut.cShort': 'C',
+  'nut.saveAsTemplate': 'Save as template',
+  'nut.saveTemplateBtn': 'Save template',
+  'nut.saveTemplateHint':
+    'Pick a meal — all its foods are saved as one template you can later apply with a single tap.',
+  'nut.templateNamePh': 'Name (e.g. "Oatmeal + banana")',
+  'nut.drank': 'Drank',
+  'nut.waterFromWeight': 'from {kg} kg × 35',
+  'nut.mealTemplates': 'MEAL TEMPLATES',
+  'nut.noTemplates':
+    'No templates yet. Add a few foods to a regular meal and save the combo as a template from the three-dot menu.',
+  'nut.productsCount': '{n} items',
+  'nut.per100g': '(100 g)',
+  // ProgramEditScreen
+  'common.name': 'Name',
+  'pe.editorShort': 'Editor',
+  'pe.title': 'Program editor',
+  'pe.subtitle': 'Subtitle',
+  'pe.description': 'Description',
+  'pe.daysCount': 'DAYS ({n})',
+  'pe.noDays': 'No days yet. Add the first one ↑',
+  'pe.restLine': 'rest {s}s',
+  'pe.addExercise': '+ Add exercise',
+  'pe.newDay': 'New day',
+  'pe.dayNamePh': 'E.g. Chest+triceps',
+  'pe.weekdayOptional': 'Weekday (optional)',
+  'pe.pickExercise': 'Pick an exercise',
+  'pe.nothingFound': 'Nothing found',
+  'pe.replaceExercise': 'Replace exercise',
+  'pe.sets': 'Sets',
+  'pe.repsFrom': 'Reps from',
+  'pe.repsTo': 'Reps to',
+  'pe.restLabel': 'Rest, sec',
+  'pe.noteOptional': 'Note (optional)',
+  'pe.notePh': 'E.g. pyramid, last set to failure',
+  // ProgramDetailScreen
+  'pd.title': 'Program',
+  'pd.useProgram': 'Use program',
+  'pd.systemTemplate': 'System template. To edit it — clone it first.',
+  'pd.noSchedule': 'Program without a schedule',
+  'pd.noScheduleHint':
+    'This is a base card without a ready workout plan. Clone it and build your full plan in the editor — or pick one of the templates with days.',
+  'pd.cloneAndEdit': 'Clone and edit',
+  'pd.programDays': 'PROGRAM DAYS',
+  'pd.nextMonday': 'From next Monday',
+  'pd.launchProgram': 'Launch program',
+  'pd.useHint':
+    'Pick a start date, duration and a weekday for each workout. Old planned workouts of this program will be replaced.',
+  'pd.start': 'START',
+  'pd.duration': 'DURATION',
+  'pd.weeksN': '{w} wk',
+  'pd.weekdaysTitle': 'WEEKDAYS ({n} {word})',
+  'pd.workout1': 'workout',
+  'pd.workoutMany': 'workouts',
+  'pd.weekdayConflict':
+    'Two program days fall on the same weekday. Pick different days.',
+  'pd.createPlan': 'Create plan',
+  // CalendarScreen
+  'cal.title': 'Calendar',
+  'cal.filterAll': 'All',
+  'cal.filterProgram': 'From program only',
+  'cal.emptyDay': 'Nothing scheduled for this day.',
+  'cal.addPlan': 'Add a plan',
+  'cal.statusDone': 'Done',
+  'cal.statusSkipped': 'Skipped',
+  'cal.statusPlanned': 'Planned',
+  'cal.defaultTitle': 'Workout',
+  'cal.newPlan': 'New plan',
+  'cal.onDate': 'On {date}',
+  'cal.timeOptional': 'Time (optional)',
+  'cal.timePh': 'HH:mm — e.g. 18:30',
+  'cal.repeatByDays': 'Repeat on days',
+  'cal.repeatHint': 'Creates a series of plans for N weeks',
+  'cal.create': 'Create',
+  // ExerciseDetailScreen
+  'ed.tapToWatch': 'Tap to watch',
+  'ed.videoSoon': 'Video soon',
+  'ed.workingMuscles': 'WORKING MUSCLES',
+  'ed.primaryMuscle': ' (primary)',
+  'ed.technique': 'Technique',
+  'ed.tips': '💡 Tips',
+  'ed.backToWorkout': 'Back to workout',
+  'ed.startWorkout': 'Start workout',
+  // WorkoutSummaryModal
+  'ws.title': 'Workout complete',
+  'ws.time': 'Time',
+  'ws.volume': 'Volume',
+  'ws.sets': 'Sets',
+  'ws.exercises': 'Exercises',
+  'ws.prs': '🏆 PERSONAL RECORDS ({n})',
+  'ws.wasKg': '(was {x} kg)',
+  'ws.firstRecord': '(first record)',
+  'ws.nextTime': '📈 NEXT TIME',
+  // ChestRewardModal
+  'chest.tierBronze': 'Bronze',
+  'chest.tierSilver': 'Silver',
+  'chest.tierGold': 'Gold',
+  'chest.tierLegendary': 'Legendary',
+  'chest.leavesN': '🌿 {n} leaves',
+  'chest.jackpot': 'JACKPOT!',
+  'chest.streakFreeze': 'Streak freeze',
+  'chest.streakFreezeSub': 'saves your streak for 1 day',
+  'chest.coupon': 'Coupon −30%',
+  'chest.couponSub': 'for a shop skin · 24h',
+  'chest.prBoostSub': '+50% leaves next workout',
+  'chest.auraPeek': 'Next aura preview',
+  'chest.auraPeekSub': 'for 24 hours',
+  'chest.rarityCommon': 'COMMON',
+  'chest.rarityRare': 'RARE',
+  'chest.rarityEpic': 'EPIC',
+  'chest.rarityJackpot': '★ JACKPOT ★',
+  'common.monthsShort': 'Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec',
+  // ProgressPhotosScreen
+  'pp.transform': 'Transformation',
+  'pp.daysProgress': '{n} days of progress',
+  'pp.beforeAfter': 'before / after',
+  'pp.before': 'BEFORE',
+  'pp.after': 'AFTER',
+  'pp.photoFrom': 'Photo from {date}',
+  // FriendsScreen
+  'fr.noHandle': 'no handle',
+  'fr.shareMsg': 'Find me in Iron Mind AI: @{handle}',
+  'fr.shareCodeMsg':
+    'Iron Mind AI — my code: {code}. Sign up and get 200 🌿 to start.',
+  // BarcodeScannerModal
+  'bc.notFound': "Couldn't find {code} in OpenFoodFacts. Add it manually.",
+  'bc.notSupported':
+    'BarcodeDetector is not supported in this browser (Chrome/Edge needed).',
+  'bc.cameraError': 'Camera unavailable: {msg}',
+  'bc.title': 'Barcode scanner',
+  'bc.enterManually': 'ENTER CODE MANUALLY',
+  'bc.find': 'Find',
+  'bc.footer':
+    'Data from OpenFoodFacts — an open food database (≈3M products).',
+  // ShareCard
+  'sc.tagline': 'Discipline. Growth. Strength.',
+  'sc.level': 'Level',
+  'sc.streakLabel': 'Login streak',
+  'sc.streakValue': '{n} days in a row',
+  'sc.achievements': 'Achievements',
+  'sc.achievementsValue': '{u} / {t} unlocked',
+  'sc.leaves': 'Leaves',
+  'sc.totalXp': 'Total XP',
+  'sc.footer': 'Every workout is one more brick\non your path to a better you.',
+  // RestOverlay
+  'ro.rest': 'REST',
+  'ro.outOf': 'of {x}',
+  'ro.sec': '{p}s',
+  'ro.min': '{p}min',
+  'ro.skip': 'Skip rest',
+  // LevelUpOverlay
+  'lu.levelUp': 'LEVEL {n}!',
+  'lu.workoutCounted': 'WORKOUT COUNTED',
+  'lu.streakN': '🔥 {n}-day streak',
+  'lu.keepGoing': 'Keep it up!',
+  // MotivationScreen
+  'mot.title': 'Motivation',
+  'mot.anotherQuote': 'Another quote',
+  // AdminPanelScreen
+  'admin.title': 'Admin panel',
+  'admin.offlineHint':
+    'Sign in as admin@ironmind.ai (password IronMind2026!) during onboarding to sync the panel.',
+  'admin.statUsers': 'Users',
+  'admin.statCoaches': 'Coaches',
+  'admin.statWorkouts': 'Workouts',
+  'admin.manageAccounts': 'Account management',
+  'admin.userMeta': '{role} · {w} wo. · {n} meals',
+  // CommunityScreen
+  'comm.viewAll': 'View all',
+  'comm.tabFeed': 'Feed',
+  'comm.tabFriends': 'Friends',
+  'comm.tabGroups': 'Groups',
+  // CoachPanelScreen
+  'coach.title': 'Coach panel',
+  'coach.offlineHint':
+    'Sign in as coach@ironmind.ai / IronMind2026! to access clients on the server.',
+  'coach.stats14d': '14 days: {w} wo. · volume {v} kg',
+  'coach.nutritionKcal': 'Nutrition (kcal)',
+  'coach.recentWorkouts': 'Recent workouts: {n}',
+  // ShopVisual
+  'shop.daysPlus': '{days}+ d',
+  'common.guest': 'Guest',
+  // RestTimer (inline)
+  'rt.nextSetIn': 'Next set in {x}',
+  'rt.add30': 'Add 30 seconds',
+  'rt.title': 'Rest timer',
+  'rt.startsHint': 'Starts when you check a set',
+  'rt.restPSec': 'Rest {p} seconds',
+  // AiProgramGenScreen
+  'ag.genDesc': 'Generated by Iron Mind AI for your goal and level.',
+  // Muscle groups + difficulty (data labels)
+  'muscle.chest': 'Chest',
+  'muscle.back': 'Back',
+  'muscle.shoulders': 'Shoulders',
+  'muscle.biceps': 'Biceps',
+  'muscle.triceps': 'Triceps',
+  'muscle.legs': 'Legs',
+  'muscle.glutes': 'Glutes',
+  'muscle.abs': 'Abs',
+  'muscle.fullbody': 'Full body',
+  'muscle.cardio': 'Cardio',
+  'diff.basic': 'Basic',
+  'diff.medium': 'Intermediate',
+  'diff.hard': 'Advanced',
+  'theme.title': 'Accent theme',
+  'theme.auto': 'Auto',
+  'theme.autoHint': 'By gender & shop skins',
+  'theme.lockedByShop': 'Set by an accent skin from the shop',
+  'theme.cyber': 'Cyber violet',
+  'theme.rose': 'Rose',
+  'theme.cyan': 'Cyan',
+  'theme.pink': 'Pink',
+  'theme.amber': 'Amber',
+  'cycle.bannerEyebrow': 'Cycle phase',
+  'cycle.nutrition.menstrual': 'More iron and warm food. Don\'t cut calories hard.',
+  'cycle.nutrition.follicular': 'Carbs absorb well now — fuel up for intensity.',
+  'cycle.nutrition.ovulation': 'Appetite peaks: lean on protein and fiber.',
+  'cycle.nutrition.luteal': 'Sugar cravings — go for complex carbs, magnesium, don\'t starve.',
+  // SWEEP_EN_ANCHOR
 };
 
 const DICTS: Record<Lang, Dict> = { ru, en };
@@ -1657,21 +2558,30 @@ export function setLang(l: Lang) {
 }
 
 /** Локализованное имя программы. Если id — известный шаблон, возвращает t(programs.id.title), иначе fallback. */
-export function programLabel(id: string | null | undefined, fallback?: string | null): string {
+export function programLabel(
+  id: string | null | undefined,
+  fallback?: string | null,
+): string {
   if (!id) return fallback ?? '';
   const key = `programs.${id}.title`;
   const translated = t(key);
   if (translated !== key) return translated;
   return fallback ?? id;
 }
-export function programSubtitle(id: string | null | undefined, fallback?: string | null): string {
+export function programSubtitle(
+  id: string | null | undefined,
+  fallback?: string | null,
+): string {
   if (!id) return fallback ?? '';
   const key = `programs.${id}.subtitle`;
   const translated = t(key);
   if (translated !== key) return translated;
   return fallback ?? '';
 }
-export function programDescription(id: string | null | undefined, fallback?: string | null): string {
+export function programDescription(
+  id: string | null | undefined,
+  fallback?: string | null,
+): string {
   if (!id) return fallback ?? '';
   const key = `programs.${id}.description`;
   const translated = t(key);
@@ -1693,10 +2603,10 @@ const DAY_TITLE_MAP: Record<string, string> = {
   'Push 2': 'day.ppl.push2',
   'Pull 2': 'day.ppl.pull2',
   'Legs 2': 'day.ppl.legs2',
-  'Грудь': 'day.split.chest',
-  'Спина': 'day.split.back',
-  'Ноги': 'day.split.legs',
-  'Плечи': 'day.split.shoulders',
+  Грудь: 'day.split.chest',
+  Спина: 'day.split.back',
+  Ноги: 'day.split.legs',
+  Плечи: 'day.split.shoulders',
   'Руки + Кор': 'day.split.arms',
 };
 
@@ -1717,6 +2627,40 @@ export function goalLabel(goalKey: string | null | undefined): string {
 export function levelLabel(level: string | null | undefined): string {
   if (!level) return '';
   return t(`level.${level.toLowerCase()}`);
+}
+
+/** RU-значение группы мышц (канонический ключ в data) → i18n-ключ. */
+const MUSCLE_KEY: Record<string, string> = {
+  Грудь: 'muscle.chest',
+  Спина: 'muscle.back',
+  Плечи: 'muscle.shoulders',
+  Бицепс: 'muscle.biceps',
+  Трицепс: 'muscle.triceps',
+  Ноги: 'muscle.legs',
+  Ягодицы: 'muscle.glutes',
+  Пресс: 'muscle.abs',
+  'Полное тело': 'muscle.fullbody',
+  Кардио: 'muscle.cardio',
+};
+
+/** Локализованное имя группы мышц. Неизвестное — вернёт как есть. */
+export function muscleLabel(m: string | null | undefined): string {
+  if (!m) return '';
+  const key = MUSCLE_KEY[m];
+  return key ? t(key) : m;
+}
+
+const DIFF_KEY: Record<string, string> = {
+  Базовое: 'diff.basic',
+  Среднее: 'diff.medium',
+  Сложное: 'diff.hard',
+};
+
+/** Локализованное имя уровня сложности. */
+export function difficultyLabel(d: string | null | undefined): string {
+  if (!d) return '';
+  const key = DIFF_KEY[d];
+  return key ? t(key) : d;
 }
 
 /** Перевод по ключу. Если ключа нет — вернёт сам ключ. */

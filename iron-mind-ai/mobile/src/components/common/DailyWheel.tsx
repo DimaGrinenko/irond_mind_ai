@@ -1,13 +1,27 @@
 /**
  * Колесо удачи — одно вращение в день, growing множитель по серии.
  */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import Svg, { Defs, LinearGradient as SvgGrad, Stop, Path, Circle, G, Text as SvgText } from 'react-native-svg';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming, Easing } from 'react-native-reanimated';
+import Svg, {
+  Defs,
+  LinearGradient as SvgGrad,
+  Stop,
+  Path,
+  Circle,
+  G,
+  Text as SvgText,
+} from 'react-native-svg';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated';
 import { useDailyBonusStore, WHEEL_SECTORS } from '../../store/dailyBonusStore';
 import { useLeafEconomyStore } from '../../store/leafEconomyStore';
+import { api } from '../../api/client';
 import { colors, radii } from '../../theme/tokens';
 import { fontFamilies } from '../../theme/typography';
 import { t } from '../../i18n';
@@ -18,24 +32,47 @@ export function DailyWheel({ embed = false }: { embed?: boolean }) {
   const canSpin = useDailyBonusStore((s) => s.canSpinToday());
   const spin = useDailyBonusStore((s) => s.spin);
   const streakDays = useDailyBonusStore((s) => s.streakDays);
-  const earn = useLeafEconomyStore((s) => s.earn);
-  const [result, setResult] = useState<{ total: number; multiplier: number } | null>(null);
+  const applyDaily = useDailyBonusStore((s) => s.applyWallet);
+  const applyLeaf = useLeafEconomyStore((s) => s.applyWallet);
+  const [result, setResult] = useState<{
+    total: number;
+    multiplier: number;
+  } | null>(null);
+  const [spinning, setSpinning] = useState(false);
 
   const angle = useSharedValue(0);
 
-  const handleSpin = () => {
-    if (!canSpin) return;
-    const res = spin();
-    if (!res.ok) return;
+  // Подтянуть серверный кошелёк (баланс + можно ли крутить сегодня + стрик).
+  useEffect(() => {
+    api.economy
+      .wallet()
+      .then((w) => {
+        applyLeaf(w);
+        applyDaily(w.canSpinToday, w.wheelStreak);
+      })
+      .catch(() => {
+        /* offline — локальный кэш */
+      });
+  }, [applyDaily, applyLeaf]);
+
+  const handleSpin = async () => {
+    if (!canSpin || spinning) return;
+    setSpinning(true);
+    const res = await spin();
+    if (!res.ok) {
+      setSpinning(false);
+      return;
+    }
     const sectorAngle = 360 / WHEEL_SECTORS.length;
-    // Найти индекс выпавшего сектора по value
-    const idx = WHEEL_SECTORS.findIndex((s) => s.value === res.value);
-    const targetCenter = -(idx * sectorAngle + sectorAngle / 2); // стрелка наверху
+    const targetCenter = -(res.sectorIndex * sectorAngle + sectorAngle / 2); // стрелка наверху
     const spins = 5;
-    angle.value = withTiming(spins * 360 + targetCenter, { duration: 3200, easing: Easing.out(Easing.cubic) });
+    angle.value = withTiming(spins * 360 + targetCenter, {
+      duration: 3200,
+      easing: Easing.out(Easing.cubic),
+    });
     setTimeout(() => {
       setResult({ total: res.total, multiplier: res.multiplier });
-      earn(res.total, 'daily_wheel');
+      setSpinning(false);
     }, 3300);
   };
 
@@ -44,30 +81,69 @@ export function DailyWheel({ embed = false }: { embed?: boolean }) {
   }));
 
   return (
-    <View style={[{ paddingHorizontal: embed ? 0 : 16, marginTop: embed ? 0 : 12 }]}>
+    <View
+      style={[{ paddingHorizontal: embed ? 0 : 16, marginTop: embed ? 0 : 12 }]}
+    >
       <View
         style={{
           padding: 16,
           borderRadius: 18,
           borderWidth: 1,
           borderColor: canSpin ? '#FFD27A88' : colors.border,
-          backgroundColor: canSpin ? 'rgba(255,210,122,0.08)' : colors.bgSecondary,
+          backgroundColor: canSpin
+            ? 'rgba(255,210,122,0.08)'
+            : colors.bgSecondary,
           alignItems: 'center',
         }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'stretch', marginBottom: 10 }}>
-          <Ionicons name="ribbon" size={18} color={canSpin ? '#FFD27A' : colors.textMuted} />
-          <Text style={{ flex: 1, marginLeft: 8, color: colors.text, fontFamily: fontFamilies.body700, fontSize: 14 }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            alignSelf: 'stretch',
+            marginBottom: 10,
+          }}
+        >
+          <Ionicons
+            name="ribbon"
+            size={18}
+            color={canSpin ? '#FFD27A' : colors.textMuted}
+          />
+          <Text
+            style={{
+              flex: 1,
+              marginLeft: 8,
+              color: colors.text,
+              fontFamily: fontFamilies.body700,
+              fontSize: 14,
+            }}
+          >
             {t('wheel.title')}
           </Text>
           {streakDays >= 3 ? (
-            <Text style={{ color: '#FFD27A', fontFamily: fontFamilies.body700, fontSize: 11 }}>
-              {t('wheel.streak', { n: streakDays, mult: streakDays >= 7 ? 2 : streakDays >= 5 ? 1.5 : 1.25 })}
+            <Text
+              style={{
+                color: '#FFD27A',
+                fontFamily: fontFamilies.body700,
+                fontSize: 11,
+              }}
+            >
+              {t('wheel.streak', {
+                n: streakDays,
+                mult: streakDays >= 7 ? 2 : streakDays >= 5 ? 1.5 : 1.25,
+              })}
             </Text>
           ) : null}
         </View>
 
-        <View style={{ width: SIZE, height: SIZE, alignItems: 'center', justifyContent: 'center' }}>
+        <View
+          style={{
+            width: SIZE,
+            height: SIZE,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           {/* Стрелка */}
           <View
             pointerEvents="none"
@@ -93,10 +169,19 @@ export function DailyWheel({ embed = false }: { embed?: boolean }) {
                   <Stop offset="1" stopColor="#FFB547" />
                 </SvgGrad>
               </Defs>
-              <Circle cx="100" cy="100" r="98" fill="none" stroke="url(#rim)" strokeWidth="3" />
+              <Circle
+                cx="100"
+                cy="100"
+                r="98"
+                fill="none"
+                stroke="url(#rim)"
+                strokeWidth="3"
+              />
               {WHEEL_SECTORS.map((sector, i) => {
-                const a1 = (i / WHEEL_SECTORS.length) * Math.PI * 2 - Math.PI / 2;
-                const a2 = ((i + 1) / WHEEL_SECTORS.length) * Math.PI * 2 - Math.PI / 2;
+                const a1 =
+                  (i / WHEEL_SECTORS.length) * Math.PI * 2 - Math.PI / 2;
+                const a2 =
+                  ((i + 1) / WHEEL_SECTORS.length) * Math.PI * 2 - Math.PI / 2;
                 const x1 = 100 + Math.cos(a1) * 96;
                 const y1 = 100 + Math.sin(a1) * 96;
                 const x2 = 100 + Math.cos(a2) * 96;
@@ -106,7 +191,11 @@ export function DailyWheel({ embed = false }: { embed?: boolean }) {
                 const ty = 100 + Math.sin(aMid) * 60;
                 return (
                   <G key={i}>
-                    <Path d={`M100 100 L${x1} ${y1} A96 96 0 0 1 ${x2} ${y2} Z`} fill={sector.color} fillOpacity="0.85" />
+                    <Path
+                      d={`M100 100 L${x1} ${y1} A96 96 0 0 1 ${x2} ${y2} Z`}
+                      fill={sector.color}
+                      fillOpacity="0.85"
+                    />
                     <SvgText
                       x={tx}
                       y={ty + 4}
@@ -121,18 +210,38 @@ export function DailyWheel({ embed = false }: { embed?: boolean }) {
                 );
               })}
               {/* Центральный hub */}
-              <Circle cx="100" cy="100" r="14" fill="#1A1A28" stroke="#FFD27A" strokeWidth="2" />
+              <Circle
+                cx="100"
+                cy="100"
+                r="14"
+                fill="#1A1A28"
+                stroke="#FFD27A"
+                strokeWidth="2"
+              />
             </Svg>
           </Animated.View>
         </View>
 
         {result ? (
           <View style={{ marginTop: 12, alignItems: 'center' }}>
-            <Text style={{ color: '#FFD27A', fontFamily: fontFamilies.body700, fontSize: 16 }}>
+            <Text
+              style={{
+                color: '#FFD27A',
+                fontFamily: fontFamilies.body700,
+                fontSize: 16,
+              }}
+            >
               {t('wheel.gotN', { n: result.total })}
             </Text>
             {result.multiplier > 1 ? (
-              <Text style={{ marginTop: 2, color: colors.pink, fontFamily: fontFamilies.body700, fontSize: 12 }}>
+              <Text
+                style={{
+                  marginTop: 2,
+                  color: colors.pink,
+                  fontFamily: fontFamilies.body700,
+                  fontSize: 12,
+                }}
+              >
                 ×{result.multiplier} streak bonus
               </Text>
             ) : null}
@@ -152,12 +261,24 @@ export function DailyWheel({ embed = false }: { embed?: boolean }) {
                 backgroundColor: 'rgba(255,210,122,0.22)',
               }}
             >
-              <Text style={{ color: '#FFD27A', fontFamily: fontFamilies.body700, fontSize: 13 }}>
+              <Text
+                style={{
+                  color: '#FFD27A',
+                  fontFamily: fontFamilies.body700,
+                  fontSize: 13,
+                }}
+              >
                 {t('wheel.cta')}
               </Text>
             </Pressable>
           ) : (
-            <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 12 }}>
+            <Text
+              style={{
+                color: colors.textMuted,
+                fontFamily: fontFamilies.body,
+                fontSize: 12,
+              }}
+            >
               {result ? t('wheel.tomorrow') : t('wheel.todayDone')}
             </Text>
           )}

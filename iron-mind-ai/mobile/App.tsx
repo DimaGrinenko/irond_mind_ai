@@ -6,15 +6,32 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { colors } from './src/theme/tokens';
 import { RootNavigator } from './src/navigation/RootNavigator';
-import { PhoneFrame, WEB_SAFE_AREA_METRICS } from './src/components/web/PhoneFrame';
-import { useFonts as useManrope, Manrope_400Regular, Manrope_500Medium, Manrope_600SemiBold, Manrope_700Bold } from '@expo-google-fonts/manrope';
-import { useFonts as useUnbounded, Unbounded_700Bold } from '@expo-google-fonts/unbounded';
+import {
+  PhoneFrame,
+  WEB_SAFE_AREA_METRICS,
+} from './src/components/web/PhoneFrame';
+import {
+  useFonts as useManrope,
+  Manrope_400Regular,
+  Manrope_500Medium,
+  Manrope_600SemiBold,
+  Manrope_700Bold,
+} from '@expo-google-fonts/manrope';
+import {
+  useFonts as useUnbounded,
+  Unbounded_700Bold,
+} from '@expo-google-fonts/unbounded';
 import { initDb } from './src/db/init';
 import { useAuthStore } from './src/store/authStore';
 import { useAppStreakStore } from './src/store/appStreakStore';
 import { useUserStore } from './src/store/userStore';
+import { useCycleStore } from './src/store/cycleStore';
+import { useLeafEconomyStore } from './src/store/leafEconomyStore';
 
-class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error: unknown }> {
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { error: unknown }
+> {
   state = { error: null as unknown };
   static getDerivedStateFromError(error: unknown) {
     return { error };
@@ -26,9 +43,21 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { err
   render() {
     if (this.state.error) {
       return (
-        <View style={{ flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-          <Text style={{ color: colors.text, fontSize: 16, fontWeight: '600' }}>Ошибка приложения</Text>
-          <Text style={{ marginTop: 12, color: 'rgba(255,255,255,0.75)' }}>{String(this.state.error)}</Text>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: colors.bg,
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 16,
+          }}
+        >
+          <Text style={{ color: colors.text, fontSize: 16, fontWeight: '600' }}>
+            Ошибка приложения
+          </Text>
+          <Text style={{ marginTop: 12, color: 'rgba(255,255,255,0.75)' }}>
+            {String(this.state.error)}
+          </Text>
         </View>
       );
     }
@@ -63,12 +92,22 @@ export default function App() {
   const registerOpen = useAppStreakStore((s) => s.registerOpen);
 
   React.useEffect(() => {
-    hydrateAuth().catch(() => null);
+    hydrateAuth()
+      .then(() => {
+        // Pull server-canonical state once authed (economy drives theme; cycle drives phase banners).
+        useLeafEconomyStore.getState().refresh();
+        useCycleStore.getState().refresh();
+      })
+      .catch(() => null);
     // Регистрируем заход — серия дней захода в приложение
     registerOpen();
     // Авто-старт Pro-trial при первом запуске прошедшего онбординг юзера
     const userState = useUserStore.getState();
-    if (userState.onboardingCompleted && !userState.proTrialEndsAt && userState.subscriptionTier === 'free') {
+    if (
+      userState.onboardingCompleted &&
+      !userState.proTrialEndsAt &&
+      userState.subscriptionTier === 'free'
+    ) {
       userState.startProTrial(7);
     }
   }, [hydrateAuth, registerOpen]);
@@ -102,7 +141,14 @@ export default function App() {
       <SafeAreaProvider initialMetrics={initialMetrics}>
         <StatusBar style="light" />
         <PhoneFrame>
-          <View style={{ flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' }}>
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: colors.bg,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
             <ActivityIndicator color={colors.purple} />
             {dbError ? (
               <Text style={{ marginTop: 12, color: 'rgba(255,255,255,0.7)' }}>

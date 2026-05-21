@@ -2,7 +2,15 @@
  * Друзья: приглашения по @handle или user id, поиск по своим, удаление, дуэли.
  */
 import React, { useMemo, useState } from 'react';
-import { Alert, Pressable, ScrollView, Share, Text, TextInput, View } from 'react-native';
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  Share,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../components/common/Card';
@@ -36,11 +44,14 @@ export function FriendsScreen() {
     const term = search.trim().toLowerCase().replace(/^@/, '');
     if (!term) return friends;
     return friends.filter(
-      (f) => f.handle.includes(term) || f.name.toLowerCase().includes(term) || f.id.includes(term),
+      (f) =>
+        f.handle.includes(term) ||
+        f.name.toLowerCase().includes(term) ||
+        f.id.includes(term),
     );
   }, [friends, search]);
 
-  const myCard = myHandle ?? 'нет ника';
+  const myCard = myHandle ?? t('fr.noHandle');
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
@@ -52,34 +63,64 @@ export function FriendsScreen() {
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <View
                 style={{
-                  width: 44, height: 44, borderRadius: 22,
+                  width: 44,
+                  height: 44,
+                  borderRadius: 22,
                   backgroundColor: 'rgba(157,107,255,0.22)',
-                  borderWidth: 1, borderColor: colors.borderNeon,
-                  alignItems: 'center', justifyContent: 'center',
+                  borderWidth: 1,
+                  borderColor: colors.borderNeon,
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
-                <Text style={{ color: colors.purpleLight, fontFamily: fontFamilies.body700, fontSize: 16 }}>
+                <Text
+                  style={{
+                    color: colors.purpleLight,
+                    fontFamily: fontFamilies.body700,
+                    fontSize: 16,
+                  }}
+                >
                   {(myName || myCard)[0]?.toUpperCase() ?? '?'}
                 </Text>
               </View>
               <View style={{ flex: 1, marginLeft: 12 }}>
-                <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 14 }}>
+                <Text
+                  style={{
+                    color: colors.text,
+                    fontFamily: fontFamilies.body700,
+                    fontSize: 14,
+                  }}
+                >
                   {myName || t('friends.you')}
                 </Text>
-                <Text style={{ color: colors.purpleLight, fontFamily: fontFamilies.body600, fontSize: 12, marginTop: 2 }}>
+                <Text
+                  style={{
+                    color: colors.purpleLight,
+                    fontFamily: fontFamilies.body600,
+                    fontSize: 12,
+                    marginTop: 2,
+                  }}
+                >
                   @{myCard}
                 </Text>
                 {myId ? (
                   <Text
                     selectable
-                    style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 10, marginTop: 2 }}
+                    style={{
+                      color: colors.textMuted,
+                      fontFamily: fontFamilies.body,
+                      fontSize: 10,
+                      marginTop: 2,
+                    }}
                   >
                     id: {myId.slice(0, 20)}…
                   </Text>
                 ) : null}
               </View>
               <Pressable
-                onPress={() => Share.share({ message: `Найди меня в Iron Mind AI: @${myCard}` })}
+                onPress={() =>
+                  Share.share({ message: t('fr.shareMsg', { handle: myCard }) })
+                }
                 hitSlop={10}
                 style={{
                   paddingHorizontal: 10,
@@ -90,7 +131,11 @@ export function FriendsScreen() {
                   backgroundColor: 'rgba(157,107,255,0.18)',
                 }}
               >
-                <Ionicons name="share-social" size={16} color={colors.purpleLight} />
+                <Ionicons
+                  name="share-social"
+                  size={16}
+                  color={colors.purpleLight}
+                />
               </Pressable>
             </View>
 
@@ -110,7 +155,16 @@ export function FriendsScreen() {
                     paddingHorizontal: 12,
                   }}
                 >
-                  <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body700, fontSize: 14, marginRight: 4 }}>@</Text>
+                  <Text
+                    style={{
+                      color: colors.textMuted,
+                      fontFamily: fontFamilies.body700,
+                      fontSize: 14,
+                      marginRight: 4,
+                    }}
+                  >
+                    @
+                  </Text>
                   <TextInput
                     value={handleDraft}
                     onChangeText={(v) =>
@@ -128,13 +182,24 @@ export function FriendsScreen() {
                     autoFocus
                     autoCorrect={false}
                     autoCapitalize="none"
-                    style={{ flex: 1, color: colors.text, fontFamily: fontFamilies.body600, fontSize: 14, outlineWidth: 0 } as any}
+                    style={
+                      {
+                        flex: 1,
+                        color: colors.text,
+                        fontFamily: fontFamilies.body600,
+                        fontSize: 14,
+                        outlineWidth: 0,
+                      } as any
+                    }
                   />
                 </View>
                 <Pressable
                   onPress={() => {
                     if (handleDraft.length < 3) {
-                      Alert.alert(t('friends.handleShortTitle'), t('friends.handleShort'));
+                      Alert.alert(
+                        t('friends.handleShortTitle'),
+                        t('friends.handleShort'),
+                      );
                       return;
                     }
                     setHandle(handleDraft);
@@ -149,14 +214,23 @@ export function FriendsScreen() {
                     justifyContent: 'center',
                   }}
                 >
-                  <Text style={{ color: colors.green, fontFamily: fontFamilies.body700, fontSize: 12 }}>
+                  <Text
+                    style={{
+                      color: colors.green,
+                      fontFamily: fontFamilies.body700,
+                      fontSize: 12,
+                    }}
+                  >
                     {t('common.save')}
                   </Text>
                 </Pressable>
               </View>
             ) : (
               <Pressable
-                onPress={() => { setHandleDraft(myHandle ?? ''); setEditingHandle(true); }}
+                onPress={() => {
+                  setHandleDraft(myHandle ?? '');
+                  setEditingHandle(true);
+                }}
                 style={{
                   marginTop: 10,
                   paddingVertical: 8,
@@ -170,9 +244,21 @@ export function FriendsScreen() {
                   gap: 6,
                 }}
               >
-                <Ionicons name="create-outline" size={14} color={colors.textSecondary} />
-                <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body700, fontSize: 12 }}>
-                  {myHandle ? t('friends.changeHandle') : t('friends.setHandle')}
+                <Ionicons
+                  name="create-outline"
+                  size={14}
+                  color={colors.textSecondary}
+                />
+                <Text
+                  style={{
+                    color: colors.textSecondary,
+                    fontFamily: fontFamilies.body700,
+                    fontSize: 12,
+                  }}
+                >
+                  {myHandle
+                    ? t('friends.changeHandle')
+                    : t('friends.setHandle')}
                 </Text>
               </Pressable>
             )}
@@ -182,10 +268,23 @@ export function FriendsScreen() {
         {/* Пригласить */}
         <View style={{ paddingHorizontal: 16, marginTop: 12 }}>
           <Card variant="secondary">
-            <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 14 }}>
+            <Text
+              style={{
+                color: colors.text,
+                fontFamily: fontFamilies.body700,
+                fontSize: 14,
+              }}
+            >
               {t('friends.inviteTitle')}
             </Text>
-            <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11, marginTop: 4 }}>
+            <Text
+              style={{
+                color: colors.textMuted,
+                fontFamily: fontFamilies.body,
+                fontSize: 11,
+                marginTop: 4,
+              }}
+            >
               {t('friends.inviteHint')}
             </Text>
             <View style={{ flexDirection: 'row', gap: 8, marginTop: 10 }}>
@@ -226,7 +325,13 @@ export function FriendsScreen() {
                   justifyContent: 'center',
                 }}
               >
-                <Text style={{ color: colors.purpleLight, fontFamily: fontFamilies.body700, fontSize: 12 }}>
+                <Text
+                  style={{
+                    color: colors.purpleLight,
+                    fontFamily: fontFamilies.body700,
+                    fontSize: 12,
+                  }}
+                >
                   {t('friends.invite')}
                 </Text>
               </Pressable>
@@ -237,8 +342,22 @@ export function FriendsScreen() {
         {/* Список + поиск */}
         <View style={{ paddingHorizontal: 16, marginTop: 12 }}>
           <Card variant="secondary">
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
-              <Text style={{ flex: 1, color: colors.textSecondary, fontFamily: fontFamilies.body600, fontSize: 12, letterSpacing: 1 }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginBottom: 10,
+              }}
+            >
+              <Text
+                style={{
+                  flex: 1,
+                  color: colors.textSecondary,
+                  fontFamily: fontFamilies.body600,
+                  fontSize: 12,
+                  letterSpacing: 1,
+                }}
+              >
                 {t('friends.listHeader', { n: friends.length })}
               </Text>
             </View>
@@ -264,14 +383,29 @@ export function FriendsScreen() {
                   placeholder={t('friends.searchPh')}
                   placeholderTextColor={colors.textMuted}
                   autoCapitalize="none"
-                  style={{ flex: 1, color: colors.text, fontFamily: fontFamilies.body, fontSize: 13 }}
+                  style={{
+                    flex: 1,
+                    color: colors.text,
+                    fontFamily: fontFamilies.body,
+                    fontSize: 13,
+                  }}
                 />
               </View>
             ) : null}
 
             {filtered.length === 0 ? (
-              <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 12, textAlign: 'center', paddingVertical: 16 }}>
-                {friends.length === 0 ? t('friends.empty') : t('friends.noMatch')}
+              <Text
+                style={{
+                  color: colors.textMuted,
+                  fontFamily: fontFamilies.body,
+                  fontSize: 12,
+                  textAlign: 'center',
+                  paddingVertical: 16,
+                }}
+              >
+                {friends.length === 0
+                  ? t('friends.empty')
+                  : t('friends.noMatch')}
               </Text>
             ) : (
               filtered.map((f) => (
@@ -287,31 +421,67 @@ export function FriendsScreen() {
                 >
                   <View
                     style={{
-                      width: 36, height: 36, borderRadius: 18,
+                      width: 36,
+                      height: 36,
+                      borderRadius: 18,
                       backgroundColor: 'rgba(157,107,255,0.22)',
-                      borderWidth: 1, borderColor: colors.borderNeon,
-                      alignItems: 'center', justifyContent: 'center',
+                      borderWidth: 1,
+                      borderColor: colors.borderNeon,
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     }}
                   >
-                    <Text style={{ color: colors.purpleLight, fontFamily: fontFamilies.body700, fontSize: 14 }}>
+                    <Text
+                      style={{
+                        color: colors.purpleLight,
+                        fontFamily: fontFamilies.body700,
+                        fontSize: 14,
+                      }}
+                    >
                       {f.name[0]?.toUpperCase() ?? '?'}
                     </Text>
                   </View>
                   <View style={{ flex: 1, marginLeft: 10 }}>
-                    <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 13 }}>
+                    <Text
+                      style={{
+                        color: colors.text,
+                        fontFamily: fontFamilies.body700,
+                        fontSize: 13,
+                      }}
+                    >
                       {f.name}
                     </Text>
-                    <Text style={{ color: colors.purpleLight, fontFamily: fontFamilies.body, fontSize: 11, marginTop: 2 }}>
+                    <Text
+                      style={{
+                        color: colors.purpleLight,
+                        fontFamily: fontFamilies.body,
+                        fontSize: 11,
+                        marginTop: 2,
+                      }}
+                    >
                       @{f.handle}
                     </Text>
                   </View>
                   {f.status === 'pending' ? (
-                    <Text style={{ color: colors.amber, fontFamily: fontFamilies.body700, fontSize: 10, marginRight: 8 }}>
+                    <Text
+                      style={{
+                        color: colors.amber,
+                        fontFamily: fontFamilies.body700,
+                        fontSize: 10,
+                        marginRight: 8,
+                      }}
+                    >
                       {t('friends.pending')}
                     </Text>
                   ) : (
                     <Pressable
-                      onPress={() => nav.navigate('Duels', { friendId: f.id, friendName: f.name, theirVol: 0 })}
+                      onPress={() =>
+                        nav.navigate('Duels', {
+                          friendId: f.id,
+                          friendName: f.name,
+                          theirVol: 0,
+                        })
+                      }
                       hitSlop={6}
                       style={{
                         paddingHorizontal: 10,
@@ -323,13 +493,23 @@ export function FriendsScreen() {
                         marginRight: 8,
                       }}
                     >
-                      <Text style={{ color: colors.pink, fontFamily: fontFamilies.body700, fontSize: 11 }}>
+                      <Text
+                        style={{
+                          color: colors.pink,
+                          fontFamily: fontFamilies.body700,
+                          fontSize: 11,
+                        }}
+                      >
                         {t('friends.duel')}
                       </Text>
                     </Pressable>
                   )}
                   <Pressable onPress={() => remove(f.id)} hitSlop={10}>
-                    <Ionicons name="close-circle-outline" size={20} color={colors.textMuted} />
+                    <Ionicons
+                      name="close-circle-outline"
+                      size={20}
+                      color={colors.textMuted}
+                    />
                   </Pressable>
                 </View>
               ))
@@ -342,7 +522,14 @@ export function FriendsScreen() {
 
         <View style={{ paddingHorizontal: 16, marginTop: 10 }}>
           <Card variant="secondary">
-            <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11, lineHeight: 16 }}>
+            <Text
+              style={{
+                color: colors.textMuted,
+                fontFamily: fontFamilies.body,
+                fontSize: 11,
+                lineHeight: 16,
+              }}
+            >
               {t('friends.note')}
             </Text>
           </Card>
@@ -361,21 +548,63 @@ function ReferralCard() {
 
   return (
     <View style={{ paddingHorizontal: 16, marginTop: 12 }}>
-      <Card variant="secondary" style={{ borderColor: colors.amber, borderWidth: 1, backgroundColor: 'rgba(255,181,71,0.08)' }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+      <Card
+        variant="secondary"
+        style={{
+          borderColor: colors.amber,
+          borderWidth: 1,
+          backgroundColor: 'rgba(255,181,71,0.08)',
+        }}
+      >
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 8,
+            marginBottom: 6,
+          }}
+        >
           <Ionicons name="gift" size={18} color={colors.amber} />
-          <Text style={{ flex: 1, color: colors.amber, fontFamily: fontFamilies.body700, fontSize: 13 }}>
+          <Text
+            style={{
+              flex: 1,
+              color: colors.amber,
+              fontFamily: fontFamilies.body700,
+              fontSize: 13,
+            }}
+          >
             {t('ref.title')}
           </Text>
         </View>
-        <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, fontSize: 12, marginBottom: 10 }}>
+        <Text
+          style={{
+            color: colors.textSecondary,
+            fontFamily: fontFamilies.body,
+            fontSize: 12,
+            marginBottom: 10,
+          }}
+        >
           {t('ref.body')}
         </Text>
 
-        <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body500, fontSize: 10, letterSpacing: 1 }}>
+        <Text
+          style={{
+            color: colors.textMuted,
+            fontFamily: fontFamilies.body500,
+            fontSize: 10,
+            letterSpacing: 1,
+          }}
+        >
           {t('ref.myCode')}
         </Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 6 }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 8,
+            marginTop: 6,
+          }}
+        >
           <View
             style={{
               flex: 1,
@@ -388,12 +617,21 @@ function ReferralCard() {
               alignItems: 'center',
             }}
           >
-            <Text style={{ color: colors.amber, fontFamily: fontFamilies.heading, fontSize: 18, letterSpacing: 3 }}>
+            <Text
+              style={{
+                color: colors.amber,
+                fontFamily: fontFamilies.heading,
+                fontSize: 18,
+                letterSpacing: 3,
+              }}
+            >
               {myCode}
             </Text>
           </View>
           <Pressable
-            onPress={() => Share.share({ message: `Iron Mind AI — мой код: ${myCode}. Зарегистрируйся и получи 200 🌿 на старт.` })}
+            onPress={() =>
+              Share.share({ message: t('fr.shareCodeMsg', { code: myCode }) })
+            }
             style={{
               paddingHorizontal: 12,
               paddingVertical: 10,
@@ -403,13 +641,25 @@ function ReferralCard() {
               backgroundColor: 'rgba(157,107,255,0.18)',
             }}
           >
-            <Ionicons name="share-social" size={16} color={colors.purpleLight} />
+            <Ionicons
+              name="share-social"
+              size={16}
+              color={colors.purpleLight}
+            />
           </Pressable>
         </View>
 
         {!applied ? (
           <>
-            <Text style={{ marginTop: 12, color: colors.textMuted, fontFamily: fontFamilies.body500, fontSize: 10, letterSpacing: 1 }}>
+            <Text
+              style={{
+                marginTop: 12,
+                color: colors.textMuted,
+                fontFamily: fontFamilies.body500,
+                fontSize: 10,
+                letterSpacing: 1,
+              }}
+            >
               {t('ref.enter')}
             </Text>
             <View style={{ flexDirection: 'row', gap: 8, marginTop: 6 }}>
@@ -419,20 +669,22 @@ function ReferralCard() {
                 placeholder={t('ref.enterPh')}
                 placeholderTextColor={colors.textMuted}
                 autoCapitalize="characters"
-                style={{
-                  flex: 1,
-                  height: 42,
-                  borderRadius: radii.md,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                  backgroundColor: colors.bgSecondary,
-                  paddingHorizontal: 12,
-                  color: colors.text,
-                  fontFamily: fontFamilies.body700,
-                  fontSize: 14,
-                  letterSpacing: 2,
-                  outlineWidth: 0,
-                } as any}
+                style={
+                  {
+                    flex: 1,
+                    height: 42,
+                    borderRadius: radii.md,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                    backgroundColor: colors.bgSecondary,
+                    paddingHorizontal: 12,
+                    color: colors.text,
+                    fontFamily: fontFamilies.body700,
+                    fontSize: 14,
+                    letterSpacing: 2,
+                    outlineWidth: 0,
+                  } as any
+                }
               />
               <Pressable
                 onPress={() => {
@@ -440,7 +692,9 @@ function ReferralCard() {
                   if (!res.ok) {
                     Alert.alert(
                       t('common.error'),
-                      res.reason === 'already_used' ? t('ref.alreadyUsed') : t('ref.invalid'),
+                      res.reason === 'already_used'
+                        ? t('ref.alreadyUsed')
+                        : t('ref.invalid'),
                     );
                     return;
                   }
@@ -457,14 +711,27 @@ function ReferralCard() {
                   justifyContent: 'center',
                 }}
               >
-                <Text style={{ color: colors.green, fontFamily: fontFamilies.body700, fontSize: 12 }}>
+                <Text
+                  style={{
+                    color: colors.green,
+                    fontFamily: fontFamilies.body700,
+                    fontSize: 12,
+                  }}
+                >
                   {t('ref.applyBtn')}
                 </Text>
               </Pressable>
             </View>
           </>
         ) : (
-          <Text style={{ marginTop: 10, color: colors.green, fontFamily: fontFamilies.body700, fontSize: 12 }}>
+          <Text
+            style={{
+              marginTop: 10,
+              color: colors.green,
+              fontFamily: fontFamilies.body700,
+              fontSize: 12,
+            }}
+          >
             ✓ {applied}
           </Text>
         )}

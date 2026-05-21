@@ -1,3 +1,5 @@
+import type { Lang } from '../i18n';
+
 export type CommunityPost = {
   id: string;
   name: string;
@@ -6,7 +8,7 @@ export type CommunityPost = {
   subtitle: string;
 };
 
-export const communityPosts: CommunityPost[] = [
+const POSTS_RU: CommunityPost[] = [
   {
     id: 'p1',
     name: 'Дмитрий',
@@ -23,3 +25,24 @@ export const communityPosts: CommunityPost[] = [
   },
 ];
 
+const POSTS_EN: CommunityPost[] = [
+  {
+    id: 'p1',
+    name: 'Dmitry',
+    timeAgo: '2 hours ago',
+    title: 'Finished my workout',
+    subtitle: 'Upper body 💪',
+  },
+  {
+    id: 'p2',
+    name: 'Alexey',
+    timeAgo: 'yesterday',
+    title: 'New bench PR',
+    subtitle: '100 kg × 5',
+  },
+];
+
+/** Localized mock community feed. */
+export function communityPosts(lang: Lang): CommunityPost[] {
+  return lang === 'en' ? POSTS_EN : POSTS_RU;
+}

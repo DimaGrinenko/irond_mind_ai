@@ -1,0 +1,6 @@
+# Claude Code MCP config — contains a local dev DB connection string (password). Keep out of VCS.
+.mcp.json
+
+# Personal/local Claude Code settings (machine-specific permissions, etc.)
+.claude/settings.local.json
+.claude/scheduled_tasks.lock

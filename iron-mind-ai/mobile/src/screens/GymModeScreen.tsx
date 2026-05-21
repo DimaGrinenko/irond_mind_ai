@@ -19,14 +19,17 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Card } from '../components/common/Card';
 import { GradientButton } from '../components/common/GradientButton';
+import { CyclePhaseBanner } from '../components/common/CyclePhaseBanner';
 import { RestOverlay } from '../components/workout/RestOverlay';
 import { ExercisePickerModal } from '../components/workout/ExercisePickerModal';
 import { WorkoutSummaryModal } from '../components/workout/WorkoutSummaryModal';
-import { ChestRewardModal } from '../components/workout/ChestRewardModal';
 import { Confetti } from '../components/anim/Confetti';
 import { colors, neonGlow, neonTextShadow, radii } from '../theme/tokens';
 import { fontFamilies } from '../theme/typography';
-import { useActiveWorkoutStore, type WorkoutSummary } from '../store/activeWorkoutStore';
+import {
+  useActiveWorkoutStore,
+  type WorkoutSummary,
+} from '../store/activeWorkoutStore';
 import { useExerciseNotesStore } from '../store/exerciseNotesStore';
 import { useVoiceInput, parseCommand } from '../hooks/useVoiceInput';
 import { exercises as catalog } from '../data/exercises';
@@ -63,7 +66,6 @@ export function GymModeScreen() {
   const [finishing, setFinishing] = useState(false);
   const [summary, setSummary] = useState<WorkoutSummary | null>(null);
   const [summaryVisible, setSummaryVisible] = useState(false);
-  const [chestVisible, setChestVisible] = useState(false);
   const [confetti, setConfetti] = useState(0);
   const [pickerVisible, setPickerVisible] = useState(false);
   const [notesVisible, setNotesVisible] = useState(false);
@@ -78,11 +80,21 @@ export function GymModeScreen() {
     return () => clearInterval(id);
   }, []);
 
-  useEffect(() => () => { if (finishTimer.current) clearTimeout(finishTimer.current); }, []);
+  useEffect(
+    () => () => {
+      if (finishTimer.current) clearTimeout(finishTimer.current);
+    },
+    [],
+  );
 
   const current = list[idx];
 
-  const { listening, supported: voiceSupported, start: voiceStart, stop: voiceStop } = useVoiceInput(
+  const {
+    listening,
+    supported: voiceSupported,
+    start: voiceStart,
+    stop: voiceStop,
+  } = useVoiceInput(
     (parsed, raw) => {
       if (handsFree) {
         const cmd = parseCommand(raw);
@@ -100,12 +112,20 @@ export function GymModeScreen() {
           }
         } else if (cmd.kind === 'add_set' && current) {
           addSet(current.exerciseId);
-        } else if ((cmd.kind === 'plus_kg' || cmd.kind === 'minus_kg') && current) {
-          const target = current.sets.find((s) => !s.done) ?? current.sets[current.sets.length - 1];
+        } else if (
+          (cmd.kind === 'plus_kg' || cmd.kind === 'minus_kg') &&
+          current
+        ) {
+          const target =
+            current.sets.find((s) => !s.done) ??
+            current.sets[current.sets.length - 1];
           if (target) {
             const cur = Number(target.weight.replace(',', '.')) || 0;
-            const next = cmd.kind === 'plus_kg' ? cur + cmd.kg : Math.max(0, cur - cmd.kg);
-            updateSet(current.exerciseId, target.setNumber, { weight: String(next) });
+            const next =
+              cmd.kind === 'plus_kg' ? cur + cmd.kg : Math.max(0, cur - cmd.kg);
+            updateSet(current.exerciseId, target.setNumber, {
+              weight: String(next),
+            });
           }
         } else if (cmd.kind === 'finish') {
           handleFinish();
@@ -126,10 +146,28 @@ export function GymModeScreen() {
 
   if (!workout || list.length === 0) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: colors.bg,
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 24,
+        }}
+      >
         <Ionicons name="barbell-outline" size={48} color={colors.textMuted} />
-        <Text style={{ marginTop: 12, color: colors.textSecondary, fontFamily: fontFamilies.body600, fontSize: 14, textAlign: 'center' }}>
-          {t('workout.notActive')}{'\n'}{t('workout.startFromHome')}
+        <Text
+          style={{
+            marginTop: 12,
+            color: colors.textSecondary,
+            fontFamily: fontFamilies.body600,
+            fontSize: 14,
+            textAlign: 'center',
+          }}
+        >
+          {t('workout.notActive')}
+          {'\n'}
+          {t('workout.startFromHome')}
         </Text>
         <Pressable
           onPress={() => nav.goBack()}
@@ -142,7 +180,11 @@ export function GymModeScreen() {
             borderColor: colors.border,
           }}
         >
-          <Text style={{ color: colors.text, fontFamily: fontFamilies.body700 }}>{t('common.back')}</Text>
+          <Text
+            style={{ color: colors.text, fontFamily: fontFamilies.body700 }}
+          >
+            {t('common.back')}
+          </Text>
         </Pressable>
       </View>
     );
@@ -212,15 +254,49 @@ export function GymModeScreen() {
         style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 320 }}
       />
 
-      <View style={{ paddingTop: insets.top + 8, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center' }}>
-        <Pressable onPress={() => nav.goBack()} hitSlop={12} style={{ paddingVertical: 8, paddingRight: 10 }}>
+      <View
+        style={{
+          paddingTop: insets.top + 8,
+          paddingHorizontal: 16,
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}
+      >
+        <Pressable
+          onPress={() => nav.goBack()}
+          hitSlop={12}
+          style={{ paddingVertical: 8, paddingRight: 10 }}
+        >
           <Ionicons name="chevron-back" size={20} color={colors.text} />
         </Pressable>
         <View style={{ flex: 1 }}>
-          <Text style={{ color: colors.text, fontFamily: fontFamilies.body700, fontSize: 16 }}>{title}</Text>
-          <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11, marginTop: 2 }}>
+          <Text
+            style={{
+              color: colors.text,
+              fontFamily: fontFamilies.body700,
+              fontSize: 16,
+            }}
+          >
+            {title}
+          </Text>
+          <Text
+            style={{
+              color: colors.textMuted,
+              fontFamily: fontFamilies.body,
+              fontSize: 11,
+              marginTop: 2,
+            }}
+          >
             {idx + 1}/{list.length} · {duration}
-            {handsFree && lastCommand ? ` · 🎙 ${lastCommand}` : ''}
+            {handsFree && lastCommand ? (
+              <Text>
+                {' · '}
+                <Ionicons name="mic" size={11} color={colors.textMuted} />{' '}
+                {lastCommand}
+              </Text>
+            ) : (
+              ''
+            )}
           </Text>
         </View>
         {voiceSupported ? (
@@ -241,22 +317,41 @@ export function GymModeScreen() {
               borderRadius: 14,
               borderWidth: 1,
               borderColor: handsFree ? colors.pink : colors.border,
-              backgroundColor: handsFree ? 'rgba(255,77,210,0.22)' : colors.bgSecondary,
+              backgroundColor: handsFree
+                ? 'rgba(255,77,210,0.22)'
+                : colors.bgSecondary,
               flexDirection: 'row',
               alignItems: 'center',
               gap: 4,
             }}
           >
-            <Ionicons name={handsFree ? 'mic' : 'mic-off-outline'} size={14} color={handsFree ? colors.pink : colors.textSecondary} />
-            <Text style={{ color: handsFree ? colors.pink : colors.textSecondary, fontFamily: fontFamilies.body700, fontSize: 10 }}>
-              {handsFree ? 'Hands-free' : 'Голос'}
+            <Ionicons
+              name={handsFree ? 'mic' : 'mic-off-outline'}
+              size={14}
+              color={handsFree ? colors.pink : colors.textSecondary}
+            />
+            <Text
+              style={{
+                color: handsFree ? colors.pink : colors.textSecondary,
+                fontFamily: fontFamilies.body700,
+                fontSize: 10,
+              }}
+            >
+              {handsFree ? 'Hands-free' : t('gym.voice')}
             </Text>
           </Pressable>
         ) : null}
       </View>
 
       {/* Big progress bar of exercises */}
-      <View style={{ paddingHorizontal: 16, marginTop: 12, flexDirection: 'row', gap: 4 }}>
+      <View
+        style={{
+          paddingHorizontal: 16,
+          marginTop: 12,
+          flexDirection: 'row',
+          gap: 4,
+        }}
+      >
         {list.map((_, i) => (
           <View
             key={i}
@@ -265,20 +360,39 @@ export function GymModeScreen() {
               height: 4,
               borderRadius: 2,
               backgroundColor:
-                i < idx ? colors.green : i === idx ? colors.purpleLight : 'rgba(255,255,255,0.08)',
+                i < idx
+                  ? colors.green
+                  : i === idx
+                    ? colors.purpleLight
+                    : 'rgba(255,255,255,0.08)',
             }}
           />
         ))}
       </View>
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 220 }} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 220 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <CyclePhaseBanner context="training" />
         <View style={{ paddingHorizontal: 16, marginTop: 18 }}>
           <Card style={{ padding: 0, overflow: 'hidden' }}>
-            <LinearGradient colors={['rgba(157,107,255,0.22)', 'rgba(0,0,0,0)']} style={{ padding: 18 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <LinearGradient
+              colors={['rgba(157,107,255,0.22)', 'rgba(0,0,0,0)']}
+              style={{ padding: 18 }}
+            >
+              <View
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}
+              >
                 <Text
                   style={[
-                    { flex: 1, color: colors.text, fontFamily: fontFamilies.heading, fontSize: 22, lineHeight: 26 },
+                    {
+                      flex: 1,
+                      color: colors.text,
+                      fontFamily: fontFamilies.heading,
+                      fontSize: 22,
+                      lineHeight: 26,
+                    },
                     neonTextShadow(colors.purpleLight, 12),
                   ]}
                 >
@@ -299,21 +413,38 @@ export function GymModeScreen() {
                     gap: 4,
                   }}
                 >
-                  <Ionicons name="swap-horizontal" size={14} color={colors.purpleLight} />
-                  <Text style={{ color: colors.purpleLight, fontFamily: fontFamilies.body700, fontSize: 11 }}>
+                  <Ionicons
+                    name="swap-horizontal"
+                    size={14}
+                    color={colors.purpleLight}
+                  />
+                  <Text
+                    style={{
+                      color: colors.purpleLight,
+                      fontFamily: fontFamilies.body700,
+                      fontSize: 11,
+                    }}
+                  >
                     {t('gym.replace')}
                   </Text>
                 </Pressable>
                 <Pressable
-                  onPress={() => { setNoteDraft(''); setNotesVisible(true); }}
+                  onPress={() => {
+                    setNoteDraft('');
+                    setNotesVisible(true);
+                  }}
                   hitSlop={10}
                   style={{
                     paddingHorizontal: 10,
                     paddingVertical: 8,
                     borderRadius: 12,
                     borderWidth: 1,
-                    borderColor: exerciseNotes.length > 0 ? colors.amber : colors.border,
-                    backgroundColor: exerciseNotes.length > 0 ? 'rgba(255,181,71,0.12)' : colors.bgSecondary,
+                    borderColor:
+                      exerciseNotes.length > 0 ? colors.amber : colors.border,
+                    backgroundColor:
+                      exerciseNotes.length > 0
+                        ? 'rgba(255,181,71,0.12)'
+                        : colors.bgSecondary,
                     flexDirection: 'row',
                     alignItems: 'center',
                     gap: 4,
@@ -322,11 +453,18 @@ export function GymModeScreen() {
                   <Ionicons
                     name="document-text-outline"
                     size={14}
-                    color={exerciseNotes.length > 0 ? colors.amber : colors.textSecondary}
+                    color={
+                      exerciseNotes.length > 0
+                        ? colors.amber
+                        : colors.textSecondary
+                    }
                   />
                   <Text
                     style={{
-                      color: exerciseNotes.length > 0 ? colors.amber : colors.textSecondary,
+                      color:
+                        exerciseNotes.length > 0
+                          ? colors.amber
+                          : colors.textSecondary,
                       fontFamily: fontFamilies.body700,
                       fontSize: 11,
                     }}
@@ -335,8 +473,16 @@ export function GymModeScreen() {
                   </Text>
                 </Pressable>
               </View>
-              <Text style={{ marginTop: 6, color: colors.textSecondary, fontFamily: fontFamilies.body, fontSize: 12 }}>
-                {meta?.primary ?? ''} · {t('workout.rest')} {current.restSeconds} {t('common.seconds')}
+              <Text
+                style={{
+                  marginTop: 6,
+                  color: colors.textSecondary,
+                  fontFamily: fontFamilies.body,
+                  fontSize: 12,
+                }}
+              >
+                {meta?.primary ?? ''} · {t('workout.rest')}{' '}
+                {current.restSeconds} {t('common.seconds')}
               </Text>
 
               {current.history?.maxWeight ? (
@@ -355,12 +501,25 @@ export function GymModeScreen() {
                   }}
                 >
                   <Ionicons name="trophy" size={14} color={colors.amber} />
-                  <Text style={{ color: colors.amber, fontFamily: fontFamilies.body700, fontSize: 12 }}>
+                  <Text
+                    style={{
+                      color: colors.amber,
+                      fontFamily: fontFamilies.body700,
+                      fontSize: 12,
+                    }}
+                  >
                     PR: {current.history.maxWeight} {t('common.kg')}
                   </Text>
                 </View>
               ) : (
-                <Text style={{ marginTop: 12, color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 11 }}>
+                <Text
+                  style={{
+                    marginTop: 12,
+                    color: colors.textMuted,
+                    fontFamily: fontFamilies.body,
+                    fontSize: 11,
+                  }}
+                >
                   {t('workout.firstTime')}
                 </Text>
               )}
@@ -376,10 +535,23 @@ export function GymModeScreen() {
                     borderColor: 'rgba(255,181,71,0.35)',
                   }}
                 >
-                  <Text style={{ color: colors.amber, fontSize: 10, fontFamily: fontFamilies.body700, marginBottom: 4 }}>
+                  <Text
+                    style={{
+                      color: colors.amber,
+                      fontSize: 10,
+                      fontFamily: fontFamilies.body700,
+                      marginBottom: 4,
+                    }}
+                  >
                     📝 {t('gym.notes')}
                   </Text>
-                  <Text style={{ color: colors.text, fontFamily: fontFamilies.body, fontSize: 12 }}>
+                  <Text
+                    style={{
+                      color: colors.text,
+                      fontFamily: fontFamilies.body,
+                      fontSize: 12,
+                    }}
+                  >
                     {exerciseNotes[0].text}
                   </Text>
                 </View>
@@ -396,22 +568,36 @@ export function GymModeScreen() {
               Number.isFinite(setWeight) &&
               current.history?.maxWeight != null &&
               setWeight > current.history.maxWeight;
-            const lastSet = lastWorkoutSets.find((ls) => ls.setNumber === s.setNumber);
+            const lastSet = lastWorkoutSets.find(
+              (ls) => ls.setNumber === s.setNumber,
+            );
             return (
               <View
                 key={`${current.exerciseId}-${s.setNumber}`}
                 style={{
                   borderRadius: 16,
                   borderWidth: 1,
-                  borderColor: isPR ? colors.amber : s.done ? colors.green : 'rgba(42,42,62,0.9)',
-                  backgroundColor: s.done ? 'rgba(63,255,150,0.08)' : 'rgba(15,15,26,0.55)',
+                  borderColor: isPR
+                    ? colors.amber
+                    : s.done
+                      ? colors.green
+                      : 'rgba(42,42,62,0.9)',
+                  backgroundColor: s.done
+                    ? 'rgba(63,255,150,0.08)'
+                    : 'rgba(15,15,26,0.55)',
                   paddingVertical: 12,
                   paddingHorizontal: 14,
                   gap: 6,
                   ...(s.done ? neonGlow(colors.green, 0.3, 10, 3) : {}),
                 }}
               >
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 10,
+                  }}
+                >
                   <View
                     style={{
                       width: 36,
@@ -424,23 +610,43 @@ export function GymModeScreen() {
                       borderColor: colors.borderNeon,
                     }}
                   >
-                    <Text style={{ color: colors.purpleLight, fontFamily: fontFamilies.body700, fontSize: 14 }}>
+                    <Text
+                      style={{
+                        color: colors.purpleLight,
+                        fontFamily: fontFamilies.body700,
+                        fontSize: 14,
+                      }}
+                    >
                       {s.setNumber}
                     </Text>
                   </View>
                   <View style={{ flex: 1, flexDirection: 'row', gap: 8 }}>
                     <TextInput
                       value={s.weight}
-                      onChangeText={(v) => updateSet(current.exerciseId, s.setNumber, { weight: v })}
+                      onChangeText={(v) =>
+                        updateSet(current.exerciseId, s.setNumber, {
+                          weight: v,
+                        })
+                      }
                       placeholder={t('common.kg')}
                       placeholderTextColor={colors.textMuted}
                       keyboardType="numeric"
                       style={inputBigStyle}
                     />
-                    <Text style={{ color: colors.textMuted, alignSelf: 'center', fontFamily: fontFamilies.body700 }}>×</Text>
+                    <Text
+                      style={{
+                        color: colors.textMuted,
+                        alignSelf: 'center',
+                        fontFamily: fontFamilies.body700,
+                      }}
+                    >
+                      ×
+                    </Text>
                     <TextInput
                       value={s.reps}
-                      onChangeText={(v) => updateSet(current.exerciseId, s.setNumber, { reps: v })}
+                      onChangeText={(v) =>
+                        updateSet(current.exerciseId, s.setNumber, { reps: v })
+                      }
                       placeholder={t('common.reps')}
                       placeholderTextColor={colors.textMuted}
                       keyboardType="numeric"
@@ -458,7 +664,15 @@ export function GymModeScreen() {
                         borderColor: colors.amber,
                       }}
                     >
-                      <Text style={{ color: colors.amber, fontFamily: fontFamilies.body700, fontSize: 10 }}>PR!</Text>
+                      <Text
+                        style={{
+                          color: colors.amber,
+                          fontFamily: fontFamilies.body700,
+                          fontSize: 10,
+                        }}
+                      >
+                        PR!
+                      </Text>
                     </View>
                   ) : null}
                   {voiceSupported ? (
@@ -471,15 +685,29 @@ export function GymModeScreen() {
                         borderRadius: 12,
                         alignItems: 'center',
                         justifyContent: 'center',
-                        backgroundColor: listening && voiceTargetSet === s.setNumber ? 'rgba(255,77,210,0.22)' : 'rgba(255,255,255,0.04)',
+                        backgroundColor:
+                          listening && voiceTargetSet === s.setNumber
+                            ? 'rgba(255,77,210,0.22)'
+                            : 'rgba(255,255,255,0.04)',
                         borderWidth: 1,
-                        borderColor: listening && voiceTargetSet === s.setNumber ? colors.pink : 'rgba(255,255,255,0.14)',
+                        borderColor:
+                          listening && voiceTargetSet === s.setNumber
+                            ? colors.pink
+                            : 'rgba(255,255,255,0.14)',
                       }}
                     >
                       <Ionicons
-                        name={listening && voiceTargetSet === s.setNumber ? 'mic' : 'mic-outline'}
+                        name={
+                          listening && voiceTargetSet === s.setNumber
+                            ? 'mic'
+                            : 'mic-outline'
+                        }
                         size={16}
-                        color={listening && voiceTargetSet === s.setNumber ? colors.pink : colors.textSecondary}
+                        color={
+                          listening && voiceTargetSet === s.setNumber
+                            ? colors.pink
+                            : colors.textSecondary
+                        }
                       />
                     </Pressable>
                   ) : null}
@@ -492,7 +720,9 @@ export function GymModeScreen() {
                       borderRadius: 14,
                       alignItems: 'center',
                       justifyContent: 'center',
-                      backgroundColor: s.done ? 'rgba(63,255,150,0.18)' : 'rgba(255,255,255,0.05)',
+                      backgroundColor: s.done
+                        ? 'rgba(63,255,150,0.18)'
+                        : 'rgba(255,255,255,0.05)',
                       borderWidth: 1,
                       borderColor: s.done ? colors.green : colors.border,
                     }}
@@ -506,8 +736,18 @@ export function GymModeScreen() {
                 </View>
                 {/* Подсказка «было прошлый раз» */}
                 {lastSet && lastSet.weight != null && lastSet.reps != null ? (
-                  <Text style={{ marginLeft: 46, color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 10 }}>
-                    {t('gym.wasLast', { weight: lastSet.weight, reps: lastSet.reps })}
+                  <Text
+                    style={{
+                      marginLeft: 46,
+                      color: colors.textMuted,
+                      fontFamily: fontFamilies.body,
+                      fontSize: 10,
+                    }}
+                  >
+                    {t('gym.wasLast', {
+                      weight: lastSet.weight,
+                      reps: lastSet.reps,
+                    })}
                   </Text>
                 ) : null}
               </View>
@@ -530,7 +770,13 @@ export function GymModeScreen() {
             }}
           >
             <Ionicons name="add" size={16} color={colors.purpleLight} />
-            <Text style={{ color: colors.purpleLight, fontFamily: fontFamilies.body700, fontSize: 12 }}>
+            <Text
+              style={{
+                color: colors.purpleLight,
+                fontFamily: fontFamilies.body700,
+                fontSize: 12,
+              }}
+            >
               {t('workout.addSet')}
             </Text>
           </Pressable>
@@ -570,13 +816,29 @@ export function GymModeScreen() {
                 title={finishing ? t('workout.saving') : t('workout.finish')}
                 onPress={handleFinish}
                 disabled={finishing}
-                rightIcon={<Ionicons name="checkmark-circle" size={18} color={colors.text} />}
+                rightIcon={
+                  <Ionicons
+                    name="checkmark-circle"
+                    size={18}
+                    color={colors.text}
+                  />
+                }
               />
             ) : (
               <GradientButton
-                title={allSetsDone ? t('gym.nextExercise', { n: idx + 2, total: list.length }) : t('gym.next', { n: idx + 2, total: list.length })}
+                title={
+                  allSetsDone
+                    ? t('gym.nextExercise', { n: idx + 2, total: list.length })
+                    : t('gym.next', { n: idx + 2, total: list.length })
+                }
                 onPress={goNext}
-                rightIcon={<Ionicons name="arrow-forward" size={18} color={colors.text} />}
+                rightIcon={
+                  <Ionicons
+                    name="arrow-forward"
+                    size={18}
+                    color={colors.text}
+                  />
+                }
               />
             )}
           </View>
@@ -602,26 +864,23 @@ export function GymModeScreen() {
         summary={summary}
         onClose={() => {
           setSummaryVisible(false);
-          // После summary — открываем сундук
-          if (summary && summary.completedSets > 0) {
-            setChestVisible(true);
-          } else {
-            nav.goBack();
-          }
-        }}
-      />
-
-      <ChestRewardModal
-        visible={chestVisible}
-        summary={summary}
-        onClose={() => {
-          setChestVisible(false);
           nav.goBack();
         }}
       />
 
-      <Modal visible={notesVisible} transparent animationType="slide" onRequestClose={() => setNotesVisible(false)}>
-        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.85)', justifyContent: 'flex-end' }}>
+      <Modal
+        visible={notesVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setNotesVisible(false)}
+      >
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.85)',
+            justifyContent: 'flex-end',
+          }}
+        >
           <View
             style={{
               backgroundColor: colors.bg,
@@ -634,8 +893,21 @@ export function GymModeScreen() {
               maxHeight: '92%',
             }}
           >
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-              <Text style={{ flex: 1, color: colors.text, fontFamily: fontFamilies.heading, fontSize: 20 }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginBottom: 12,
+              }}
+            >
+              <Text
+                style={{
+                  flex: 1,
+                  color: colors.text,
+                  fontFamily: fontFamilies.heading,
+                  fontSize: 20,
+                }}
+              >
                 {t('gym.notesTitle')} · {exerciseName}
               </Text>
               <Pressable onPress={() => setNotesVisible(false)} hitSlop={12}>
@@ -665,10 +937,13 @@ export function GymModeScreen() {
             <GradientButton
               title={t('gym.notesSave')}
               onPress={() => {
-                if (noteDraft.trim()) addNote(current.exerciseId, noteDraft.trim());
+                if (noteDraft.trim())
+                  addNote(current.exerciseId, noteDraft.trim());
                 setNoteDraft('');
               }}
-              rightIcon={<Ionicons name="checkmark" size={18} color={colors.text} />}
+              rightIcon={
+                <Ionicons name="checkmark" size={18} color={colors.text} />
+              }
             />
             <ScrollView style={{ marginTop: 14, maxHeight: 280 }}>
               {exerciseNotes.map((n) => (
@@ -686,18 +961,43 @@ export function GymModeScreen() {
                   }}
                 >
                   <View style={{ flex: 1 }}>
-                    <Text style={{ color: colors.text, fontFamily: fontFamilies.body, fontSize: 13 }}>{n.text}</Text>
-                    <Text style={{ marginTop: 4, color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 10 }}>
+                    <Text
+                      style={{
+                        color: colors.text,
+                        fontFamily: fontFamilies.body,
+                        fontSize: 13,
+                      }}
+                    >
+                      {n.text}
+                    </Text>
+                    <Text
+                      style={{
+                        marginTop: 4,
+                        color: colors.textMuted,
+                        fontFamily: fontFamilies.body,
+                        fontSize: 10,
+                      }}
+                    >
                       {n.date}
                     </Text>
                   </View>
                   <Pressable onPress={() => removeNote(n.id)} hitSlop={8}>
-                    <Ionicons name="trash-outline" size={16} color={colors.pink} />
+                    <Ionicons
+                      name="trash-outline"
+                      size={16}
+                      color={colors.pink}
+                    />
                   </Pressable>
                 </View>
               ))}
               {exerciseNotes.length === 0 ? (
-                <Text style={{ color: colors.textMuted, textAlign: 'center', paddingVertical: 16 }}>
+                <Text
+                  style={{
+                    color: colors.textMuted,
+                    textAlign: 'center',
+                    paddingVertical: 16,
+                  }}
+                >
                   {t('gym.notesEmpty')}
                 </Text>
               ) : null}

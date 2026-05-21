@@ -49,7 +49,10 @@ export class ApiError extends Error {
 
 type ReqInit = Omit<RequestInit, 'body'> & { body?: unknown };
 
-export async function request<T = unknown>(path: string, init: ReqInit = {}): Promise<T> {
+export async function request<T = unknown>(
+  path: string,
+  init: ReqInit = {},
+): Promise<T> {
   const token = await getToken();
   const headers: Record<string, string> = {
     Accept: 'application/json',
@@ -68,8 +71,13 @@ export async function request<T = unknown>(path: string, init: ReqInit = {}): Pr
   const data = text ? safeJson(text) : null;
 
   if (!res.ok) {
-    const message = (data && (data as any).message) || res.statusText || 'Request failed';
-    throw new ApiError(Array.isArray(message) ? message.join(', ') : String(message), res.status, data);
+    const message =
+      (data && (data as any).message) || res.statusText || 'Request failed';
+    throw new ApiError(
+      Array.isArray(message) ? message.join(', ') : String(message),
+      res.status,
+      data,
+    );
   }
 
   return data as T;
@@ -85,15 +93,27 @@ function safeJson(t: string) {
 
 export const api = {
   auth: {
-    register: (b: { email: string; password: string; name: string; goal?: string }) =>
-      request<{ token: string; user: any }>('/auth/register', { method: 'POST', body: b }),
+    register: (b: {
+      email: string;
+      password: string;
+      name: string;
+      goal?: string;
+    }) =>
+      request<{ token: string; user: any }>('/auth/register', {
+        method: 'POST',
+        body: b,
+      }),
     login: (b: { email: string; password: string }) =>
-      request<{ token: string; user: any }>('/auth/login', { method: 'POST', body: b }),
+      request<{ token: string; user: any }>('/auth/login', {
+        method: 'POST',
+        body: b,
+      }),
     me: () => request<any>('/auth/me'),
   },
   users: {
     me: () => request<any>('/users/me'),
-    update: (b: Record<string, unknown>) => request<any>('/users/me', { method: 'PATCH', body: b }),
+    update: (b: Record<string, unknown>) =>
+      request<any>('/users/me', { method: 'PATCH', body: b }),
   },
   programs: {
     list: () => request<ProgramSummary[]>('/programs'),
@@ -101,46 +121,74 @@ export const api = {
     create: (b: CreateProgramPayload) =>
       request<ProgramFull>('/programs', { method: 'POST', body: b }),
     clone: (id: string) =>
-      request<ProgramFull>(`/programs/${id}/clone`, { method: 'POST', body: {} }),
+      request<ProgramFull>(`/programs/${id}/clone`, {
+        method: 'POST',
+        body: {},
+      }),
     update: (id: string, b: UpdateProgramPayload) =>
       request<ProgramFull>(`/programs/${id}`, { method: 'PATCH', body: b }),
-    remove: (id: string) => request<{ ok: true }>(`/programs/${id}`, { method: 'DELETE' }),
+    remove: (id: string) =>
+      request<{ ok: true }>(`/programs/${id}`, { method: 'DELETE' }),
     use: (id: string, b: UseProgramPayload) =>
       request<{ created: number; programId: string }>(`/programs/${id}/use`, {
         method: 'POST',
         body: b,
       }),
     addDay: (id: string, b: CreateProgramDayPayload) =>
-      request<ProgramDayWithExercises>(`/programs/${id}/days`, { method: 'POST', body: b }),
+      request<ProgramDayWithExercises>(`/programs/${id}/days`, {
+        method: 'POST',
+        body: b,
+      }),
     updateDay: (dayId: string, b: UpdateProgramDayPayload) =>
-      request<ProgramDayWithExercises>(`/programs/days/${dayId}`, { method: 'PATCH', body: b }),
+      request<ProgramDayWithExercises>(`/programs/days/${dayId}`, {
+        method: 'PATCH',
+        body: b,
+      }),
     removeDay: (dayId: string) =>
       request<{ ok: true }>(`/programs/days/${dayId}`, { method: 'DELETE' }),
     addExercise: (dayId: string, b: CreateProgramExercisePayload) =>
-      request<ProgramExercise>(`/programs/days/${dayId}/exercises`, { method: 'POST', body: b }),
+      request<ProgramExercise>(`/programs/days/${dayId}/exercises`, {
+        method: 'POST',
+        body: b,
+      }),
     updateExercise: (exerciseId: string, b: UpdateProgramExercisePayload) =>
-      request<ProgramExercise>(`/programs/exercises/${exerciseId}`, { method: 'PATCH', body: b }),
+      request<ProgramExercise>(`/programs/exercises/${exerciseId}`, {
+        method: 'PATCH',
+        body: b,
+      }),
     removeExercise: (exerciseId: string) =>
-      request<{ ok: true }>(`/programs/exercises/${exerciseId}`, { method: 'DELETE' }),
+      request<{ ok: true }>(`/programs/exercises/${exerciseId}`, {
+        method: 'DELETE',
+      }),
   },
   workouts: {
-    list: (limit?: number) => request<any[]>(`/workouts${limit ? `?limit=${limit}` : ''}`),
-    create: (b: CreateWorkoutPayload) => request<{ id: string }>('/workouts', { method: 'POST', body: b }),
-    finish: (id: string) => request<any>(`/workouts/${id}/finish`, { method: 'PATCH' }),
+    list: (limit?: number) =>
+      request<any[]>(`/workouts${limit ? `?limit=${limit}` : ''}`),
+    create: (b: CreateWorkoutPayload) =>
+      request<{ id: string }>('/workouts', { method: 'POST', body: b }),
+    finish: (id: string) =>
+      request<any>(`/workouts/${id}/finish`, { method: 'PATCH' }),
     upsertSet: (id: string, b: UpsertSetPayload) =>
       request<any>(`/workouts/${id}/sets`, { method: 'POST', body: b }),
     exerciseHistory: (slug: string) =>
-      request<ExerciseHistory>(`/workouts/exercise-history/${encodeURIComponent(slug)}`),
+      request<ExerciseHistory>(
+        `/workouts/exercise-history/${encodeURIComponent(slug)}`,
+      ),
     exercise1rmSeries: (slug: string) =>
-      request<Array<{ date: string; max1rm: number }>>(`/workouts/exercise-1rm-series/${encodeURIComponent(slug)}`),
+      request<Array<{ date: string; max1rm: number }>>(
+        `/workouts/exercise-1rm-series/${encodeURIComponent(slug)}`,
+      ),
   },
   measurements: {
     list: () => request<any[]>('/measurements'),
-    create: (b: Record<string, unknown>) => request<any>('/measurements', { method: 'POST', body: b }),
+    create: (b: Record<string, unknown>) =>
+      request<any>('/measurements', { method: 'POST', body: b }),
   },
   nutrition: {
-    list: (date?: string) => request<any[]>(`/nutrition${date ? `?date=${date}` : ''}`),
-    create: (b: Record<string, unknown>) => request<any>('/nutrition', { method: 'POST', body: b }),
+    list: (date?: string) =>
+      request<any[]>(`/nutrition${date ? `?date=${date}` : ''}`),
+    create: (b: Record<string, unknown>) =>
+      request<any>('/nutrition', { method: 'POST', body: b }),
     recipeImport: (url: string) =>
       request<{
         url: string;
@@ -151,36 +199,55 @@ export const api = {
   },
   chat: {
     list: () => request<any[]>('/chat'),
-    send: (content: string) => request<any>('/chat', { method: 'POST', body: { content } }),
+    send: (content: string) =>
+      request<any>('/chat', { method: 'POST', body: { content } }),
   },
   stats: {
-    me: (days?: number) => request<UserDashboard>(`/stats/me${days ? `?days=${days}` : ''}`),
+    me: (days?: number) =>
+      request<UserDashboard>(`/stats/me${days ? `?days=${days}` : ''}`),
     platform: () => request<any>('/stats/platform'),
   },
   admin: {
     users: () => request<any[]>('/admin/users'),
     setRole: (id: string, role: string) =>
-      request<any>(`/admin/users/${id}/role`, { method: 'PATCH', body: { role } }),
+      request<any>(`/admin/users/${id}/role`, {
+        method: 'PATCH',
+        body: { role },
+      }),
     assignCoach: (clientId: string, coachId: string, notes?: string) =>
-      request<any>(`/admin/clients/${clientId}/coach`, { method: 'POST', body: { coachId, notes } }),
+      request<any>(`/admin/clients/${clientId}/coach`, {
+        method: 'POST',
+        body: { coachId, notes },
+      }),
   },
   coach: {
     clients: () => request<any[]>('/coach/clients'),
     client: (id: string) => request<any>(`/coach/clients/${id}`),
     setNotes: (id: string, notes: string) =>
-      request<any>(`/coach/clients/${id}/notes`, { method: 'PATCH', body: { notes } }),
+      request<any>(`/coach/clients/${id}/notes`, {
+        method: 'PATCH',
+        body: { notes },
+      }),
   },
   onboarding: {
     preview: (b: OnboardingPayload) =>
-      request<OnboardingPlan>('/onboarding/preview', { method: 'POST', body: b }),
+      request<OnboardingPlan>('/onboarding/preview', {
+        method: 'POST',
+        body: b,
+      }),
     complete: (b: OnboardingPayload) =>
-      request<{ user: any; plan: OnboardingPlan }>('/onboarding/complete', { method: 'POST', body: b }),
+      request<{ user: any; plan: OnboardingPlan }>('/onboarding/complete', {
+        method: 'POST',
+        body: b,
+      }),
   },
   achievements: {
     progress: () => request<AchievementsProgress>('/achievements/progress'),
     tree: () => request<AchievementNode[]>('/achievements/tree'),
     history: (limit?: number) =>
-      request<ActivityEventDto[]>(`/achievements/history${limit ? `?limit=${limit}` : ''}`),
+      request<ActivityEventDto[]>(
+        `/achievements/history${limit ? `?limit=${limit}` : ''}`,
+      ),
   },
   schedule: {
     list: (from?: string, to?: string) => {
@@ -191,11 +258,81 @@ export const api = {
       return request<ScheduledWorkout[]>(`/schedule${qs ? `?${qs}` : ''}`);
     },
     create: (b: CreateScheduledPayload) =>
-      request<ScheduledWorkout | ScheduledWorkout[]>('/schedule', { method: 'POST', body: b }),
-    complete: (id: string) => request<ScheduledWorkout>(`/schedule/${id}/complete`, { method: 'PATCH' }),
-    skip: (id: string) => request<ScheduledWorkout>(`/schedule/${id}/skip`, { method: 'PATCH' }),
-    remove: (id: string) => request<{ ok: true }>(`/schedule/${id}`, { method: 'DELETE' }),
+      request<ScheduledWorkout | ScheduledWorkout[]>('/schedule', {
+        method: 'POST',
+        body: b,
+      }),
+    complete: (id: string) =>
+      request<ScheduledWorkout>(`/schedule/${id}/complete`, {
+        method: 'PATCH',
+      }),
+    skip: (id: string) =>
+      request<ScheduledWorkout>(`/schedule/${id}/skip`, { method: 'PATCH' }),
+    remove: (id: string) =>
+      request<{ ok: true }>(`/schedule/${id}`, { method: 'DELETE' }),
   },
+  economy: {
+    wallet: () => request<EconomyWallet>('/economy/wallet'),
+    spinWheel: () =>
+      request<WheelSpinResult>('/economy/wheel/spin', {
+        method: 'POST',
+        body: {},
+      }),
+    buy: (itemId: string) =>
+      request<EconomyWallet>('/economy/shop/buy', {
+        method: 'POST',
+        body: { itemId },
+      }),
+    equip: (itemId: string) =>
+      request<EconomyWallet>('/economy/shop/equip', {
+        method: 'POST',
+        body: { itemId },
+      }),
+    unequip: (itemId: string) =>
+      request<EconomyWallet>('/economy/shop/unequip', {
+        method: 'POST',
+        body: { itemId },
+      }),
+  },
+  cycle: {
+    get: () => request<CycleState>('/cycle'),
+    update: (
+      body: Partial<
+        Pick<CycleState, 'enabled' | 'lastPeriodStart' | 'cycleLength'>
+      >,
+    ) => request<CycleState>('/cycle', { method: 'PUT', body }),
+  },
+};
+
+export type CyclePhase = 'menstrual' | 'follicular' | 'ovulation' | 'luteal';
+
+export type CycleState = {
+  enabled: boolean;
+  lastPeriodStart: string | null;
+  cycleLength: number;
+  dayOfCycle: number | null;
+  phase: CyclePhase | null;
+};
+
+export type EconomyWallet = {
+  leaves: number;
+  owned: Array<{ itemId: string; equipped: string | null }>;
+  equipped: {
+    tree: string | null;
+    dumbbell: string | null;
+    accent: string | null;
+  };
+  canSpinToday: boolean;
+  wheelStreak: number;
+};
+
+export type WheelSpinResult = {
+  value: number;
+  multiplier: number;
+  total: number;
+  sectorIndex: number;
+  leaves: number;
+  wheelStreak: number;
 };
 
 export type ScheduledStatus = 'PLANNED' | 'DONE' | 'SKIPPED';
@@ -305,7 +442,11 @@ export type UpsertSetPayload = {
 
 export type ExerciseHistory = {
   lastSet: { weight: number | null; reps: number | null; date: string } | null;
-  lastWorkoutSets?: Array<{ setNumber: number; weight: number | null; reps: number | null }>;
+  lastWorkoutSets?: Array<{
+    setNumber: number;
+    weight: number | null;
+    reps: number | null;
+  }>;
   maxWeight: number | null;
   maxReps: number | null;
   maxVolume: number | null;
@@ -361,7 +502,12 @@ export type UserDashboard = {
   program: ProgramProgressSummary | null;
 };
 
-export type ProgramKind = 'FULL_BODY' | 'UPPER_LOWER' | 'PUSH_PULL_LEGS' | 'SPLIT' | 'CUSTOM';
+export type ProgramKind =
+  | 'FULL_BODY'
+  | 'UPPER_LOWER'
+  | 'PUSH_PULL_LEGS'
+  | 'SPLIT'
+  | 'CUSTOM';
 export type FitnessLevelEnum = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
 export type FitnessGoalEnum = 'MASS' | 'CUT' | 'STRENGTH' | 'ENDURANCE' | 'ABS';
 
@@ -453,7 +599,8 @@ export type CreateProgramExercisePayload = {
   order?: number;
 };
 
-export type UpdateProgramExercisePayload = Partial<CreateProgramExercisePayload>;
+export type UpdateProgramExercisePayload =
+  Partial<CreateProgramExercisePayload>;
 
 export type UseProgramPayload = {
   startDate: string;
