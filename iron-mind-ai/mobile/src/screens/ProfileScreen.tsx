@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../components/common/Card';
 import { ScreenHeader } from '../components/layout/ScreenHeader';
 import { colors, glow, radii } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import { useAuthStore } from '../store/authStore';
 import { useUserStore } from '../store/userStore';
@@ -19,6 +20,7 @@ import { programLabel } from '../i18n';
 
 export function ProfileScreen({ navigation }: any) {
   useLang();
+  const theme = useTheme();
   const userName = useUserStore((s) => s.name);
   const userGoalKey = useUserStore((s) => s.goalKey);
   const userGender = useUserStore((s) => s.gender);
@@ -235,7 +237,7 @@ export function ProfileScreen({ navigation }: any) {
                       <Ionicons
                         name={x.icon}
                         size={22}
-                        color={colors.purpleLight}
+                        color={theme.accentLight}
                       />
                     </View>
                     <Text
@@ -335,7 +337,7 @@ export function ProfileScreen({ navigation }: any) {
                   marginRight: 12,
                 }}
               >
-                <Ionicons name={x.icon} size={20} color={colors.purpleLight} />
+                <Ionicons name={x.icon} size={20} color={theme.accentLight} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text
@@ -549,6 +551,7 @@ export function ProfileScreen({ navigation }: any) {
 
 function LanguageSwitcher() {
   const lang = useLang();
+  const theme = useTheme();
   const setLang = useLangStore((s) => s.setLang);
   return (
     <View style={{ paddingHorizontal: 16, marginTop: 14 }}>
@@ -575,10 +578,8 @@ function LanguageSwitcher() {
                 alignItems: 'center',
                 borderRadius: 14,
                 borderWidth: 1,
-                borderColor: active ? colors.borderNeon : colors.border,
-                backgroundColor: active
-                  ? 'rgba(157,107,255,0.18)'
-                  : colors.bgSecondary,
+                borderColor: active ? theme.borderNeon : colors.border,
+                backgroundColor: active ? theme.accentSoft : colors.bgSecondary,
               }}
             >
               <Text

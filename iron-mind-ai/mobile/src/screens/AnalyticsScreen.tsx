@@ -17,6 +17,7 @@ import { Card } from '../components/common/Card';
 import { NeonText } from '../components/common/NeonText';
 import { ProgressBar } from '../components/common/ProgressBar';
 import { colors } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import { api, type UserDashboard } from '../api/client';
 import { t, useLang } from '../i18n';
@@ -41,7 +42,7 @@ function getMuscleUI() {
     {
       key: 'shoulders' as const,
       name: t('analytics.muscleShoulders'),
-      color: colors.purpleLight,
+      color: '#C77BFF',
     },
     {
       key: 'arms' as const,
@@ -75,9 +76,10 @@ function alphaColor(base: string, alpha: number): string {
 
 export function AnalyticsScreen() {
   useLang();
+  const theme = useTheme();
   const nav = useNavigation<any>();
   const insets = useSafeAreaInsets();
-  const purple = colors.purpleLight;
+  const purple = theme.accentLight;
   const blue = colors.blue;
   const [stats, setStats] = useState<UserDashboard | null>(null);
   const [loading, setLoading] = useState(true);
@@ -151,7 +153,7 @@ export function AnalyticsScreen() {
               paddingVertical: 8,
               borderRadius: 14,
               borderWidth: 1,
-              borderColor: colors.borderNeon,
+              borderColor: theme.borderNeon,
               backgroundColor: colors.bgSecondary,
             }}
           >
@@ -184,7 +186,7 @@ export function AnalyticsScreen() {
                   alignItems: 'center',
                   borderRadius: 14,
                   borderWidth: 1,
-                  borderColor: active ? colors.borderNeon : colors.border,
+                  borderColor: active ? theme.borderNeon : colors.border,
                   backgroundColor: active
                     ? 'rgba(157,107,255,0.18)'
                     : colors.bgSecondary,
@@ -192,7 +194,7 @@ export function AnalyticsScreen() {
               >
                 <Text
                   style={{
-                    color: active ? colors.purpleLight : colors.textSecondary,
+                    color: active ? theme.accentLight : colors.textSecondary,
                     fontFamily: fontFamilies.body700,
                     fontSize: 12,
                   }}
@@ -205,7 +207,7 @@ export function AnalyticsScreen() {
         </View>
 
         {loading && !stats ? (
-          <ActivityIndicator color={colors.purple} style={{ marginTop: 40 }} />
+          <ActivityIndicator color={theme.accent} style={{ marginTop: 40 }} />
         ) : error ? (
           <View style={{ paddingHorizontal: 16, marginTop: 24 }}>
             <Card variant="secondary">
@@ -235,13 +237,13 @@ export function AnalyticsScreen() {
                   alignItems: 'center',
                   borderRadius: 12,
                   borderWidth: 1,
-                  borderColor: colors.borderNeon,
+                  borderColor: theme.borderNeon,
                   backgroundColor: 'rgba(157,107,255,0.12)',
                 }}
               >
                 <Text
                   style={{
-                    color: colors.purpleLight,
+                    color: theme.accentLight,
                     fontFamily: fontFamilies.body700,
                     fontSize: 13,
                   }}
@@ -426,7 +428,7 @@ export function AnalyticsScreen() {
                           0.15 + 0.7 * (stats?.muscleLoad.legs ?? 0),
                         ),
                         shoulders: alphaColor(
-                          colors.purpleLight,
+                          theme.accentLight,
                           0.15 + 0.7 * (stats?.muscleLoad.shoulders ?? 0),
                         ),
                         arms: alphaColor(
@@ -644,7 +646,7 @@ export function AnalyticsScreen() {
                 <ToolBtn
                   icon="trending-up"
                   label={t('analytics.tools.oneRm')}
-                  tint={colors.purpleLight}
+                  tint={theme.accentLight}
                   onPress={() => nav.navigate('OneRmChart')}
                 />
                 <ToolBtn
@@ -676,7 +678,7 @@ export function AnalyticsScreen() {
                 <ToolBtn
                   icon="people-outline"
                   label={t('analytics.tools.friends')}
-                  tint={colors.purpleLight}
+                  tint={theme.accentLight}
                   onPress={() => nav.navigate('Friends')}
                 />
               </View>

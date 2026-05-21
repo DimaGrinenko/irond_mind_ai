@@ -13,6 +13,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Card } from '../components/common/Card';
 import { colors, gradients, radii } from '../theme/tokens';
 import { fontFamilies } from '../theme/typography';
+import { useTheme } from '../theme/useTheme';
 import { photos } from '../theme/photos';
 import { AnimatedPhoto } from '../components/anim/AnimatedPhoto';
 import { api, type ProgramSummary } from '../api/client';
@@ -42,6 +43,7 @@ function accentGradStop(accent: string) {
 
 export function ProgramsScreen() {
   useLang();
+  const theme = useTheme();
   const nav = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const userId = useUserStore((s) => s.id);
@@ -196,9 +198,7 @@ export function ProgramsScreen() {
                     marginTop: 8,
                     height: 2,
                     borderRadius: 2,
-                    backgroundColor: active
-                      ? colors.purpleLight
-                      : 'transparent',
+                    backgroundColor: active ? theme.accentLight : 'transparent',
                   }}
                 />
               </Pressable>
@@ -208,7 +208,7 @@ export function ProgramsScreen() {
 
         {loading && items.length === 0 ? (
           <View style={{ paddingVertical: 60, alignItems: 'center' }}>
-            <ActivityIndicator color={colors.purpleLight} />
+            <ActivityIndicator color={theme.accentLight} />
           </View>
         ) : null}
 
@@ -237,13 +237,13 @@ export function ProgramsScreen() {
                     alignItems: 'center',
                     borderRadius: 12,
                     borderWidth: 1,
-                    borderColor: colors.borderNeon,
+                    borderColor: theme.borderNeon,
                     backgroundColor: 'rgba(157,107,255,0.12)',
                   }}
                 >
                   <Text
                     style={{
-                      color: colors.purpleLight,
+                      color: theme.accentLight,
                       fontFamily: fontFamilies.body700,
                       fontSize: 12,
                     }}

@@ -20,6 +20,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Card } from '../components/common/Card';
 import { ScreenHeader } from '../components/layout/ScreenHeader';
 import { colors, neonGlow, neonTextShadow } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import { api } from '../api/client';
 import { t, useLang } from '../i18n';
@@ -32,11 +33,19 @@ type Msg = {
 };
 
 function quickPrompts() {
-  return [t('ai.q1'), t('ai.q2'), t('ai.q3'), t('ai.q4'), t('ai.q5'), t('ai.q6')];
+  return [
+    t('ai.q1'),
+    t('ai.q2'),
+    t('ai.q3'),
+    t('ai.q4'),
+    t('ai.q5'),
+    t('ai.q6'),
+  ];
 }
 
 export function AiTrainerScreen() {
   useLang();
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState('');
@@ -55,12 +64,20 @@ export function AiTrainerScreen() {
     }
   }, []);
 
-  useFocusEffect(useCallback(() => { load(); }, [load]));
-  useEffect(() => { load(); }, [load]);
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [load]),
+  );
+  useEffect(() => {
+    load();
+  }, [load]);
 
   useEffect(() => {
     if (messages.length > 0) {
-      requestAnimationFrame(() => scrollRef.current?.scrollToEnd({ animated: true }));
+      requestAnimationFrame(() =>
+        scrollRef.current?.scrollToEnd({ animated: true }),
+      );
     }
   }, [messages.length]);
 
@@ -106,34 +123,64 @@ export function AiTrainerScreen() {
       >
         <ScrollView
           ref={scrollRef}
-          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 16, paddingTop: 12 }}
+          contentContainerStyle={{
+            paddingHorizontal: 16,
+            paddingBottom: 16,
+            paddingTop: 12,
+          }}
           showsVerticalScrollIndicator={false}
         >
           {loading ? (
             <View style={{ paddingVertical: 36, alignItems: 'center' }}>
-              <ActivityIndicator color={colors.purpleLight} />
+              <ActivityIndicator color={theme.accentLight} />
             </View>
           ) : messages.length === 0 ? (
             <View style={{ gap: 14 }}>
               <Card variant="secondary" style={{ padding: 18 }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 10,
+                    marginBottom: 8,
+                  }}
+                >
                   <Ionicons name="sparkles" size={22} color={colors.cyan} />
                   <Text
                     style={[
-                      { color: colors.text, fontFamily: fontFamilies.heading, fontSize: 20 },
+                      {
+                        color: colors.text,
+                        fontFamily: fontFamilies.heading,
+                        fontSize: 20,
+                      },
                       neonTextShadow(colors.cyan, 12),
                     ]}
                   >
                     Iron Mind AI
                   </Text>
                 </View>
-                <Text style={{ color: colors.textSecondary, fontFamily: fontFamilies.body, fontSize: 13, lineHeight: 19 }}>
+                <Text
+                  style={{
+                    color: colors.textSecondary,
+                    fontFamily: fontFamilies.body,
+                    fontSize: 13,
+                    lineHeight: 19,
+                  }}
+                >
                   {t('ai.intro')}
                 </Text>
               </Card>
 
               <View>
-                <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body500, fontSize: 11, letterSpacing: 1, marginBottom: 8 }}>
+                <Text
+                  style={{
+                    color: colors.textMuted,
+                    fontFamily: fontFamilies.body500,
+                    fontSize: 11,
+                    letterSpacing: 1,
+                    marginBottom: 8,
+                  }}
+                >
                   {t('ai.tryAsking')}
                 </Text>
                 <View style={{ gap: 8 }}>
@@ -145,18 +192,33 @@ export function AiTrainerScreen() {
                         padding: 12,
                         borderRadius: 14,
                         borderWidth: 1,
-                        borderColor: colors.borderNeon,
+                        borderColor: theme.borderNeon,
                         backgroundColor: 'rgba(157,107,255,0.08)',
                         flexDirection: 'row',
                         alignItems: 'center',
                         gap: 10,
                       }}
                     >
-                      <Ionicons name="chatbubble-ellipses-outline" size={16} color={colors.purpleLight} />
-                      <Text style={{ flex: 1, color: colors.text, fontFamily: fontFamilies.body600, fontSize: 13 }}>
+                      <Ionicons
+                        name="chatbubble-ellipses-outline"
+                        size={16}
+                        color={theme.accentLight}
+                      />
+                      <Text
+                        style={{
+                          flex: 1,
+                          color: colors.text,
+                          fontFamily: fontFamilies.body600,
+                          fontSize: 13,
+                        }}
+                      >
                         {p}
                       </Text>
-                      <Ionicons name="arrow-forward" size={16} color={colors.textMuted} />
+                      <Ionicons
+                        name="arrow-forward"
+                        size={16}
+                        color={colors.textMuted}
+                      />
                     </Pressable>
                   ))}
                 </View>
@@ -183,8 +245,14 @@ export function AiTrainerScreen() {
                     gap: 6,
                   }}
                 >
-                  <ActivityIndicator size="small" color={colors.purpleLight} />
-                  <Text style={{ color: colors.textMuted, fontFamily: fontFamilies.body, fontSize: 12 }}>
+                  <ActivityIndicator size="small" color={theme.accentLight} />
+                  <Text
+                    style={{
+                      color: colors.textMuted,
+                      fontFamily: fontFamilies.body,
+                      fontSize: 12,
+                    }}
+                  >
                     {t('ai.thinking')}
                   </Text>
                 </View>
@@ -244,12 +312,18 @@ export function AiTrainerScreen() {
               width: 44,
               height: 44,
               borderRadius: 22,
-              backgroundColor: input.trim() && !sending ? colors.purpleLight : colors.bgSecondary,
+              backgroundColor:
+                input.trim() && !sending
+                  ? theme.accentLight
+                  : colors.bgSecondary,
               alignItems: 'center',
               justifyContent: 'center',
               borderWidth: 1,
-              borderColor: input.trim() && !sending ? colors.purpleLight : colors.border,
-              ...(input.trim() && !sending ? neonGlow(colors.purple, 0.55, 18, 6) : {}),
+              borderColor:
+                input.trim() && !sending ? theme.accentLight : colors.border,
+              ...(input.trim() && !sending
+                ? neonGlow(theme.accent, 0.55, 18, 6)
+                : {}),
             }}
           >
             <Ionicons
@@ -292,18 +366,41 @@ function MessageBubble({ message }: { message: Msg }) {
             borderWidth: 1,
             borderColor: isUser ? 'rgba(157,107,255,0.55)' : colors.border,
             borderRadius: 18,
-            ...(isUser ? { borderTopRightRadius: 4 } : { borderTopLeftRadius: 4 }),
+            ...(isUser
+              ? { borderTopRightRadius: 4 }
+              : { borderTopLeftRadius: 4 }),
           }}
         >
           {!isUser ? (
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 4,
+                marginBottom: 4,
+              }}
+            >
               <Ionicons name="sparkles" size={11} color={colors.cyan} />
-              <Text style={{ color: colors.cyan, fontFamily: fontFamilies.body700, fontSize: 10, letterSpacing: 0.5 }}>
+              <Text
+                style={{
+                  color: colors.cyan,
+                  fontFamily: fontFamilies.body700,
+                  fontSize: 10,
+                  letterSpacing: 0.5,
+                }}
+              >
                 AI
               </Text>
             </View>
           ) : null}
-          <Text style={{ color: colors.text, fontFamily: fontFamilies.body, fontSize: 14, lineHeight: 20 }}>
+          <Text
+            style={{
+              color: colors.text,
+              fontFamily: fontFamilies.body,
+              fontSize: 14,
+              lineHeight: 20,
+            }}
+          >
             {message.content}
           </Text>
         </View>
