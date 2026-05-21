@@ -19,6 +19,7 @@ import { Card } from '../components/common/Card';
 import { GradientButton } from '../components/common/GradientButton';
 import { ScreenHeader } from '../components/layout/ScreenHeader';
 import { colors, radii } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import { api, type ProgramFull } from '../api/client';
 import { useUserStore } from '../store/userStore';
@@ -52,6 +53,7 @@ function gradientFor(accent: string): readonly string[] {
 
 export function ProgramDetailScreen() {
   useLang();
+  const theme = useTheme();
   const route = useRoute<R>();
   const navigation = useNavigation<any>();
   const userId = useUserStore((s) => s.id);
@@ -202,7 +204,7 @@ export function ProgramDetailScreen() {
         <View
           style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
         >
-          <ActivityIndicator color={colors.purpleLight} />
+          <ActivityIndicator color={theme.accentLight} />
         </View>
       </View>
     );
@@ -444,13 +446,13 @@ export function ProgramDetailScreen() {
                     alignItems: 'center',
                     borderRadius: radii.md,
                     borderWidth: 1,
-                    borderColor: colors.borderNeon,
+                    borderColor: theme.borderNeon,
                     backgroundColor: 'rgba(157,107,255,0.12)',
                   }}
                 >
                   <Text
                     style={{
-                      color: colors.purpleLight,
+                      color: theme.accentLight,
                       fontFamily: fontFamilies.body700,
                       fontSize: 13,
                     }}
@@ -497,7 +499,7 @@ export function ProgramDetailScreen() {
                         borderRadius: 12,
                         backgroundColor: 'rgba(157,107,255,0.18)',
                         borderWidth: 1,
-                        borderColor: colors.borderNeon,
+                        borderColor: theme.borderNeon,
                         alignItems: 'center',
                         justifyContent: 'center',
                         marginRight: 10,
@@ -505,7 +507,7 @@ export function ProgramDetailScreen() {
                     >
                       <Text
                         style={{
-                          color: colors.purpleLight,
+                          color: theme.accentLight,
                           fontFamily: fontFamilies.body700,
                           fontSize: 13,
                         }}
@@ -554,7 +556,7 @@ export function ProgramDetailScreen() {
                         <Ionicons
                           name="barbell-outline"
                           size={14}
-                          color={colors.purpleLight}
+                          color={theme.accentLight}
                           style={{ marginRight: 8 }}
                         />
                         <Text
@@ -627,6 +629,7 @@ function UseProgramModal({
   busy: boolean;
   onSubmit: (startDate: string, weeks: number, weekdays: number[]) => void;
 }) {
+  const theme = useTheme();
   const [start, setStart] = useState<Date>(() => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
@@ -774,7 +777,7 @@ function UseProgramModal({
                     <Ionicons
                       name={active ? 'radio-button-on' : 'radio-button-off'}
                       size={18}
-                      color={active ? colors.purpleLight : colors.textMuted}
+                      color={active ? theme.accentLight : colors.textMuted}
                       style={{ marginRight: 10 }}
                     />
                     <View style={{ flex: 1 }}>
@@ -893,14 +896,14 @@ function UseProgramModal({
                         borderRadius: 8,
                         backgroundColor: 'rgba(157,107,255,0.18)',
                         borderWidth: 1,
-                        borderColor: colors.borderNeon,
+                        borderColor: theme.borderNeon,
                         alignItems: 'center',
                         justifyContent: 'center',
                       }}
                     >
                       <Text
                         style={{
-                          color: colors.purpleLight,
+                          color: theme.accentLight,
                           fontFamily: fontFamilies.body700,
                           fontSize: 11,
                         }}
@@ -946,7 +949,7 @@ function UseProgramModal({
                             borderColor: isConflict
                               ? colors.red
                               : active
-                                ? colors.borderNeon
+                                ? theme.borderNeon
                                 : colors.border,
                             backgroundColor: active
                               ? 'rgba(157,107,255,0.22)'
@@ -956,7 +959,7 @@ function UseProgramModal({
                           <Text
                             style={{
                               color: active
-                                ? colors.purpleLight
+                                ? theme.accentLight
                                 : colors.textSecondary,
                               fontFamily: fontFamilies.body700,
                               fontSize: 12,

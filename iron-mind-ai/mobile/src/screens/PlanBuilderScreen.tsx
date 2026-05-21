@@ -20,6 +20,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Card } from '../components/common/Card';
 import { GradientButton } from '../components/common/GradientButton';
 import { colors, neonGlow, radii } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import { exercises as catalog } from '../data/exercises';
 import { localizedExercise } from '../data/exercises_en';
@@ -47,6 +48,7 @@ type DayDraft = {
 
 export function PlanBuilderScreen() {
   useLang();
+  const theme = useTheme();
   const nav = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const setProgram = useUserStore((s) => s.setProgram);
@@ -205,7 +207,7 @@ export function PlanBuilderScreen() {
                 backgroundColor: done
                   ? colors.green
                   : active
-                    ? colors.purpleLight
+                    ? theme.accentLight
                     : 'rgba(255,255,255,0.08)',
               }}
             />
@@ -242,13 +244,13 @@ export function PlanBuilderScreen() {
                 padding: 12,
                 borderRadius: 12,
                 borderWidth: 1,
-                borderColor: colors.borderNeon,
+                borderColor: theme.borderNeon,
                 backgroundColor: 'rgba(157,107,255,0.08)',
               }}
             >
               <Text
                 style={{
-                  color: colors.purpleLight,
+                  color: theme.accentLight,
                   fontFamily: fontFamilies.body700,
                   fontSize: 11,
                   marginBottom: 4,
@@ -270,7 +272,7 @@ export function PlanBuilderScreen() {
               style={{
                 borderRadius: radii.md,
                 borderWidth: 1,
-                borderColor: colors.borderNeon,
+                borderColor: theme.borderNeon,
                 backgroundColor: colors.bgSecondary,
                 paddingHorizontal: 14,
               }}
@@ -365,7 +367,7 @@ export function PlanBuilderScreen() {
                           borderColor: isConflict
                             ? colors.red
                             : active
-                              ? colors.borderNeon
+                              ? theme.borderNeon
                               : colors.border,
                           backgroundColor: active
                             ? 'rgba(157,107,255,0.22)'
@@ -375,7 +377,7 @@ export function PlanBuilderScreen() {
                         <Text
                           style={{
                             color: active
-                              ? colors.purpleLight
+                              ? theme.accentLight
                               : colors.textSecondary,
                             fontFamily: fontFamilies.body700,
                             fontSize: 12,
@@ -399,13 +401,13 @@ export function PlanBuilderScreen() {
                   borderRadius: 14,
                   borderWidth: 1,
                   borderStyle: 'dashed',
-                  borderColor: colors.borderNeon,
+                  borderColor: theme.borderNeon,
                   backgroundColor: 'rgba(157,107,255,0.08)',
                 }}
               >
                 <Text
                   style={{
-                    color: colors.purpleLight,
+                    color: theme.accentLight,
                     fontFamily: fontFamilies.body700,
                     fontSize: 13,
                   }}
@@ -544,7 +546,7 @@ export function PlanBuilderScreen() {
                 <View key={idx} style={{ marginTop: 10, gap: 4 }}>
                   <Text
                     style={{
-                      color: colors.purpleLight,
+                      color: theme.accentLight,
                       fontFamily: fontFamilies.body700,
                       fontSize: 13,
                     }}

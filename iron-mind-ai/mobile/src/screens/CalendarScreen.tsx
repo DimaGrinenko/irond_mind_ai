@@ -25,6 +25,7 @@ import {
 } from '../api/client';
 import { useUserStore } from '../store/userStore';
 import { colors, radii } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import { t, dayTitle, useLang } from '../i18n';
 
@@ -56,6 +57,7 @@ function sameDay(iso: string, date: string) {
 
 export function CalendarScreen({ navigation }: any) {
   useLang();
+  const theme = useTheme();
   const currentProgramId = useUserStore((s) => s.currentProgramId);
   const [items, setItems] = useState<ScheduledWorkout[]>([]);
   const [loading, setLoading] = useState(false);
@@ -188,7 +190,7 @@ export function CalendarScreen({ navigation }: any) {
               paddingVertical: 8,
               borderRadius: 14,
               borderWidth: 1,
-              borderColor: colors.borderNeon,
+              borderColor: theme.borderNeon,
               backgroundColor: colors.bgSecondary,
             }}
           >
@@ -223,7 +225,7 @@ export function CalendarScreen({ navigation }: any) {
               alignItems: 'center',
               borderRadius: 12,
               borderWidth: 1,
-              borderColor: !onlyProgram ? colors.borderNeon : colors.border,
+              borderColor: !onlyProgram ? theme.borderNeon : colors.border,
               backgroundColor: !onlyProgram
                 ? 'rgba(157,107,255,0.18)'
                 : colors.bgSecondary,
@@ -231,7 +233,7 @@ export function CalendarScreen({ navigation }: any) {
           >
             <Text
               style={{
-                color: !onlyProgram ? colors.purpleLight : colors.textSecondary,
+                color: !onlyProgram ? theme.accentLight : colors.textSecondary,
                 fontFamily: fontFamilies.body700,
                 fontSize: 12,
               }}
@@ -247,7 +249,7 @@ export function CalendarScreen({ navigation }: any) {
               alignItems: 'center',
               borderRadius: 12,
               borderWidth: 1,
-              borderColor: onlyProgram ? colors.borderNeon : colors.border,
+              borderColor: onlyProgram ? theme.borderNeon : colors.border,
               backgroundColor: onlyProgram
                 ? 'rgba(157,107,255,0.18)'
                 : colors.bgSecondary,
@@ -255,7 +257,7 @@ export function CalendarScreen({ navigation }: any) {
           >
             <Text
               style={{
-                color: onlyProgram ? colors.purpleLight : colors.textSecondary,
+                color: onlyProgram ? theme.accentLight : colors.textSecondary,
                 fontFamily: fontFamilies.body700,
                 fontSize: 12,
               }}
@@ -297,7 +299,7 @@ export function CalendarScreen({ navigation }: any) {
                     height: 36,
                     borderRadius: 18,
                     borderWidth: 1,
-                    borderColor: active ? colors.borderNeon : colors.border,
+                    borderColor: active ? theme.borderNeon : colors.border,
                     backgroundColor: active
                       ? 'rgba(157,107,255,0.25)'
                       : colors.bgSecondary,
@@ -336,7 +338,7 @@ export function CalendarScreen({ navigation }: any) {
       >
         {loading ? (
           <View style={{ paddingVertical: 24, alignItems: 'center' }}>
-            <ActivityIndicator color={colors.purpleLight} />
+            <ActivityIndicator color={theme.accentLight} />
           </View>
         ) : null}
 
@@ -441,6 +443,7 @@ export function CalendarScreen({ navigation }: any) {
 }
 
 function StatusBadge({ status }: { status: ScheduledStatus }) {
+  const theme = useTheme();
   const icon =
     status === 'DONE'
       ? 'checkmark-circle'
@@ -452,7 +455,7 @@ function StatusBadge({ status }: { status: ScheduledStatus }) {
       ? '#3FFF8F'
       : status === 'SKIPPED'
         ? '#FF4DD2'
-        : colors.purpleLight;
+        : theme.accentLight;
   return (
     <View
       style={{

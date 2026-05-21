@@ -25,6 +25,7 @@ import { ExercisePickerModal } from '../components/workout/ExercisePickerModal';
 import { WorkoutSummaryModal } from '../components/workout/WorkoutSummaryModal';
 import { Confetti } from '../components/anim/Confetti';
 import { colors, neonGlow, neonTextShadow, radii } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import {
   useActiveWorkoutStore,
@@ -44,6 +45,7 @@ function fmtTimer(ms: number): string {
 
 export function GymModeScreen() {
   useLang();
+  const theme = useTheme();
   const nav = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const list = useActiveWorkoutStore((s) => s.exercises);
@@ -363,7 +365,7 @@ export function GymModeScreen() {
                 i < idx
                   ? colors.green
                   : i === idx
-                    ? colors.purpleLight
+                    ? theme.accentLight
                     : 'rgba(255,255,255,0.08)',
             }}
           />
@@ -393,7 +395,7 @@ export function GymModeScreen() {
                       fontSize: 22,
                       lineHeight: 26,
                     },
-                    neonTextShadow(colors.purpleLight, 12),
+                    neonTextShadow(theme.accentLight, 12),
                   ]}
                 >
                   {exerciseName}
@@ -406,7 +408,7 @@ export function GymModeScreen() {
                     paddingVertical: 8,
                     borderRadius: 12,
                     borderWidth: 1,
-                    borderColor: colors.borderNeon,
+                    borderColor: theme.borderNeon,
                     backgroundColor: 'rgba(157,107,255,0.16)',
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -416,11 +418,11 @@ export function GymModeScreen() {
                   <Ionicons
                     name="swap-horizontal"
                     size={14}
-                    color={colors.purpleLight}
+                    color={theme.accentLight}
                   />
                   <Text
                     style={{
-                      color: colors.purpleLight,
+                      color: theme.accentLight,
                       fontFamily: fontFamilies.body700,
                       fontSize: 11,
                     }}
@@ -607,12 +609,12 @@ export function GymModeScreen() {
                       justifyContent: 'center',
                       backgroundColor: 'rgba(157,107,255,0.18)',
                       borderWidth: 1,
-                      borderColor: colors.borderNeon,
+                      borderColor: theme.borderNeon,
                     }}
                   >
                     <Text
                       style={{
-                        color: colors.purpleLight,
+                        color: theme.accentLight,
                         fontFamily: fontFamilies.body700,
                         fontSize: 14,
                       }}
@@ -769,10 +771,10 @@ export function GymModeScreen() {
               gap: 8,
             }}
           >
-            <Ionicons name="add" size={16} color={colors.purpleLight} />
+            <Ionicons name="add" size={16} color={theme.accentLight} />
             <Text
               style={{
-                color: colors.purpleLight,
+                color: theme.accentLight,
                 fontFamily: fontFamilies.body700,
                 fontSize: 12,
               }}

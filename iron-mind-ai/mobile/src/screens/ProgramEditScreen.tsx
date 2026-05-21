@@ -17,6 +17,7 @@ import { Card } from '../components/common/Card';
 import { GradientButton } from '../components/common/GradientButton';
 import { ScreenHeader } from '../components/layout/ScreenHeader';
 import { colors, radii } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
 import { exercises as exerciseCatalog } from '../data/exercises';
 import { localizedExercise } from '../data/exercises_en';
@@ -42,6 +43,7 @@ const weekLabels = () => [
 
 export function ProgramEditScreen() {
   useLang();
+  const theme = useTheme();
   const route = useRoute<R>();
   const navigation = useNavigation<any>();
 
@@ -284,7 +286,7 @@ export function ProgramEditScreen() {
         <View
           style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
         >
-          <ActivityIndicator color={colors.purpleLight} />
+          <ActivityIndicator color={theme.accentLight} />
         </View>
       </View>
     );
@@ -295,7 +297,7 @@ export function ProgramEditScreen() {
       <ScreenHeader
         title={t('pe.title')}
         onBack={() => navigation.goBack()}
-        right={busy ? <ActivityIndicator color={colors.purpleLight} /> : null}
+        right={busy ? <ActivityIndicator color={theme.accentLight} /> : null}
       />
 
       <ScrollView
@@ -410,7 +412,7 @@ export function ProgramEditScreen() {
                     <Ionicons
                       name="create-outline"
                       size={18}
-                      color={colors.purpleLight}
+                      color={theme.accentLight}
                     />
                   </Pressable>
                 </View>
@@ -459,15 +461,15 @@ export function ProgramEditScreen() {
               paddingVertical: 8,
               borderRadius: 14,
               borderWidth: 1,
-              borderColor: colors.borderNeon,
+              borderColor: theme.borderNeon,
               backgroundColor: 'rgba(157,107,255,0.12)',
             }}
           >
-            <Ionicons name="add" size={16} color={colors.purpleLight} />
+            <Ionicons name="add" size={16} color={theme.accentLight} />
             <Text
               style={{
                 marginLeft: 4,
-                color: colors.purpleLight,
+                color: theme.accentLight,
                 fontFamily: fontFamilies.body700,
                 fontSize: 12,
               }}
@@ -548,6 +550,7 @@ function DayCard({
   onEditExercise: (e: ProgramExercise) => void;
   onRemoveExercise: (id: string) => void;
 }) {
+  const theme = useTheme();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(day.title);
 
@@ -609,7 +612,7 @@ function DayCard({
           style={[
             chipStyle,
             day.weekday === null && {
-              borderColor: colors.borderNeon,
+              borderColor: theme.borderNeon,
               backgroundColor: 'rgba(157,107,255,0.18)',
             },
           ]}
@@ -617,7 +620,7 @@ function DayCard({
           <Text
             style={{
               color:
-                day.weekday === null ? colors.purpleLight : colors.textMuted,
+                day.weekday === null ? theme.accentLight : colors.textMuted,
               fontFamily: fontFamilies.body600,
               fontSize: 11,
             }}
@@ -634,14 +637,14 @@ function DayCard({
               style={[
                 chipStyle,
                 active && {
-                  borderColor: colors.borderNeon,
+                  borderColor: theme.borderNeon,
                   backgroundColor: 'rgba(157,107,255,0.18)',
                 },
               ]}
             >
               <Text
                 style={{
-                  color: active ? colors.purpleLight : colors.textSecondary,
+                  color: active ? theme.accentLight : colors.textSecondary,
                   fontFamily: fontFamilies.body600,
                   fontSize: 11,
                 }}
@@ -712,7 +715,7 @@ function DayCard({
         >
           <Text
             style={{
-              color: colors.purpleLight,
+              color: theme.accentLight,
               fontFamily: fontFamilies.body600,
               fontSize: 12,
             }}
@@ -736,6 +739,7 @@ function AddDayModal({
   onAdd: (title: string, weekday: number | null) => void;
   busy: boolean;
 }) {
+  const theme = useTheme();
   const [title, setTitle] = useState('');
   const [wd, setWd] = useState<number | null>(null);
 
@@ -804,14 +808,14 @@ function AddDayModal({
                 style={[
                   chipStyle,
                   wd === null && {
-                    borderColor: colors.borderNeon,
+                    borderColor: theme.borderNeon,
                     backgroundColor: 'rgba(157,107,255,0.18)',
                   },
                 ]}
               >
                 <Text
                   style={{
-                    color: wd === null ? colors.purpleLight : colors.textMuted,
+                    color: wd === null ? theme.accentLight : colors.textMuted,
                     fontFamily: fontFamilies.body600,
                     fontSize: 11,
                   }}
@@ -828,7 +832,7 @@ function AddDayModal({
                     style={[
                       chipStyle,
                       active && {
-                        borderColor: colors.borderNeon,
+                        borderColor: theme.borderNeon,
                         backgroundColor: 'rgba(157,107,255,0.18)',
                       },
                     ]}
@@ -836,7 +840,7 @@ function AddDayModal({
                     <Text
                       style={{
                         color: active
-                          ? colors.purpleLight
+                          ? theme.accentLight
                           : colors.textSecondary,
                         fontFamily: fontFamilies.body600,
                         fontSize: 11,
@@ -877,6 +881,7 @@ function PickExerciseModal({
   onPick: (cat: { id: string; name: string }) => void;
 }) {
   const lang = useLang();
+  const theme = useTheme();
   const [q, setQ] = useState('');
 
   useEffect(() => {
@@ -961,7 +966,7 @@ function PickExerciseModal({
                 <Ionicons
                   name="barbell-outline"
                   size={18}
-                  color={colors.purpleLight}
+                  color={theme.accentLight}
                   style={{ marginRight: 10 }}
                 />
                 <View style={{ flex: 1 }}>
@@ -988,7 +993,7 @@ function PickExerciseModal({
                 <Ionicons
                   name="add-circle"
                   size={20}
-                  color={colors.purpleLight}
+                  color={theme.accentLight}
                 />
               </Pressable>
             ))}
@@ -1021,6 +1026,7 @@ function EditExerciseModal({
   onSave: (e: ProgramExercise) => void;
   busy: boolean;
 }) {
+  const theme = useTheme();
   const [draft, setDraft] = useState<ProgramExercise | null>(null);
   const [pickReplace, setPickReplace] = useState(false);
 
@@ -1079,11 +1085,11 @@ function EditExerciseModal({
                 <Ionicons
                   name="swap-horizontal"
                   size={12}
-                  color={colors.purpleLight}
+                  color={theme.accentLight}
                 />
                 <Text
                   style={{
-                    color: colors.purpleLight,
+                    color: theme.accentLight,
                     fontFamily: fontFamilies.body600,
                     fontSize: 11,
                   }}
@@ -1144,7 +1150,7 @@ function EditExerciseModal({
                       chipStyle,
                       { flex: 1, paddingVertical: 10 },
                       active && {
-                        borderColor: colors.borderNeon,
+                        borderColor: theme.borderNeon,
                         backgroundColor: 'rgba(157,107,255,0.18)',
                       },
                     ]}
@@ -1152,7 +1158,7 @@ function EditExerciseModal({
                     <Text
                       style={{
                         color: active
-                          ? colors.purpleLight
+                          ? theme.accentLight
                           : colors.textSecondary,
                         fontFamily: fontFamilies.body600,
                         fontSize: 12,
