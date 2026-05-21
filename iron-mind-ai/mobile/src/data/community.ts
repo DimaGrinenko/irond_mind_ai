@@ -14,7 +14,7 @@ const POSTS_RU: CommunityPost[] = [
     name: 'Дмитрий',
     timeAgo: '2 часа назад',
     title: 'Закончил свою тренировку',
-    subtitle: 'Верх тела 💪',
+    subtitle: 'Верх тела',
   },
   {
     id: 'p2',
@@ -31,7 +31,7 @@ const POSTS_EN: CommunityPost[] = [
     name: 'Dmitry',
     timeAgo: '2 hours ago',
     title: 'Finished my workout',
-    subtitle: 'Upper body 💪',
+    subtitle: 'Upper body',
   },
   {
     id: 'p2',

@@ -136,7 +136,12 @@ function ChallengeCard({
       <View
         style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}
       >
-        <Text style={{ fontSize: 22, marginRight: 10 }}>{c.emoji}</Text>
+        <Ionicons
+          name={c.icon as any}
+          size={22}
+          color={theme.accentLight}
+          style={{ marginRight: 10 }}
+        />
         <View style={{ flex: 1 }}>
           <Text
             style={{
