@@ -1,0 +1,63 @@
+==========================================================
+  GitHub + раздача через Telegram (план)
+==========================================================
+
+ЧАСТЬ 1 — GitHub (исходники, безопасно)
+--------------------------------------
+Репозиторий: https://github.com/DimaGrinenko/irond_mind_ai
+Ветка с актуальными правками: visual-wave
+
+Что НЕ попадает в Git:
+  backend/.env          — ключи OpenRouter, JWT, DATABASE_URL
+  backend/dist/         — сборка Nest (пересобирается npm run build)
+  node_modules/
+
+После клонирования у себя:
+  1) cp backend/.env.example → backend/.env и заполнить
+  2) npm install в backend и mobile
+  3) см. ЗАПУСК_ПРИЛОЖЕНИЯ.txt
+
+Свой аккаунт GitHub:
+  Fork репозитория или «New repository» → git remote add origin <ваш-url>
+  git push -u origin visual-wave
+
+
+ЧАСТЬ 2 — Telegram-канал (APK для людей)
+----------------------------------------
+GitHub ≠ установка для пользователей. В канал кладут готовый APK (Android).
+
+Шаги (когда будете готовы, отдельно от GitHub):
+  1) Собрать release APK (Expo EAS Build или локально eas build -p android)
+  2) В mobile/.env или eas.json зашить EXPO_PUBLIC_API_URL на адрес,
+     с которого телефоны достучатся до вашего backend
+  3) Загрузить APK в канал (файл или ссылка на релиз)
+
+Важно: пока backend и Postgres только на вашем ПК — приложение у других
+работает ТОЛЬКО когда:
+  • ваш ПК включён и запущены Postgres + backend;
+  • у вас открыт доступ из интернета к порту 4001 (см. ниже).
+
+Варианты «достучаться до ПК»:
+  A) Одна Wi‑Fi / LAN — EXPO_PUBLIC_API_URL=http://192.168.x.x:4001
+     (только соседи в той же сети, не весь интернет)
+  B) Туннель: ngrok / Cloudflare Tunnel / localtunnel на :4001
+     → в APK подставить https://xxxx.ngrok-free.app
+  C) VPS в облаке — перенести backend + Postgres (нормальный прод)
+
+Без B или C люди из Telegram по всему миру к вашему домашнему ПК
+не подключатся (NAT, firewall, провайдер).
+
+
+ЧАСТЬ 3 — Минимальный чеклист перед раздачей APK
+-------------------------------------------------
+[ ] backend/.env не в Git, ключи не в чате/скринах
+[ ] Сменить OPENROUTER_API_KEY если светился в переписке
+[ ] Демо-логин user@ironmind.local / user12345 — осознанно для демо
+[ ] В APK правильный EXPO_PUBLIC_API_URL (не localhost для чужих телефонов)
+[ ] Windows Firewall: разрешить входящие на порт 4001 (если LAN)
+[ ] Тест с телефона не в Wi‑Fi ПК — только через туннель или VPS
+
+
+Порядок как вы просили:
+  1) Сначала GitHub (код + доки) — сделано этим коммитом
+  2) Потом Telegram + туннель/VPS — по этому файлу, когда скажете «делаем APK»

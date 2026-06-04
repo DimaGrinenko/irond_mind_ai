@@ -432,7 +432,7 @@ async function main() {
   const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? 'admin12345';
   const coachEmail = process.env.SEED_COACH_EMAIL ?? 'coach@ironmind.local';
   const coachPassword = process.env.SEED_COACH_PASSWORD ?? 'coach12345';
-  const userEmail = process.env.SEED_USER_EMAIL ?? 'athlete@ironmind.local';
+  const userEmail = process.env.SEED_USER_EMAIL ?? 'user@ironmind.local';
   const userPassword = process.env.SEED_USER_PASSWORD ?? 'user12345';
 
   const adminHash = await bcrypt.hash(adminPassword, 10);

@@ -34,6 +34,7 @@ import {
 import { useExerciseNotesStore } from '../store/exerciseNotesStore';
 import { useVoiceInput, parseCommand } from '../hooks/useVoiceInput';
 import { exercises as catalog } from '../data/exercises';
+import { exerciseDisplayName } from '../utils/exerciseDisplayName';
 import { t, useLang } from '../i18n';
 
 function fmtTimer(ms: number): string {
@@ -195,7 +196,10 @@ export function GymModeScreen() {
   if (!current) return null;
 
   const meta = catalog.find((e) => e.id === current.exerciseId);
-  const exerciseName = meta?.name ?? current.exerciseId;
+  const exerciseName = exerciseDisplayName(
+    current.exerciseId,
+    meta?.name,
+  );
   const isLast = idx === list.length - 1;
   const allSetsDone = current.sets.every((s) => s.done);
   const exerciseNotes = notesFor(current.exerciseId);

@@ -28,8 +28,6 @@ import { AnimatedCounter } from '../components/anim/AnimatedCounter';
 import { Particles } from '../components/anim/Particles';
 import { StreakDumbbell } from '../components/common/StreakDumbbell';
 import { ProTrialBanner } from '../components/common/ProTrialBanner';
-import { DailyWheel } from '../components/common/DailyWheel';
-import { useDailyBonusStore } from '../store/dailyBonusStore';
 import {
   api,
   type ProgramFull,
@@ -722,9 +720,6 @@ export function HomeScreen() {
           </AppearUp>
         ) : null}
 
-        {/* Daily wheel — показывается если ещё не крутил сегодня */}
-        <DailyWheelSlot />
-
         {/* AI tip */}
         <AppearUp delayMs={230}>
           <View style={{ paddingHorizontal: 16, marginTop: 12 }}>
@@ -882,12 +877,6 @@ export function HomeScreen() {
       </ScrollView>
     </View>
   );
-}
-
-function DailyWheelSlot() {
-  const canSpin = useDailyBonusStore((s) => s.canSpinToday());
-  if (!canSpin) return null;
-  return <DailyWheel />;
 }
 
 function HeroBody() {

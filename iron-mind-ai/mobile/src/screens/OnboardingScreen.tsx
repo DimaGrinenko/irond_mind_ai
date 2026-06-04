@@ -35,6 +35,7 @@ import {
 } from '../store/userStore';
 import { useAuthStore } from '../store/authStore';
 import {
+  API_BASE_URL,
   ApiError,
   api,
   type OnboardingPlan,
@@ -347,8 +348,8 @@ function LoginModal({
 
   React.useEffect(() => {
     if (visible) {
-      setEmail('');
-      setPassword('');
+      setEmail('user@ironmind.local');
+      setPassword('user12345');
       setError(null);
     }
   }, [visible]);
@@ -392,6 +393,25 @@ function LoginModal({
       }
       onSuccess();
     } catch (e) {
+      const isNetwork = e instanceof ApiError && e.status === 0;
+      if (isNetwork) {
+        Alert.alert(
+          t('onb.errTitle'),
+          e.message,
+          [
+            { text: t('onb.retry'), style: 'cancel' },
+            {
+              text: t('onb.continueLocally'),
+              onPress: () => {
+                u.setName(u.name || 'Атлет');
+                u.completeOnboarding();
+                onSuccess();
+              },
+            },
+          ],
+        );
+        return;
+      }
       setError(e instanceof ApiError ? e.message : t('onb.errLoginFailed'));
     } finally {
       setSubmitting(false);
@@ -447,6 +467,26 @@ function LoginModal({
             }}
           >
             {t('onboarding.loginHint')}
+          </Text>
+          <Text
+            style={{
+              color: colors.textMuted,
+              fontFamily: fontFamilies.body,
+              fontSize: 11,
+              lineHeight: 16,
+            }}
+          >
+            {t('onb.loginDemoHint')}
+          </Text>
+          <Text
+            style={{
+              color: colors.cyan,
+              fontFamily: fontFamilies.body500,
+              fontSize: 10,
+              lineHeight: 14,
+            }}
+          >
+            {t('onb.loginApiHint', { url: API_BASE_URL })}
           </Text>
 
           <View

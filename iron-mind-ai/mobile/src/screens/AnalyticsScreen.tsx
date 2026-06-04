@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -110,10 +110,6 @@ export function AnalyticsScreen() {
       load(days);
     }, [load, days]),
   );
-
-  useEffect(() => {
-    load(days);
-  }, [load, days]);
 
   const chart = stats?.chart ?? [];
   const maxVol = Math.max(1, ...chart.map((c) => c.volume));

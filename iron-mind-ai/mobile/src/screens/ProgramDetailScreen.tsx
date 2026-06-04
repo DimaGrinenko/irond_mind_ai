@@ -31,6 +31,7 @@ import {
   programDescription,
   dayTitle,
 } from '../i18n';
+import { programIconName } from '../utils/programIcon';
 
 type R = RouteProp<RootStackParamList, 'ProgramDetail'>;
 
@@ -285,7 +286,7 @@ export function ProgramDetailScreen() {
                     }}
                   >
                     <Ionicons
-                      name={(program.iconName || 'barbell-outline') as any}
+                      name={programIconName(program.iconName)}
                       size={34}
                       color="rgba(255,255,255,0.90)"
                     />

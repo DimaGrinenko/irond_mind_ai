@@ -57,7 +57,7 @@ export function GradientButton({
     variant === 'primary' ? neonGlow(theme.glow, 0.85, 42, 22) : glowStrong;
 
   const pulse = useSharedValue(0);
-  const shine = useSharedValue(-1);
+  const shine = useSharedValue(0);
 
   React.useEffect(() => {
     if (Platform.OS === 'web') return;
@@ -67,7 +67,7 @@ export function GradientButton({
       true,
     );
     shine.value = withRepeat(
-      withTiming(1, { duration: 2400, easing: Easing.linear }),
+      withTiming(1, { duration: 2600, easing: Easing.linear }),
       -1,
       false,
     );
@@ -79,10 +79,14 @@ export function GradientButton({
     return { transform: [{ scale: s }], opacity: o };
   });
 
+  /** Блик проходит всю ширину кнопки (раньше opacity гасился на 1/3 пути). */
   const aShine = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: shine.value * 220 }, { skewX: '-18deg' }],
-      opacity: shine.value > -0.6 && shine.value < 0.6 ? 0.45 : 0,
+      transform: [
+        { translateX: -160 + shine.value * 420 },
+        { skewX: '-18deg' },
+      ],
+      opacity: 0.42,
     };
   });
 
@@ -123,9 +127,9 @@ export function GradientButton({
               style={[
                 StyleSheet.absoluteFillObject,
                 {
-                  width: 80,
-                  backgroundColor: 'rgba(255,255,255,0.55)',
-                  left: -120,
+                  width: 72,
+                  backgroundColor: 'rgba(255,255,255,0.5)',
+                  left: 0,
                 },
                 aShine,
               ]}

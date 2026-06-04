@@ -84,6 +84,16 @@ const ru: Dict = {
   'home.goal': 'Твоя цель',
   'home.currentProgram': 'Текущая программа',
   'home.workouts': 'Тренировки',
+  'history.unknownExercise': 'Упражнение',
+  'history.setsCount': '{n} подх.',
+  'history.bestSet': '{w} кг × {r}',
+  'history.workoutSession': 'Силовая тренировка',
+  'history.devWorkout': 'Тренировка (тест / черновик)',
+  'history.setsShort': 'подх.',
+  'history.deleteTitle': 'Удалить тренировку?',
+  'history.deleteBody':
+    'Запись и все подходы будут удалены. Восстановить нельзя.',
+  'history.deleteFailed': 'Не удалось удалить. Проверь связь с сервером.',
   'home.level': 'Уровень',
   'home.streak': 'Дней подряд',
   'home.today': 'Сегодня',
@@ -123,6 +133,9 @@ const ru: Dict = {
   'programs.emptyMy':
     'У тебя пока нет собственных программ. Клонируй шаблон → редактируй.',
   'programs.empty': 'Программ нет.',
+  'programs.legacySection': 'Карточки по целям',
+  'programs.legacyHint':
+    'Без готового расписания. Для тренировок выбери программу выше с днями и упражнениями.',
 
   'detail.use': 'Использовать программу',
   'detail.daysHeader': 'ДНИ ПРОГРАММЫ',
@@ -552,17 +565,20 @@ const ru: Dict = {
   'live.title': 'Тренер',
   'live.elite': 'ELITE-фича',
   'live.intro':
-    'Реальный тренер ответит за 24 часа. Можно прислать видео техники, описать боль/застой, попросить разобрать план.',
-  'live.sent': 'Запрос отправлен',
+    'Задай вопрос — ответит AI (DeepSeek), с учётом твоей программы и тренировок. Живой тренер — позже.',
+  'live.sent': 'Ответ AI',
   'live.sentBody':
-    'Тренер ответит в течение 24 часов. Уведомление придёт в приложение.',
+    'Ниже ответ. Полная история — во вкладке «AI».',
+  'live.sending': 'AI думает…',
+  'live.openAiChat': 'Открыть чат AI',
+  'live.aiOffline': 'Сервер недоступен. Проверь backend и EXPO_PUBLIC_API_URL.',
   'live.questionLabel': 'ТВОЙ ВОПРОС',
   'live.questionPh':
     'Например: «3 недели стою на 80 кг в жиме — что попробовать?»',
   'live.send': 'Отправить тренеру',
   'live.elaborate': 'Хотя бы пара предложений.',
   'live.note':
-    '💡 Backend для тренерских запросов в разработке. Сейчас сохранится локально.',
+    'Сообщение уходит на сервер /chat (тот же AI, что во вкладке AI). Позже добавим очередь для живого тренера.',
 
   'share.title': 'Поделиться программой',
   'share.codeHint':
@@ -873,6 +889,17 @@ const ru: Dict = {
   'ai.q4': 'Как делать присед правильно?',
   'ai.q5': 'Как пробить плато в жиме?',
   'ai.q6': 'Стоит ли пить креатин?',
+  'ai.modeLive': 'Живой AI · {provider}',
+  'ai.modeRules': 'Локальные подсказки (добавь API-ключ в backend/.env)',
+  'ai.inputHint': 'Можно писать свой вопрос в поле внизу — не только кнопки.',
+  'ai.needLogin': 'Чтобы писать в чат, войди в аккаунт (backend сохраняет историю).',
+  'ai.demoLogin': 'Войти демо (user@ironmind.local)',
+  'ai.loginFailed': 'Не удалось войти. Запущен ли backend на :4001?',
+  'ai.rulesFallback': 'DeepSeek не ответил — показана локальная подсказка.',
+  'ai.billingError':
+    'На балансе DeepSeek нет средств (402). Бесплатно: добавь GROQ_API_KEY с console.groq.com и AI_PROVIDER=groq в backend/.env (см. AI_SETUP_RU.txt).',
+  'ai.llmErrorGeneric': 'Ошибка AI: {error}',
+  'ai.llmOk': 'Ответ от {provider}',
 
   'profile.logoutTitle': 'Выйти из профиля?',
   'profile.logoutBody':
@@ -899,6 +926,8 @@ const ru: Dict = {
   'onb.errServerDown': 'Сервер недоступен. Можно продолжить локально.',
   'onb.retry': 'Повторить',
   'onb.continueLocally': 'Продолжить локально',
+  'onb.loginDemoHint': 'Демо: user@ironmind.local / user12345',
+  'onb.loginApiHint': 'API: {url}',
 
   'day.fb.a': 'Фулбади A',
   'day.fb.b': 'Фулбади B',
@@ -1342,6 +1371,16 @@ const en: Dict = {
   'home.goal': 'Your goal',
   'home.currentProgram': 'Current program',
   'home.workouts': 'Workouts',
+  'history.unknownExercise': 'Exercise',
+  'history.setsCount': '{n} sets',
+  'history.bestSet': '{w} kg × {r}',
+  'history.workoutSession': 'Strength workout',
+  'history.devWorkout': 'Workout (test / draft)',
+  'history.setsShort': 'sets',
+  'history.deleteTitle': 'Delete workout?',
+  'history.deleteBody':
+    'This session and all sets will be removed. This cannot be undone.',
+  'history.deleteFailed': 'Could not delete. Check your connection to the server.',
   'home.level': 'Level',
   'home.streak': 'Day streak',
   'home.today': 'Today',
@@ -1381,6 +1420,9 @@ const en: Dict = {
   'programs.allMy': 'All my programs',
   'programs.emptyMy': 'No personal programs yet. Clone a template → edit.',
   'programs.empty': 'No programs.',
+  'programs.legacySection': 'Goal cards',
+  'programs.legacyHint':
+    'No ready schedule. For workouts, pick a program above with days and exercises.',
 
   'detail.use': 'Use program',
   'detail.daysHeader': 'PROGRAM DAYS',
@@ -1803,16 +1845,19 @@ const en: Dict = {
   'live.title': 'Coach',
   'live.elite': 'ELITE feature',
   'live.intro':
-    'A real coach replies within 24 hours. Send technique video, describe pain/plateau, ask plan review.',
-  'live.sent': 'Request sent',
+    'Ask a question — AI (DeepSeek) replies using your program and workouts. A human coach comes later.',
+  'live.sent': 'AI reply',
   'live.sentBody':
-    'Coach will reply within 24 hours. Push notification will arrive.',
+    'Answer below. Full history is in the AI tab.',
+  'live.sending': 'AI is thinking…',
+  'live.openAiChat': 'Open AI chat',
+  'live.aiOffline': 'Server unavailable. Check backend and EXPO_PUBLIC_API_URL.',
   'live.questionLabel': 'YOUR QUESTION',
   'live.questionPh': 'E.g. «Stuck at 80 kg bench for 3 weeks — what to try?»',
   'live.send': 'Send to coach',
   'live.elaborate': 'At least a couple of sentences.',
   'live.note':
-    '💡 Backend for coach requests is in progress. Saved locally for now.',
+    'Messages go to server /chat (same AI as the AI tab). A human coach queue will be added later.',
 
   'share.title': 'Share program',
   'share.codeHint':
@@ -2124,6 +2169,17 @@ const en: Dict = {
   'ai.q4': 'How do I squat properly?',
   'ai.q5': 'How do I break through a bench-press plateau?',
   'ai.q6': 'Should I take creatine?',
+  'ai.modeLive': 'Live AI · {provider}',
+  'ai.modeRules': 'Local tips only (add an API key in backend/.env)',
+  'ai.inputHint': 'Type your own question in the field below — not only the chips.',
+  'ai.needLogin': 'Sign in to use chat (history is stored on the server).',
+  'ai.demoLogin': 'Demo login (user@ironmind.local)',
+  'ai.loginFailed': 'Login failed. Is the backend running on :4001?',
+  'ai.rulesFallback': 'DeepSeek did not reply — showing a local tip.',
+  'ai.billingError':
+    'DeepSeek balance is empty (402). Free option: add GROQ_API_KEY from console.groq.com and AI_PROVIDER=groq in backend/.env (see AI_SETUP_RU.txt).',
+  'ai.llmErrorGeneric': 'AI error: {error}',
+  'ai.llmOk': 'Reply from {provider}',
 
   'profile.logoutTitle': 'Sign out?',
   'profile.logoutBody':
@@ -2150,6 +2206,8 @@ const en: Dict = {
   'onb.errServerDown': 'Server unreachable. You can continue locally.',
   'onb.retry': 'Retry',
   'onb.continueLocally': 'Continue locally',
+  'onb.loginDemoHint': 'Demo: user@ironmind.local / user12345',
+  'onb.loginApiHint': 'API: {url}',
 
   'day.fb.a': 'Full body A',
   'day.fb.b': 'Full body B',

@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtGuard } from '../auth/jwt.guard';
 import { CurrentUser, CurrentUserPayload } from '../auth/current-user.decorator';
 import { WorkoutsService } from './workouts.service';
@@ -41,6 +51,11 @@ export class WorkoutsController {
   @Get(':id')
   one(@CurrentUser() user: CurrentUserPayload, @Param('id') id: string) {
     return this.workouts.byId(user.id, id);
+  }
+
+  @Delete(':id')
+  remove(@CurrentUser() user: CurrentUserPayload, @Param('id') id: string) {
+    return this.workouts.remove(user.id, id);
   }
 
   @Patch(':id/finish')

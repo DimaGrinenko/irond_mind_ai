@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { ChatRole } from '@prisma/client';
+import { ChatRole, WorkoutStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { AiProvider } from '../ai/ai-provider';
+import { AiProvider, type AiSource } from '../ai/ai-provider';
 import { CycleService, type CyclePhase } from '../cycle/cycle.service';
 
 const CYCLE_ADVICE: Record<CyclePhase, string> = {
@@ -205,23 +205,40 @@ export class ChatService {
     });
   }
 
+  status() {
+    return this.ai.getInfo();
+  }
+
   async send(userId: string, content: string) {
     const userMsg = await this.prisma.chatMessage.create({
       data: { userId, role: ChatRole.USER, content },
     });
 
-    const reply = await this.generateReply(userId, content);
+    const { text: reply, source, llmError } = await this.generateReply(
+      userId,
+      content,
+    );
     const aiMsg = await this.prisma.chatMessage.create({
       data: { userId, role: ChatRole.ASSISTANT, content: reply },
     });
 
-    return { userMsg, aiMsg };
+    const info = this.ai.getInfo();
+    return {
+      userMsg,
+      aiMsg,
+      meta: {
+        source,
+        provider: info.label,
+        model: info.model,
+        llmError: llmError ?? null,
+      },
+    };
   }
 
   private async generateReply(
     userId: string,
     message: string,
-  ): Promise<string> {
+  ): Promise<{ text: string; source: AiSource; llmError?: string }> {
     // Pull the user's cycle phase (only set for users who opted in) so advice
     // can be tailored — both for the live AI and the rule-based fallback.
     let phase: CyclePhase | null = null;
@@ -238,20 +255,104 @@ export class ChatService {
         orderBy: { createdAt: 'asc' },
         take: 20,
       });
-      const systemPrompt = phase
-        ? `${SYSTEM_PROMPT}\n\nКонтекст: пользователь отслеживает менструальный цикл, текущая фаза — ${phase}. ${CYCLE_ADVICE[phase]} Учитывай это при рекомендациях по нагрузке и питанию, но не зацикливайся на этом, если вопрос не связан.`
-        : SYSTEM_PROMPT;
+      const historyForAi = history
+        .filter(
+          (m, i, arr) =>
+            !(
+              i === arr.length - 1 &&
+              m.role === ChatRole.USER &&
+              m.content === message
+            ),
+        )
+        .slice(-18);
+      const systemPrompt = await this.buildSystemPrompt(userId, phase);
       const result = await this.ai.complete({
         systemPrompt,
-        history: history.map((m) => ({
-          role: m.role === ChatRole.USER ? 'user' : 'assistant',
+        history: historyForAi.map((m) => ({
+          role:
+            m.role === ChatRole.USER ? ('user' as const) : ('assistant' as const),
           content: m.content,
         })),
         userMessage: message,
       });
-      if (result) return result;
+      if (result) return { text: result, source: 'llm' };
+      return {
+        text: this.fallbackReply(message, phase),
+        source: 'rules',
+        llmError: this.ai.getLastError() ?? 'llm_unavailable',
+      };
     }
-    return this.fallbackReply(message, phase);
+    return { text: this.fallbackReply(message, phase), source: 'rules' };
+  }
+
+  private async buildSystemPrompt(
+    userId: string,
+    phase: CyclePhase | null,
+  ): Promise<string> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        name: true,
+        goalKey: true,
+        goal: true,
+        weightKg: true,
+        heightCm: true,
+        age: true,
+        level: true,
+        dailyCaloriesGoal: true,
+        dailyProteinGoal: true,
+        currentProgramId: true,
+      },
+    });
+
+    let programTitle: string | null = null;
+    if (user?.currentProgramId) {
+      const prog = await this.prisma.program.findUnique({
+        where: { id: user.currentProgramId },
+        select: { title: true, daysPerWeek: true, weeks: true },
+      });
+      if (prog) {
+        programTitle = `${prog.title} (${prog.daysPerWeek}×/нед, ${prog.weeks} нед)`;
+      }
+    }
+
+    const since = new Date();
+    since.setDate(since.getDate() - 30);
+    const workouts30d = await this.prisma.workout.count({
+      where: {
+        userId,
+        status: WorkoutStatus.COMPLETED,
+        date: { gte: since },
+      },
+    });
+
+    const parts = [SYSTEM_PROMPT, '\n\n--- Контекст пользователя ---'];
+    if (user) {
+      parts.push(`Имя: ${user.name}`);
+      if (user.goalKey || user.goal) {
+        parts.push(`Цель: ${user.goalKey ?? user.goal}`);
+      }
+      if (user.level) parts.push(`Уровень: ${user.level}`);
+      if (user.weightKg) parts.push(`Вес: ${user.weightKg} кг`);
+      if (user.heightCm) parts.push(`Рост: ${user.heightCm} см`);
+      if (user.age) parts.push(`Возраст: ${user.age}`);
+      if (user.dailyCaloriesGoal) {
+        parts.push(`Калории/день (цель): ${user.dailyCaloriesGoal}`);
+      }
+      if (user.dailyProteinGoal) {
+        parts.push(`Белок/день (цель): ${user.dailyProteinGoal} г`);
+      }
+    }
+    if (programTitle) parts.push(`Текущая программа: ${programTitle}`);
+    parts.push(`Завершённых тренировок за 30 дней: ${workouts30d}`);
+
+    if (phase) {
+      parts.push(
+        `\nМенструальный цикл: фаза ${phase}. ${CYCLE_ADVICE[phase]} Учитывай при нагрузке, если вопрос про тренировки/самочувствие.`,
+      );
+    }
+
+    return parts.join('\n');
   }
 
   private fallbackReply(text: string, phase: CyclePhase | null): string {

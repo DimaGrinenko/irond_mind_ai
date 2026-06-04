@@ -1,0 +1,153 @@
+IRON MIND AI — ПЛАН УЛУЧШЕНИЯ ПРОЕКТА
+
+Приоритеты: P1 (критично для сдачи/стабильности), P2 (качество продукта), P3 (масштабирование).
+
+────────────────────────────────────────
+P1 — СТАБИЛЬНОСТЬ И СДАЧА
+────────────────────────────────────────
+
+1. Единый запуск и документация
+   - Оставить один файл запуска: ЗАПУСК_ПРИЛОЧЕНИЯ.txt + PROJECT_HANDOVER_RU.txt.
+   - Добавить check-скрипт: backend up, DB migrate, mobile web smoke.
+
+2. Надёжность API
+   - Добавить health endpoint (/health) и проверку подключения к PostgreSQL при старте.
+   - На mobile: экран «Сервер недоступен» с кнопкой Retry (не только текст ошибки в Analytics).
+
+3. Аналитика
+   - Уже исправлено: устойчивый /stats/me при битых сетах.
+   - Дальше: кэш последних stats в AsyncStorage (офлайн-режим), индикатор «данные от …».
+
+4. Тесты минимум для защиты
+   - Backend: unit-тест StatsService (пустые данные, битый exerciseId, период 7/30).
+   - Mobile: smoke-тест навигации (Home → Analytics → Programs).
+
+5. Очистка артефактов (сделано)
+   - Удалены логи, screenshots/tools, dist, мёртвый DailyWheel, старые audit-отчёты.
+
+────────────────────────────────────────
+P2 — ПРОДУКТ И UX
+────────────────────────────────────────
+
+6. Убрать «полумоки» или довести до backend
+   Сейчас частично локально:
+   - Friends / Duels / Community (mobile/src/data/community.ts).
+   План:
+   - либо скрыть из UI до готовности API,
+   - либо сделать модуль social: friends, invites, weekly volume duel.
+
+7. AI-тренер (частично сделано)
+   - DeepSeek / Groq / OpenAI-compatible в backend (ai-provider.ts).
+   - Вкладка AI: свой текст + быстрые кнопки → POST /chat.
+   - Профиль → «Тренер»: тот же /chat (временно, пока нет живого тренера).
+   - Дальше: очередь CoachRequest в БД, панель coach@, push «тренер ответил».
+   - Лимиты сообщений Free / безлимит Pro.
+
+8. Подписка (SubscriptionScreen)
+   - Сейчас «Coming soon».
+   - Интеграция RevenueCat или Stripe + feature flags:
+     analytics 30/90 дней, AI без лимита, экспорт CSV, form analysis.
+
+9. Геймификация без колеса
+   - Колесо убрано из UI — на backend можно отключить /economy/wheel/spin.
+   - Оставить листья за тренировки, достижения, челленджи; магазин косметики синхронизировать полностью.
+
+10. i18n и тексты
+    - Прогнать i18n-audit: убрать оставшийся hardcoded RU в leafEconomyStore (названия shop items).
+    - EN-версия supplements/foods (частично есть exercises_en).
+
+11. Производительность экранов
+    - AnalyticsScreen: убрать двойной load (useFocusEffect + useEffect дублируют запрос).
+    - Тяжёлые 3D-блоки (NeonScene3D) — lazy/off на слабых устройствах.
+
+12. Календарь и программы
+    - Связать ScheduledWorkout ↔ Workout жёстче (авто-complete при finish).
+    - Push/local notifications «тренировка сегодня» (expo-notifications уже в зависимостях).
+
+────────────────────────────────────────
+P3 — АРХИТЕКТУРА И МАСШТАБ
+────────────────────────────────────────
+
+13. Backend
+    - DTO + валидация на всех POST/PATCH.
+    - Пагинация workouts/history.
+    - OpenAPI (Swagger) для сдачи и мобильной генерации типов.
+
+14. Mobile
+    - Разбить api/client.ts на модули (auth, programs, stats…).
+    - React Query вместо ручного load в каждом экране.
+    - Error boundary на уровне RootNavigator.
+
+15. DevOps
+    - Docker compose: postgres + backend.
+    - CI: lint + test + build backend on push.
+    - EAS Build для Android/iOS.
+
+16. Безопасность
+    - Ротация JWT, refresh token.
+    - Не хранить пароли в документах; .env.example без секретов.
+    - Audit зависимостей (npm audit).
+
+17. Мониторинг
+    - Sentry на mobile + backend.
+    - Структурированные логи Nest (request id, user id).
+
+────────────────────────────────────────
+ПЛАН ДОРАБОТКИ AI И «ТРЕНЕР» (по запросу, июнь 2026)
+────────────────────────────────────────
+
+Сейчас:
+| Экран | Куда уходит | Что видит пользователь |
+| AI (вкладка) | POST /chat + история GET /chat | Поле ввода внизу, быстрые вопросы |
+| Профиль → Тренер | Тот же POST /chat | Ответ сразу на экране |
+| Без backend / без ключа | rules-fallback | «Локальные подсказки» |
+
+Этап 1 (1–2 дня) — сделано / в работе:
+- Исправить «?» на иконках программ (Ionicons alias).
+- Программы: шаблоны с днями сверху, карточки mass/relief — отдельным блоком.
+- Тренер → DeepSeek через /chat, честные тексты в UI.
+
+Этап 2 (3–5 дней):
+- CoachRequest: таблица prisma, POST /coach/requests, статус pending/answered.
+- Уведомление в приложении; ответ тренера из coach panel.
+- AI остаётся мгновенным fallback, если тренер offline.
+
+Этап 3 (неделя):
+- Видео техники (upload → S3/локально → ссылка в запросе).
+- Контекст AI: последняя тренировка, 1RM, цикл (уже частично в chat.service).
+- Лимиты и Pro-флаг.
+
+Этап 4:
+- Telegram-бот или Mini App с тем же /chat (опционально).
+
+Проверка у себя:
+1. backend :4001, DEEPSEEK_API_KEY в backend/.env
+2. Телефон в той же Wi‑Fi, EXPO_PUBLIC_API_URL=http://IP:4001
+3. Вкладка AI — строка «Живой AI · DeepSeek»
+4. Написать в поле внизу (не только чипы)
+
+────────────────────────────────────────
+ЧТО БЫ Я СДЕЛАЛ В ПЕРВУЮ ОЧЕРЕДЬ (2 недели)
+────────────────────────────────────────
+
+Неделя 1:
+- health + offline banner API
+- тесты stats + smoke navigation
+- убрать/спрятать mock social или сделать минимальный friends API
+- i18n shop + supplements EN
+
+Неделя 2:
+- AI с контекстом пользователя
+- calendar notifications
+- React Query на Home/Analytics/Programs
+- Swagger + docker-compose для демо на защите
+
+────────────────────────────────────────
+МЕТРИКИ «ГОТОВ К СДАЧЕ»
+────────────────────────────────────────
+
+- Запуск по инструкции с нуля ≤ 15 минут.
+- Demo user проходит: onboarding → программа → тренировка → analytics.
+- Нет красных экранов на web (8090) и Android emulator.
+- Документы: HANDOVER + IMPROVEMENT PLAN + ЗАПУСК.
+- Репозиторий без логов, dist, screenshot-tools, мёртвого кода колеса.

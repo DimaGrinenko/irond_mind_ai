@@ -18,7 +18,15 @@ import { photos } from '../theme/photos';
 import { AnimatedPhoto } from '../components/anim/AnimatedPhoto';
 import { api, type ProgramSummary } from '../api/client';
 import { useUserStore } from '../store/userStore';
-import { t, useLang, programLabel, programSubtitle } from '../i18n';
+import {
+  t,
+  useLang,
+  programLabel,
+  programSubtitle,
+  goalLabel,
+  levelLabel,
+} from '../i18n';
+import { programIconName } from '../utils/programIcon';
 
 function programPhoto(id: string) {
   const key = `program_${id}` as keyof typeof photos;
@@ -103,16 +111,18 @@ export function ProgramsScreen() {
 
   const visible = useMemo(() => {
     if (tab === 'Мои') return own;
-    if (tab === 'Шаблоны') return [...byGoalFirst, ...legacyTemplates];
+    if (tab === 'Шаблоны') return byGoalFirst;
     if (tab === 'Новые')
       return [...structuredTemplates].sort((a, b) =>
         b.createdAt.localeCompare(a.createdAt),
       );
     return byGoalFirst;
-  }, [tab, own, byGoalFirst, legacyTemplates, structuredTemplates]);
+  }, [tab, own, byGoalFirst, structuredTemplates]);
 
   const featured = visible[0];
   const rest = visible.slice(1);
+  const showLegacySection =
+    tab === 'Шаблоны' && legacyTemplates.length > 0;
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
@@ -318,7 +328,7 @@ export function ProgramsScreen() {
                       }}
                     >
                       <Ionicons
-                        name={(featured.iconName || 'barbell-outline') as any}
+                        name={programIconName(featured.iconName)}
                         size={72}
                         color="rgba(255,255,255,0.22)"
                       />
@@ -354,6 +364,16 @@ export function ProgramsScreen() {
                     }}
                   >
                     {programSubtitle(featured.id, featured.subtitle)}
+                  </Text>
+                  <Text
+                    style={{
+                      marginTop: 8,
+                      color: 'rgba(255,255,255,0.7)',
+                      fontFamily: fontFamilies.body500,
+                      fontSize: 11,
+                    }}
+                  >
+                    {goalLabel(featured.goalKey)} · {levelLabel(featured.level)}
                   </Text>
 
                   <Pressable
@@ -459,7 +479,7 @@ export function ProgramsScreen() {
                       }}
                     >
                       <Ionicons
-                        name={(p.iconName || 'barbell-outline') as any}
+                        name={programIconName(p.iconName)}
                         size={32}
                         color="rgba(255,255,255,0.85)"
                       />
@@ -483,7 +503,17 @@ export function ProgramsScreen() {
                         fontSize: 12,
                       }}
                     >
-                      {p.weeks} {t('common.weekShort')} ·{' '}
+                      {p.weeks} {t('common.weekShort')} · {p.daysPerWeek}
+                      {t('common.perWeek')} · {goalLabel(p.goalKey)}
+                    </Text>
+                    <Text
+                      style={{
+                        marginTop: 2,
+                        color: colors.textMuted,
+                        fontFamily: fontFamilies.body,
+                        fontSize: 11,
+                      }}
+                    >
                       {programSubtitle(p.id, p.subtitle)}
                     </Text>
                   </View>
@@ -492,6 +522,85 @@ export function ProgramsScreen() {
                     size={22}
                     color={colors.textMuted}
                     style={{ marginRight: 12 }}
+                  />
+                </Pressable>
+              ))}
+            </View>
+          </>
+        ) : null}
+
+        {showLegacySection ? (
+          <>
+            <View style={{ paddingHorizontal: 16, marginTop: 20 }}>
+              <Text
+                style={{
+                  color: colors.textSecondary,
+                  fontFamily: fontFamilies.body600,
+                  fontSize: 12,
+                }}
+              >
+                {t('programs.legacySection')}
+              </Text>
+              <Text
+                style={{
+                  marginTop: 6,
+                  color: colors.textMuted,
+                  fontFamily: fontFamilies.body,
+                  fontSize: 11,
+                  lineHeight: 16,
+                }}
+              >
+                {t('programs.legacyHint')}
+              </Text>
+            </View>
+            <View style={{ paddingHorizontal: 16, marginTop: 10, gap: 12 }}>
+              {legacyTemplates.map((p) => (
+                <Pressable
+                  key={p.id}
+                  onPress={() =>
+                    nav.navigate('ProgramDetail', { programId: p.id })
+                  }
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    borderRadius: 18,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                    backgroundColor: colors.bgSecondary,
+                    padding: 14,
+                  }}
+                >
+                  <Ionicons
+                    name={programIconName(p.iconName)}
+                    size={28}
+                    color={theme.accentLight}
+                    style={{ marginRight: 12 }}
+                  />
+                  <View style={{ flex: 1 }}>
+                    <Text
+                      style={{
+                        color: colors.text,
+                        fontFamily: fontFamilies.body700,
+                        fontSize: 15,
+                      }}
+                    >
+                      {programLabel(p.id, p.title)}
+                    </Text>
+                    <Text
+                      style={{
+                        marginTop: 4,
+                        color: colors.textSecondary,
+                        fontFamily: fontFamilies.body,
+                        fontSize: 12,
+                      }}
+                    >
+                      {programSubtitle(p.id, p.subtitle)}
+                    </Text>
+                  </View>
+                  <Ionicons
+                    name="chevron-forward"
+                    size={22}
+                    color={colors.textMuted}
                   />
                 </Pressable>
               ))}

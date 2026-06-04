@@ -4,3 +4,20 @@
 # Personal/local Claude Code settings (machine-specific permissions, etc.)
 .claude/settings.local.json
 .claude/scheduled_tasks.lock
+
+# Local run logs and screenshot audit tooling (repo root D:\iron)
+*.log
+
+# Secrets — never commit
+.env
+.env.*
+!.env.example
+
+# Build artifacts
+backend/dist/
+node_modules/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/

@@ -38,7 +38,17 @@ export class StatsService {
       await Promise.all([
         this.prisma.workout.findMany({
           where: { userId, date: { gte: since }, status: WorkoutStatus.COMPLETED },
-          include: { sets: { include: { exercise: { select: { primary: true } } } } },
+          include: {
+            sets: {
+              select: {
+                id: true,
+                exerciseId: true,
+                completed: true,
+                weight: true,
+                reps: true,
+              },
+            },
+          },
           orderBy: { date: 'asc' },
         }),
         this.prisma.nutritionEntry.findMany({
@@ -58,6 +68,17 @@ export class StatsService {
           select: { weight: true, reps: true },
         }),
       ]);
+
+    const exerciseIds = Array.from(
+      new Set(workouts.flatMap((w) => w.sets.map((s) => s.exerciseId))),
+    );
+    const exercises = exerciseIds.length
+      ? await this.prisma.exercise.findMany({
+          where: { id: { in: exerciseIds } },
+          select: { id: true, primary: true },
+        })
+      : [];
+    const exercisePrimaryById = new Map(exercises.map((e) => [e.id, e.primary]));
 
     const allTimeVolumeKg = allTimeSets.reduce(
       (s, set) => s + (set.weight ?? 0) * (set.reps ?? 0),
@@ -132,7 +153,8 @@ export class StatsService {
         if (s.completed) completedSets += 1;
         const v = (s.weight ?? 0) * (s.reps ?? 0);
         volumeKg += v;
-        const key = MUSCLE_MAP[s.exercise.primary] ?? 'other';
+        const primary = exercisePrimaryById.get(s.exerciseId);
+        const key = primary ? (MUSCLE_MAP[primary] ?? 'other') : 'other';
         muscleVolumeAbs[key] += v;
       }
     }

@@ -9,6 +9,11 @@ import { SendChatDto } from './dto/send.dto';
 export class ChatController {
   constructor(private readonly chat: ChatService) {}
 
+  @Get('status')
+  status() {
+    return this.chat.status();
+  }
+
   @Get()
   list(@CurrentUser() user: CurrentUserPayload, @Query('limit') limit?: string) {
     return this.chat.list(user.id, limit ? Number(limit) : undefined);

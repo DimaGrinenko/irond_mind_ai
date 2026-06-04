@@ -1,0 +1,79 @@
+==========================================================
+  IRON MIND AI — КАК ЗАПУСТИТЬ ПРИЛОЖЕНИЕ (с нуля)
+==========================================================
+Все команды для PowerShell (Windows). Запускать по порядку.
+Каждый шаг — в СВОЁМ окне терминала (они работают одновременно).
+
+Демо-логин:  user@ironmind.local  /  user12345
+
+Документ для защиты/сдачи:
+  PROJECT_HANDOVER_RU.txt  (в этой же папке)
+
+Настройка AI (OpenRouter / Groq):
+  AI_SETUP_RU.txt
+
+GitHub и Telegram:
+  GITHUB_AND_TELEGRAM_RU.txt
+
+----------------------------------------------------------
+ШАГ 1. PostgreSQL (база данных)  —  окно №1
+----------------------------------------------------------
+Запуск (подставьте свой путь к pg_ctl, если отличается):
+  & "D:\postgresql-18.3-2-windows-x64-binaries\pgsql\bin\pg_ctl.exe" -D "D:\postgresql-18.3-2-windows-x64-binaries\pgsql\data" -l "D:\postgresql-18.3-2-windows-x64-binaries\pgsql\logfile.log" start
+
+Проверить:
+  & "D:\postgresql-18.3-2-windows-x64-binaries\pgsql\bin\pg_ctl.exe" -D "D:\postgresql-18.3-2-windows-x64-binaries\pgsql\data" status
+
+  БД:     iron_mind_ai
+  Юзер:   postgres
+  Пароль: см. backend/.env → DATABASE_URL
+
+----------------------------------------------------------
+ШАГ 2. Backend (порт 4001)  —  окно №2
+----------------------------------------------------------
+  cd <путь-к-репо>\iron-mind-ai\backend
+  npm install
+  npx prisma migrate deploy
+  npm run start:dev
+
+Проверка: http://localhost:4001
+
+AI: скопировать backend/.env.example → backend/.env,
+     задать OPENROUTER_API_KEY и AI_PROVIDER=openrouter
+(см. AI_SETUP_RU.txt). После смены .env — перезапустить backend.
+
+----------------------------------------------------------
+ШАГ 3. Mobile / Expo  —  окно №3
+----------------------------------------------------------
+  cd <путь-к-репо>\iron-mind-ai\mobile
+  npm install
+
+На телефоне (Expo Go):
+  $env:EXPO_PUBLIC_API_URL = "http://<IP-ПК>:4001"
+  npx expo start
+  IP: ipconfig → IPv4 (напр. 192.168.1.14). Телефон и ПК в одной Wi‑Fi.
+
+В браузере на ПК:
+  $env:EXPO_PUBLIC_API_URL = "http://localhost:4001"
+  npx expo start --web --port 8090
+
+----------------------------------------------------------
+ДЕМО НА ЗАЩИТЕ (коротко)
+----------------------------------------------------------
+1) Вход user@ironmind.local / user12345
+2) Программы → шаблон → «Использовать»
+3) Главная → тренировка → Gym Mode → завершить
+4) Аналитика — графики
+5) AI — вопрос в поле внизу → ответ
+6) Профиль → Тренировки — история, при необходимости удалить (корзина)
+
+----------------------------------------------------------
+ПОРЯДОК:  Postgres  →  Backend  →  Mobile
+----------------------------------------------------------
+
+Частые проблемы:
+- Network error — backend не запущен или неверный EXPO_PUBLIC_API_URL на телефоне
+- AI «локальные подсказки» — нет ключа в .env или backend не перезапущен
+- Поле чата не видно — обновить приложение (reload в Expo)
+
+Обновлено: 2026-06-04

@@ -4,6 +4,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Pressable,
   ScrollView,
   Text,
@@ -16,13 +17,19 @@ import { ScreenHeader } from '../components/layout/ScreenHeader';
 import { colors } from '../theme/tokens';
 import { useTheme } from '../theme/useTheme';
 import { fontFamilies } from '../theme/typography';
-import { api } from '../api/client';
-import { exercises as catalog } from '../data/exercises';
+import { api, ApiError } from '../api/client';
+import { exerciseDisplayName } from '../utils/exerciseDisplayName';
+import {
+  workoutDisplayName,
+  workoutProgramSubtitle,
+} from '../utils/workoutDisplayName';
 import { t, useLang } from '../i18n';
 
 type WorkoutRow = {
   id: string;
   name: string | null;
+  programId?: string | null;
+  program?: { id: string; title: string } | null;
   date: string;
   durationSeconds: number | null;
   calories: number | null;
@@ -34,6 +41,7 @@ type WorkoutRow = {
     weight: number | null;
     reps: number | null;
     completed: boolean;
+    exercise?: { id: string; name: string; slug: string };
   }>;
 };
 
@@ -57,6 +65,7 @@ export function WorkoutsHistoryScreen() {
   const nav = useNavigation<any>();
   const [items, setItems] = useState<WorkoutRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -80,6 +89,33 @@ export function WorkoutsHistoryScreen() {
   }, [load]);
 
   const completed = items.filter((w) => w.status === 'COMPLETED');
+
+  const confirmDelete = (w: WorkoutRow) => {
+    const title = workoutDisplayName(w.name, w.program);
+    Alert.alert(t('history.deleteTitle'), `${title}\n\n${t('history.deleteBody')}`, [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('common.delete'),
+        style: 'destructive',
+        onPress: () => void deleteWorkout(w.id),
+      },
+    ]);
+  };
+
+  const deleteWorkout = async (id: string) => {
+    setDeletingId(id);
+    try {
+      await api.workouts.remove(id);
+      setItems((prev) => prev.filter((x) => x.id !== id));
+    } catch (e) {
+      Alert.alert(
+        t('common.error'),
+        e instanceof ApiError ? e.message : t('history.deleteFailed'),
+      );
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
@@ -110,6 +146,11 @@ export function WorkoutsHistoryScreen() {
         ) : (
           <View style={{ paddingHorizontal: 16, marginTop: 12, gap: 12 }}>
             {completed.map((w) => {
+              const sessionTitle = workoutDisplayName(w.name, w.program);
+              const programSub = workoutProgramSubtitle(
+                sessionTitle,
+                w.program,
+              );
               const totalVol = w.sets.reduce(
                 (s, x) => s + (x.weight ?? 0) * (x.reps ?? 0),
                 0,
@@ -157,29 +198,84 @@ export function WorkoutsHistoryScreen() {
                           fontSize: 14,
                         }}
                       >
-                        {w.name || t('workout.title')}
+                        {sessionTitle}
                       </Text>
+                      {programSub ? (
+                        <Text
+                          style={{
+                            color: colors.textSecondary,
+                            fontFamily: fontFamilies.body,
+                            fontSize: 11,
+                            marginTop: 2,
+                          }}
+                        >
+                          {programSub}
+                        </Text>
+                      ) : null}
                       <Text
                         style={{
                           color: colors.textMuted,
                           fontFamily: fontFamilies.body,
                           fontSize: 11,
-                          marginTop: 2,
+                          marginTop: programSub ? 2 : 2,
                         }}
                       >
                         {fmtDate(w.date, lang)} · {fmtTime(w.date)} ·{' '}
                         {Math.round(totalVol)} {t('common.kg')} · {doneCount}/
-                        {setCount}
+                        {setCount} {t('history.setsShort')}
                       </Text>
                     </View>
+                    <Pressable
+                      onPress={() => confirmDelete(w)}
+                      disabled={deletingId === w.id}
+                      hitSlop={10}
+                      accessibilityRole="button"
+                      accessibilityLabel={t('common.delete')}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 12,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderWidth: 1,
+                        borderColor: 'rgba(255,80,120,0.35)',
+                        backgroundColor: 'rgba(255,60,100,0.1)',
+                      }}
+                    >
+                      {deletingId === w.id ? (
+                        <ActivityIndicator size="small" color="#FF6B9A" />
+                      ) : (
+                        <Ionicons
+                          name="trash-outline"
+                          size={20}
+                          color="#FF6B9A"
+                        />
+                      )}
+                    </Pressable>
                   </View>
                   {byExercise.size === 0 ? null : (
                     <View style={{ gap: 4 }}>
                       {Array.from(byExercise.entries()).map(([exId, sets]) => {
-                        const meta = catalog.find((e) => e.id === exId);
-                        const name = meta?.name ?? exId;
-                        const best = sets.reduce(
-                          (m, s) => Math.max(m, s.weight ?? 0),
+                        const exMeta = sets[0]?.exercise;
+                        const name =
+                          exerciseDisplayName(
+                            exId,
+                            exMeta?.name,
+                            exMeta?.slug,
+                          ) || t('history.unknownExercise');
+                        const doneSets = sets.filter((s) => s.completed);
+                        const count = doneSets.length || sets.length;
+                        let best = 0;
+                        let bestReps = 0;
+                        for (const s of sets) {
+                          const w = s.weight ?? 0;
+                          if (w >= best) {
+                            best = w;
+                            bestReps = s.reps ?? bestReps;
+                          }
+                        }
+                        const vol = sets.reduce(
+                          (s, x) => s + (x.weight ?? 0) * (x.reps ?? 0),
                           0,
                         );
                         return (
@@ -187,28 +283,50 @@ export function WorkoutsHistoryScreen() {
                             key={exId}
                             style={{
                               flexDirection: 'row',
-                              alignItems: 'center',
+                              alignItems: 'flex-start',
+                              paddingVertical: 4,
+                              borderTopWidth: 1,
+                              borderTopColor: 'rgba(255,255,255,0.06)',
                             }}
                           >
-                            <Text
-                              style={{
-                                flex: 1,
-                                color: colors.textSecondary,
-                                fontFamily: fontFamilies.body,
-                                fontSize: 12,
-                              }}
-                            >
-                              {name}
-                            </Text>
+                            <View style={{ flex: 1, paddingRight: 8 }}>
+                              <Text
+                                style={{
+                                  color: colors.text,
+                                  fontFamily: fontFamilies.body600,
+                                  fontSize: 13,
+                                }}
+                              >
+                                {name}
+                              </Text>
+                              <Text
+                                style={{
+                                  marginTop: 2,
+                                  color: colors.textMuted,
+                                  fontFamily: fontFamilies.body,
+                                  fontSize: 11,
+                                }}
+                              >
+                                {t('history.setsCount', { n: count })}
+                                {vol > 0
+                                  ? ` · ${Math.round(vol)} ${t('common.kg')}`
+                                  : ''}
+                              </Text>
+                            </View>
                             <Text
                               style={{
                                 color: theme.accentLight,
                                 fontFamily: fontFamilies.body700,
                                 fontSize: 12,
+                                textAlign: 'right',
                               }}
                             >
-                              {sets.length}×
-                              {best > 0 ? `${best}${t('common.kg')}` : '—'}
+                              {best > 0
+                                ? t('history.bestSet', {
+                                    w: best,
+                                    r: bestReps > 0 ? bestReps : '—',
+                                  })
+                                : '—'}
                             </Text>
                           </View>
                         );

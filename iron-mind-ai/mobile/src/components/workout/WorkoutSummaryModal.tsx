@@ -7,7 +7,7 @@ import { colors, neonGlow, neonTextShadow, radii } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
 import { fontFamilies } from '../../theme/typography';
 import type { WorkoutSummary } from '../../store/activeWorkoutStore';
-import { exercises } from '../../data/exercises';
+import { exerciseDisplayName } from '../../utils/exerciseDisplayName';
 import { t, useLang } from '../../i18n';
 
 function fmtDuration(ms: number) {
@@ -16,10 +16,6 @@ function fmtDuration(ms: number) {
   const sec = s % 60;
   if (m === 0) return `${sec} ${t('common.seconds')}`;
   return `${m} ${t('common.minutes')} ${sec} ${t('common.seconds')}`;
-}
-
-function exerciseName(id: string): string {
-  return exercises.find((e) => e.id === id)?.name ?? id;
 }
 
 export function WorkoutSummaryModal({
@@ -200,7 +196,8 @@ export function WorkoutSummaryModal({
                                 fontSize: 13,
                               }}
                             >
-                              {exerciseName(pr.exerciseId)}
+                              {exerciseDisplayName(pr.exerciseId) ||
+                                t('history.unknownExercise')}
                             </Text>
                             <Text
                               style={{
@@ -263,7 +260,9 @@ export function WorkoutSummaryModal({
                                 fontSize: 13,
                               }}
                             >
-                              {exerciseName(s.exerciseId)} · +{s.addKg}{' '}
+                              {exerciseDisplayName(s.exerciseId) ||
+                                t('history.unknownExercise')}{' '}
+                              · +{s.addKg}{' '}
                               {t('common.kg')}
                             </Text>
                             <Text

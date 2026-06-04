@@ -5,10 +5,27 @@
  * иначе сборка пытается ходить на 10.0.2.2 (адрес из Android-эмулятора) и web-версия молча падает на CORS / DNS.
  */
 
-import { Platform } from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const TOKEN_KEY = 'ai_trainer_token';
+const REQUEST_TIMEOUT_MS = 20_000;
+const CHAT_REQUEST_TIMEOUT_MS = 90_000;
+
+/** Хост Metro/Expo Go (IP ПК в Wi‑Fi) — чтобы iPhone находил backend без ручного .env. */
+function getPackagerHost(): string | null {
+  try {
+    const source = NativeModules.SourceCode as
+      | { scriptURL?: string }
+      | undefined;
+    const scriptURL = source?.scriptURL;
+    if (!scriptURL) return null;
+    const m = scriptURL.match(/https?:\/\/([^:/]+)/);
+    return m?.[1] ?? null;
+  } catch {
+    return null;
+  }
+}
 
 function resolveBaseUrl(): string {
   const env = process.env.EXPO_PUBLIC_API_URL;
@@ -17,7 +34,17 @@ function resolveBaseUrl(): string {
     const host = window.location?.hostname || 'localhost';
     return `http://${host}:4001`;
   }
-  return 'http://10.0.2.2:4001';
+
+  const packagerHost = getPackagerHost();
+  if (packagerHost) {
+    if (packagerHost === 'localhost' || packagerHost === '127.0.0.1') {
+      return 'http://127.0.0.1:4001';
+    }
+    return `http://${packagerHost}:4001`;
+  }
+
+  if (Platform.OS === 'android') return 'http://10.0.2.2:4001';
+  return 'http://127.0.0.1:4001';
 }
 
 export const API_BASE_URL = resolveBaseUrl();
@@ -47,7 +74,29 @@ export class ApiError extends Error {
   }
 }
 
-type ReqInit = Omit<RequestInit, 'body'> & { body?: unknown };
+type ReqInit = Omit<RequestInit, 'body'> & {
+  body?: unknown;
+  /** Таймаут запроса (мс). Для /chat — дольше, пока DeepSeek генерирует ответ. */
+  timeoutMs?: number;
+};
+
+function networkErrorMessage(cause: unknown): string {
+  const msg = cause instanceof Error ? cause.message : String(cause);
+  if (
+    msg.includes('timed out') ||
+    msg.includes('Timeout') ||
+    msg.includes('Network request failed') ||
+    msg.includes('Failed to fetch') ||
+    msg.includes('abort')
+  ) {
+    return (
+      `Сервер не отвечает (${API_BASE_URL}). ` +
+      'Запусти Postgres и backend на ПК (порт 4001). ' +
+      'На телефоне: та же Wi‑Fi, без VPN.'
+    );
+  }
+  return msg || 'Ошибка сети';
+}
 
 export async function request<T = unknown>(
   path: string,
@@ -61,11 +110,23 @@ export async function request<T = unknown>(
   if (init.body !== undefined) headers['Content-Type'] = 'application/json';
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(`${API_BASE_URL}${path}`, {
-    ...init,
-    headers,
-    body: init.body !== undefined ? JSON.stringify(init.body) : undefined,
-  });
+  const timeoutMs = init.timeoutMs ?? REQUEST_TIMEOUT_MS;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE_URL}${path}`, {
+      ...init,
+      headers,
+      signal: controller.signal,
+      body: init.body !== undefined ? JSON.stringify(init.body) : undefined,
+    });
+  } catch (e) {
+    throw new ApiError(networkErrorMessage(e), 0, null);
+  } finally {
+    clearTimeout(timer);
+  }
 
   const text = await res.text();
   const data = text ? safeJson(text) : null;
@@ -168,6 +229,8 @@ export const api = {
       request<{ id: string }>('/workouts', { method: 'POST', body: b }),
     finish: (id: string) =>
       request<any>(`/workouts/${id}/finish`, { method: 'PATCH' }),
+    remove: (id: string) =>
+      request<{ ok: true }>(`/workouts/${id}`, { method: 'DELETE' }),
     upsertSet: (id: string, b: UpsertSetPayload) =>
       request<any>(`/workouts/${id}/sets`, { method: 'POST', body: b }),
     exerciseHistory: (slug: string) =>
@@ -198,9 +261,14 @@ export const api = {
       }>('/nutrition/recipe-import', { method: 'POST', body: { url } }),
   },
   chat: {
-    list: () => request<any[]>('/chat'),
+    list: () => request<ChatMessageDto[]>('/chat'),
+    status: () => request<AiChatStatus>('/chat/status'),
     send: (content: string) =>
-      request<any>('/chat', { method: 'POST', body: { content } }),
+      request<ChatSendResponse>('/chat', {
+        method: 'POST',
+        body: { content },
+        timeoutMs: CHAT_REQUEST_TIMEOUT_MS,
+      }),
   },
   stats: {
     me: (days?: number) =>
@@ -273,11 +341,6 @@ export const api = {
   },
   economy: {
     wallet: () => request<EconomyWallet>('/economy/wallet'),
-    spinWheel: () =>
-      request<WheelSpinResult>('/economy/wheel/spin', {
-        method: 'POST',
-        body: {},
-      }),
     buy: (itemId: string) =>
       request<EconomyWallet>('/economy/shop/buy', {
         method: 'POST',
@@ -326,13 +389,28 @@ export type EconomyWallet = {
   wheelStreak: number;
 };
 
-export type WheelSpinResult = {
-  value: number;
-  multiplier: number;
-  total: number;
-  sectorIndex: number;
-  leaves: number;
-  wheelStreak: number;
+export type ChatMessageDto = {
+  id: string;
+  role: 'USER' | 'ASSISTANT';
+  content: string;
+  createdAt: string;
+};
+
+export type AiChatStatus = {
+  enabled: boolean;
+  label: string | null;
+  model: string | null;
+};
+
+export type ChatSendResponse = {
+  userMsg: ChatMessageDto;
+  aiMsg: ChatMessageDto;
+  meta: {
+    source: 'llm' | 'rules';
+    provider: string | null;
+    model: string | null;
+    llmError?: string | null;
+  };
 };
 
 export type ScheduledStatus = 'PLANNED' | 'DONE' | 'SKIPPED';

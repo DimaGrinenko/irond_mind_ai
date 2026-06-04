@@ -1,0 +1,99 @@
+IRON MIND AI — ПОДКЛЮЧЕНИЕ AI-ТРЕНЕРА
+
+────────────────────────────────────────
+БЕСПЛАТНО (рекомендуем для старта) — GROQ
+────────────────────────────────────────
+
+1) Регистрация: https://console.groq.com
+2) API Keys → Create API Key (бесплатный tier, есть лимиты RPD/RPM)
+3) В backend/.env:
+
+   GROQ_API_KEY=gsk_xxxxxxxx
+   AI_PROVIDER=groq
+
+   (строку DEEPSEEK_API_KEY можно закомментировать или удалить)
+
+4) Перезапуск backend:
+
+   cd backend
+   npm run start:dev
+
+5) В приложении вкладка AI: «Живой AI · Groq»
+
+Модель по умолчанию: llama-3.3-70b-versatile
+Своя модель: GROQ_MODEL=llama-3.1-8b-instant (быстрее, проще)
+
+Лимиты смотри в консоли Groq — для демо и сдачи проекта обычно хватает.
+
+────────────────────────────────────────
+DEEPSEEK + GROQ (авто-запасной)
+────────────────────────────────────────
+
+Если в .env есть ОБА ключа:
+  DEEPSEEK_API_KEY=...
+  GROQ_API_KEY=...
+
+Backend сначала пробует DeepSeek. При ошибке 402 (нет баланса) или другой
+ошибке API — автоматически отвечает через Groq.
+
+В UI: «Живой AI · DeepSeek (+ Groq)»
+
+────────────────────────────────────────
+DEEPSEEK (платный, когда есть баланс)
+────────────────────────────────────────
+
+1) https://platform.deepseek.com → API keys → Billing
+2) backend/.env:
+
+   DEEPSEEK_API_KEY=sk-xxxxxxxx
+   AI_PROVIDER=deepseek
+
+3) Перезапуск backend.
+
+Модель: deepseek-chat (AI_MODEL=deepseek-chat)
+
+Ошибка 402 Insufficient Balance — пополни счёт или включи Groq (см. выше).
+
+────────────────────────────────────────
+OPENROUTER (пополнение Credits, напр. $5)
+────────────────────────────────────────
+
+1) https://openrouter.ai/keys → Create Key (sk-or-v1-...)
+2) backend/.env:
+
+   AI_PROVIDER=openrouter
+   OPENROUTER_API_KEY=sk-or-v1-...
+   AI_MODEL=deepseek/deepseek-chat
+
+3) Перезапуск backend (npm run start:dev)
+4) В приложении AI: «Живой AI · OpenRouter»
+
+Модели на выбор (смотри цену на openrouter.ai/models):
+  deepseek/deepseek-chat — дёшево, хорошо для чата
+  google/gemini-2.5-flash-preview
+  openai/gpt-4o-mini
+
+────────────────────────────────────────
+БЕЗ API (всегда бесплатно, но не «настоящий» AI)
+────────────────────────────────────────
+
+AI_PROVIDER=off
+
+Ответы — заготовленные шаблоны по ключевым словам (присед, белок, масса…).
+Подходит для офлайн-демо без интернета к LLM.
+
+────────────────────────────────────────
+ПРОВЕРКА
+────────────────────────────────────────
+
+- Вход в приложение: user@ironmind.local / user12345
+- Вкладка AI → поле внизу → отправить вопрос
+- GET /chat/status (с JWT): enabled: true, label: Groq или DeepSeek
+- Ответ meta.source = llm (не rules)
+
+Частые ошибки:
+- 401 — не залогинен или неверный JWT
+- 402 DeepSeek — нет денег → добавь GROQ_API_KEY
+- Mobile «сервер не отвечает» — backend :4001, Wi‑Fi, EXPO_PUBLIC_API_URL
+
+Подробнее: backend/.env.example

@@ -12,13 +12,39 @@ export class WorkoutsService {
     private readonly achievements: AchievementsService,
   ) {}
 
-  list(userId: string, limit = 50) {
-    return this.prisma.workout.findMany({
+  async list(userId: string, limit = 50) {
+    const workouts = await this.prisma.workout.findMany({
       where: { userId },
       orderBy: { date: 'desc' },
       take: Math.min(limit, 200),
-      include: { sets: true },
+      include: {
+        sets: {
+          orderBy: [{ setNumber: 'asc' }],
+          include: {
+            exercise: { select: { id: true, name: true, slug: true } },
+          },
+        },
+      },
     });
+
+    const programIds = [
+      ...new Set(
+        workouts.map((w) => w.programId).filter((id): id is string => !!id),
+      ),
+    ];
+    const programs =
+      programIds.length > 0
+        ? await this.prisma.program.findMany({
+            where: { id: { in: programIds } },
+            select: { id: true, title: true },
+          })
+        : [];
+    const programById = new Map(programs.map((p) => [p.id, p]));
+
+    return workouts.map((w) => ({
+      ...w,
+      program: w.programId ? (programById.get(w.programId) ?? null) : null,
+    }));
   }
 
   create(userId: string, dto: CreateWorkoutDto) {
@@ -35,10 +61,30 @@ export class WorkoutsService {
   }
 
   async byId(userId: string, id: string) {
-    const w = await this.prisma.workout.findUnique({ where: { id }, include: { sets: true } });
+    const w = await this.prisma.workout.findUnique({
+      where: { id },
+      include: {
+        sets: {
+          orderBy: [{ setNumber: 'asc' }],
+          include: {
+            exercise: { select: { id: true, name: true, slug: true } },
+          },
+        },
+      },
+    });
     if (!w) throw new NotFoundException();
     if (w.userId !== userId) throw new ForbiddenException();
     return w;
+  }
+
+  async remove(userId: string, id: string) {
+    await this.byId(userId, id);
+    await this.prisma.scheduledWorkout.updateMany({
+      where: { userId, workoutId: id },
+      data: { workoutId: null },
+    });
+    await this.prisma.workout.delete({ where: { id } });
+    return { ok: true as const };
   }
 
   async finish(userId: string, id: string) {
